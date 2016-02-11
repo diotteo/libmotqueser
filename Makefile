@@ -21,7 +21,7 @@ all: $(objects) $(libs)
 
 
 $(objects): %.class: %.java
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):.:$(ROOT_DIR)/$(PKG) -d $(ROOT_DIR) $^
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):.:$(ROOT_DIR)/$(PKG) -d $(ROOT_DIR) $<
 
 
 .PHONY: run
@@ -31,3 +31,11 @@ run: all
 
 .PHONY: libs
 libs: $(libs)
+
+
+ClientMessage.class: MonitorLib.class
+ControlMessage.class : MonitorLib.class
+ServerMessage.class : MonitorLib.class
+XmlStringReader.class : ClientMessage.class ControlMessage.class ServerMessage.class
+XmlStringWriter.class : ClientMessage.class ControlMessage.class ServerMessage.class
+Test.class : XmlStringReader.class XmlStringWriter.class
