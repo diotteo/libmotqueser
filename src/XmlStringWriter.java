@@ -61,10 +61,14 @@ public class XmlStringWriter {
 
 			if (value != null) {
 				xsw.writeCharacters(value);
-				xsw.writeEndElement();
 			}
 		} catch (XMLStreamException e) {
 			System.err.println(e.getMessage());
 		}
+	}
+
+
+	public void writeEndTag() {
+		xsw.writeEndElement();
 	}
 }
