@@ -44,5 +44,12 @@ class Test {
 		clm.add(a);
 		System.out.println("ClientMessage " + clm);
 		System.out.println("\n" + clm.getXmlString());
+
+
+		ServerMessage sm = new ServerMessage(new int[]{1, 0});
+		sm.add(new ServerMessage.Item(2));
+		sm.add(new ServerMessage.Item(4));
+		System.out.println("\nServerMessage " + sm);
+		System.out.println("\n" + sm.getXmlString());
 	}
 }
