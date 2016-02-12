@@ -14,13 +14,13 @@ tests_objects := $(patsubst tests/%.java,$(PKG)/%.class,$(tests_src))
 
 ROOT_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
+.PHONY: all
+all: $(objects) $(libs)
+
+
 .PHONY: test
 test: all $(PKG)/Test.class
 	$(JAVA) -cp $(subst " ",":",$(libs)):. $(patsubst /,.,$(PKG)/Test) $(ARGS)
-
-
-.PHONY: all
-all: $(objects) $(libs)
 
 
 $(objects): $(PKG)/%.class: src/%.java
