@@ -76,9 +76,9 @@ class ClientMessage extends Message {
 		}
 
 
-		void setMinutes(int min) throws BadActionTypeError, Error {
+		void setMinutes(int min) throws BadActionTypeException {
 			if (at != ActionType.SNOOZE) {
-				throw new BadActionTypeError("only snooze has minutes");
+				throw new BadActionTypeException("only snooze has minutes");
 			} else if (min < 1) {
 				throw new Error("can't snooze for less than 1 minute");
 			}
@@ -86,18 +86,18 @@ class ClientMessage extends Message {
 		}
 
 
-		void setPrevId(int prevId) throws BadActionTypeError {
+		void setPrevId(int prevId) throws BadActionTypeException {
 			if (at != ActionType.GET_MSG_LIST) {
-				throw new BadActionTypeError("only get_message_list has prev_id");
+				throw new BadActionTypeException("only get_message_list has prev_id");
 			}
 
 			this.prevId = prevId;
 		}
 
 
-		void setId(int id) throws BadActionTypeError {
+		void setId(int id) throws BadActionTypeException {
 			if (at != ActionType.GET_MSG && at != ActionType.DEL_MSG) {
-				throw new BadActionTypeError("only get_message and delete_message have id");
+				throw new BadActionTypeException("only get_message and delete_message have id");
 			}
 
 			this.id = id;
@@ -152,7 +152,7 @@ class ClientMessage extends Message {
 	}
 
 
-	void processXmlEvent(XmlEvent e) throws MalformedMessageError, Error {
+	void processXmlEvent(XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
 			processAction(e);
@@ -168,7 +168,7 @@ class ClientMessage extends Message {
 		}
 	}
 
-	private void processAction(XmlEvent e) throws MalformedMessageError, Error {
+	private void processAction(XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlEvent.START_ELEMENT, "action");
 
 		Action.ActionType at = null;

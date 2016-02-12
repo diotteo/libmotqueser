@@ -126,7 +126,7 @@ class ControlMessage extends Message {
 	}
 
 
-	void processXmlEvent(XmlEvent e) {
+	void processXmlEvent(XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
 			processItem(e);
@@ -156,7 +156,7 @@ class ControlMessage extends Message {
 	}
 
 
-	private void processItem(XmlEvent e) {
+	private void processItem(XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlEvent.START_ELEMENT, "item");
 
 		int id = -1;
@@ -187,7 +187,7 @@ class ControlMessage extends Message {
 	}
 
 
-	private void processMovie(XmlEvent e) {
+	private void processMovie(XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlEvent.START_ELEMENT, "movie");
 	}
 
@@ -201,7 +201,7 @@ class ControlMessage extends Message {
 	}
 
 
-	private void processMovieEnd(XmlEvent e) {
+	private void processMovieEnd(XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlEvent.END_ELEMENT, "movie");
 
 		curItem.add(curMedia);
@@ -209,7 +209,7 @@ class ControlMessage extends Message {
 	}
 
 
-	private void processItemEnd(XmlEvent e) {
+	private void processItemEnd(XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlEvent.END_ELEMENT, "item");
 		if (curItem.isEmpty()) {
 			throw new MalformedMessageError("empty item");

@@ -3,13 +3,13 @@ package ca.dioo.java.MonitorLib;
 import javax.xml.stream.XMLStreamReader;
 
 
-class MalformedMessageError extends Error {
-	public MalformedMessageError(String msg) {
+class MalformedMessageException extends Exception {
+	public MalformedMessageException(String msg) {
 		super(msg);
 	}
 }
-class BadActionTypeError extends MalformedMessageError {
-	public BadActionTypeError(String msg) {
+class BadActionTypeException extends MalformedMessageException {
+	public BadActionTypeException(String msg) {
 		super(msg);
 	}
 }
@@ -48,16 +48,29 @@ abstract class Message {
 	}
 
 
-	abstract void processXmlEvent(XmlEvent e) throws MalformedMessageError;
+	abstract void processXmlEvent(XmlEvent e) throws MalformedMessageException;
 
 
-	protected void validateElement(XmlEvent e, XmlEvent type, String name) throws MalformedMessageError, Error {
+	protected boolean compareElement(XmlEvent e, XmlEvent type, String name) {
 		String n;
 
 		if (e != type) {
-			throw new MalformedMessageError("unexpected XML event");
+			return false;
 		} else if (!(n = xsr.getLocalName()).equals(name)) {
-			throw new MalformedMessageError("bad tag name (" + n + ")");
+			return false;
+		}
+
+		return true;
+	}
+
+
+	protected void validateElement(XmlEvent e, XmlEvent type, String name) throws MalformedMessageException {
+		String n;
+
+		if (e != type) {
+			throw new MalformedMessageException("unexpected XML event");
+		} else if (!(n = xsr.getLocalName()).equals(name)) {
+			throw new MalformedMessageException("bad tag name (" + n + ")");
 		}
 	}
 }
