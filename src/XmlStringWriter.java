@@ -46,11 +46,7 @@ public class XmlStringWriter {
 
 	public void writeTag(String localName, String[][] attributes, String value) {
 		try {
-			if (value == null) {
-				xsw.writeEmptyElement(localName);
-			} else {
-				xsw.writeStartElement(localName);
-			}
+			xsw.writeStartElement(localName);
 
 			if (attributes != null) {
 				for (String[] at: attributes) {
@@ -69,6 +65,10 @@ public class XmlStringWriter {
 
 
 	public void writeEndTag() {
-		xsw.writeEndElement();
+		try {
+			xsw.writeEndElement();
+		} catch (XMLStreamException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 }
