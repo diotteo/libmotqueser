@@ -43,15 +43,28 @@ class ClientMessage extends Message {
 		}
 
 
+		public String[][] getAttributeList() {
+			switch (at) {
+			case GET_MSG_LIST:
+				return new String[][]{{"type", at.toString()}, {"prev_id", Integer.toString(prevId)}};
+			case GET_MSG:
+			case DEL_MSG:
+				return new String[][]{{"type", at.toString()}, {"id", Integer.toString(id)}};
+			case SNOOZE:
+				return new String[][]{{"type", at.toString()}, {"minutes", Integer.toString(minutes)}};
+			default:
+				throw new Error("bogus ActionType");
+			}
+		}
+
+
 		public String toString() {
 			switch (at) {
 			case GET_MSG_LIST:
-				return at + " prev_id:" + prevId;
 			case GET_MSG:
 			case DEL_MSG:
-				return at + " id:" + id;
 			case SNOOZE:
-				return at + " minutes:" + minutes;
+				return Utils.join(" ", ":", getAttributeList());
 			default:
 				throw new Error("bogus ActionType");
 			}
@@ -127,6 +140,17 @@ class ClientMessage extends Message {
 		}
 
 		return sb.toString();
+	}
+
+
+	public String getXmlString() {
+		XmlStringWriter xsw = new XmlStringWriter("client_message", new int[]{1, 0});
+
+		for (Action a: actionList) {
+			xsw.writeEmptyTag("action", a.getAttributeList());
+		}
+
+		return xsw.getXmlString();
 	}
 
 

@@ -37,5 +37,6 @@ class Test {
 		a = new ClientMessage.Action(ClientMessage.Action.ActionType.GET_MSG);
 		clm.add(a);
 		System.out.println("ClientMessage " + clm);
+		System.out.println("\n" + clm.getXmlString());
 	}
 }

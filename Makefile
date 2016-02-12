@@ -39,9 +39,8 @@ run: all
 libs: $(libs)
 
 
-$(PKG)/ClientMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class)
-$(PKG)/ServerMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class)
-$(PKG)/ControlMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class Utils.class)
-$(PKG)/XmlStringReader.class : $(patsubst %,$(PKG)/%,ClientMessage.class ControlMessage.class ServerMessage.class)
-$(PKG)/XmlStringWriter.class : $(patsubst %,$(PKG)/%,ClientMessage.class ControlMessage.class ServerMessage.class)
+$(PKG)/MonitorLib.class : $(patsubst %,$(PKG)/%,Utils.class)
+$(PKG)/ClientMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class XmlStringReader.class XmlStringWriter.class)
+$(PKG)/ServerMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class XmlStringReader.class XmlStringWriter.class)
+$(PKG)/ControlMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class XmlStringReader.class XmlStringWriter.class)
 $(PKG)/Test.class : $(patsubst %,$(PKG)/%,XmlStringReader.class XmlStringWriter.class)

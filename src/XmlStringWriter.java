@@ -41,13 +41,27 @@ public class XmlStringWriter {
 
 
 	public void writeTag(String localName, String[][] attributes) {
-		writeTag(localName, attributes, null);
+		writeTag(localName, attributes, null, false);
 	}
 
 
 	public void writeTag(String localName, String[][] attributes, String value) {
+		writeTag(localName, attributes, value, false);
+	}
+
+
+	public void writeEmptyTag(String localName, String[][] attributes) {
+		writeTag(localName, attributes, null, true);
+	}
+
+
+	public void writeTag(String localName, String[][] attributes, String value, boolean isEmptyTag) {
 		try {
-			xsw.writeStartElement(localName);
+			if (isEmptyTag) {
+				xsw.writeEmptyElement(localName);
+			} else {
+				xsw.writeStartElement(localName);
+			}
 
 			if (attributes != null) {
 				for (String[] at: attributes) {
@@ -56,7 +70,7 @@ public class XmlStringWriter {
 				}
 			}
 
-			if (value != null) {
+			if (value != null && !isEmptyTag) {
 				xsw.writeCharacters(value);
 			}
 		} catch (XMLStreamException e) {
