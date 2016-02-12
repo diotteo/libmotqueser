@@ -4,11 +4,16 @@ import java.util.Vector;
 import javax.xml.stream.XMLStreamReader;
 
 
-
 class ClientMessage extends Message {
 	private Vector<Action> actionList = new Vector<Action>();
-	private XmlEvent expected;
 	private StateMachine sm;
+
+
+	private enum StateMachine {
+		INIT,
+		ACTION,
+		END
+	}
 
 
 	static public class Action {
@@ -100,23 +105,16 @@ class ClientMessage extends Message {
 	}
 
 
-	private enum StateMachine {
-		INIT,
-		ACTION,
-		END
-	}
-
-
 	public ClientMessage(int[] version) {
 		super(version);
 	}
 
 
-	ClientMessage(XMLStreamReader xsr) {
+	public ClientMessage(XMLStreamReader xsr) {
 		super(xsr);
 
 		if (version[0] != 1 || version[1] != 0) {
-			System.err.println("unsupported version " + version[0] + "." + version[1]);
+			throw new Error("unsupported version " + version[0] + "." + version[1]);
 		}
 
 		sm = StateMachine.INIT;
@@ -161,7 +159,10 @@ class ClientMessage extends Message {
 			sm = StateMachine.ACTION;
 			break;
 		case ACTION:
-			processAction(e);
+			//Allow an empty pair of elements as well (ignore the end element)
+			if (e != XmlEvent.END_ELEMENT) {
+				processAction(e);
+			}
 			break;
 		default:
 		}
@@ -246,5 +247,7 @@ class ClientMessage extends Message {
 		default:
 			throw new Error("Invalid action");
 		}
+
+		actionList.add(a);
 	}
 }

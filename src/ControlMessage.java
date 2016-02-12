@@ -35,7 +35,7 @@ class ControlMessage extends Message {
 
 		public Item(int id) {
 			if (id < 1) {
-				System.err.println("bogus Item ID");
+				throw new Error("bogus Item ID");
 			}
 
 			this.id = id;
@@ -100,11 +100,11 @@ class ControlMessage extends Message {
 	}
 
 
-	ControlMessage(XMLStreamReader xsr) {
+	public ControlMessage(XMLStreamReader xsr) {
 		super(xsr);
 
 		if (version[0] != 1 || version[1] != 0) {
-			System.err.println("unsupported version " + version[0] + "." + version[1]);
+			throw new Error("unsupported version " + version[0] + "." + version[1]);
 		}
 
 		sm = StateMachine.INIT;

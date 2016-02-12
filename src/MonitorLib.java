@@ -36,13 +36,15 @@ abstract class Message {
 			String attrVal = xsr.getAttributeValue(i);
 
 			if (attrName.equals("version")) {
-				String[] s = attrVal.split(".");
+				version = new int[2];
+				String[] s = attrVal.split("\\.");
 				for (int j = 0; j < s.length; j++) {
 					version[j] = new Integer(s[j]);
 				}
 				break;
 			}
 		}
+		assert version != null;
 	}
 
 

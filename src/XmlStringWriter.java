@@ -21,7 +21,7 @@ public class XmlStringWriter {
 			xsw.writeStartElement(rootElement);
 			xsw.writeAttribute("version", version[0] + "." + version[1]);
 		} catch (XMLStreamException e) {
-			System.err.println(e.getMessage());
+			throw new Error(e.getMessage());
 		}
 	}
 
@@ -33,7 +33,7 @@ public class XmlStringWriter {
 				xsw.writeEndDocument();
 				xsw.close();
 			} catch (XMLStreamException e) {
-				System.err.println(e.getMessage());
+				throw new Error(e.getMessage());
 			}
 		}
 		return sw.toString();
@@ -74,7 +74,7 @@ public class XmlStringWriter {
 				xsw.writeCharacters(value);
 			}
 		} catch (XMLStreamException e) {
-			System.err.println(e.getMessage());
+			throw new Error(e.getMessage());
 		}
 	}
 
@@ -83,7 +83,7 @@ public class XmlStringWriter {
 		try {
 			xsw.writeEndElement();
 		} catch (XMLStreamException e) {
-			System.err.println(e.getMessage());
+			throw new Error(e.getMessage());
 		}
 	}
 }
