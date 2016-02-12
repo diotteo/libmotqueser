@@ -3,63 +3,101 @@ package ca.dioo.java.MonitorLib;
 import java.util.Vector;
 import javax.xml.stream.XMLStreamReader;
 
-class Action {
-	public enum ActionType {
-		GET_MSG_LIST,
-		GET_MSG,
-		DEL_MSG,
-		SNOOZE
-	}
-
-	private ActionType at;
-	private int id;
-	private int prevId;
-	private int minutes;
-
-	Action(ActionType at) {
-		this.at = at;
-	}
-
-
-	void setMinutes(int min) throws BadActionTypeError, Error {
-		if (at != ActionType.SNOOZE) {
-			throw new BadActionTypeError("only snooze has minutes");
-		} else if (min < 1) {
-			throw new Error("can't snooze for less than 1 minute");
-		}
-		minutes = min;
-	}
-
-
-	void setPrevId(int prevId) throws BadActionTypeError {
-		if (at != ActionType.GET_MSG_LIST) {
-			throw new BadActionTypeError("only get_message_list has prev_id");
-		}
-
-		this.prevId = prevId;
-	}
-
-
-	void setId(int id) throws BadActionTypeError {
-		if (at != ActionType.GET_MSG && at != ActionType.DEL_MSG) {
-			throw new BadActionTypeError("only get_message and delete_message have id");
-		}
-
-		this.id = id;
-	}
-}
 
 
 class ClientMessage extends Message {
-	private Vector<Action> actionList;
+	private Vector<Action> actionList = new Vector<Action>();
+	private XmlEvent expected;
+	private StateMachine sm;
+
+
+	static public class Action {
+		private ActionType at;
+		private int id = -1;
+		private int prevId = -1;
+		private int minutes = -1;
+
+
+		public enum ActionType {
+			GET_MSG_LIST("get_message_list"),
+			GET_MSG("get_message"),
+			DEL_MSG("delete_message"),
+			SNOOZE("snooze");
+
+			private String name;
+
+
+			ActionType(String name) {
+				this.name = name;
+			}
+
+
+			public String toString() {
+				return name;
+			}
+		}
+
+
+		public Action(ActionType at) {
+			this.at = at;
+		}
+
+
+		public String toString() {
+			switch (at) {
+			case GET_MSG_LIST:
+				return at + " prev_id:" + prevId;
+			case GET_MSG:
+			case DEL_MSG:
+				return at + " id:" + id;
+			case SNOOZE:
+				return at + " minutes:" + minutes;
+			default:
+				throw new Error("bogus ActionType");
+			}
+		}
+
+
+		void setMinutes(int min) throws BadActionTypeError, Error {
+			if (at != ActionType.SNOOZE) {
+				throw new BadActionTypeError("only snooze has minutes");
+			} else if (min < 1) {
+				throw new Error("can't snooze for less than 1 minute");
+			}
+			minutes = min;
+		}
+
+
+		void setPrevId(int prevId) throws BadActionTypeError {
+			if (at != ActionType.GET_MSG_LIST) {
+				throw new BadActionTypeError("only get_message_list has prev_id");
+			}
+
+			this.prevId = prevId;
+		}
+
+
+		void setId(int id) throws BadActionTypeError {
+			if (at != ActionType.GET_MSG && at != ActionType.DEL_MSG) {
+				throw new BadActionTypeError("only get_message and delete_message have id");
+			}
+
+			this.id = id;
+		}
+	}
+
 
 	private enum StateMachine {
 		INIT,
 		ACTION,
 		END
 	}
-	private XmlEvent expected;
-	private StateMachine sm;
+
+
+	public ClientMessage(int[] version) {
+		super(version);
+	}
+
 
 	ClientMessage(XMLStreamReader xsr) {
 		super(xsr);
@@ -69,7 +107,26 @@ class ClientMessage extends Message {
 		}
 
 		sm = StateMachine.INIT;
-		actionList = new Vector<Action>();
+	}
+
+
+	public boolean add(Action e) {
+		return actionList.add(e);
+	}
+
+
+	public String toString() {
+		return toString(0);
+	}
+
+
+	public String toString(int indent) {
+		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
+		for (Action a: actionList) {
+			sb.append("\n" + Utils.repeat("  ", indent + 1) + "action " + a.toString());
+		}
+
+		return sb.toString();
 	}
 
 

@@ -5,15 +5,15 @@ import javax.xml.stream.XMLStreamReader;
 import java.util.Iterator;
 
 class ControlMessage extends Message {
-	private Vector<Item> itemList;
+	private Vector<Item> itemList = new Vector<Item>();
 	private StateMachine sm;
 	private Item curItem;
 	private Media curMedia;
 
-	class Media {
+	public static class Media {
 		private String path;
 
-		Media(String path) {
+		public Media(String path) {
 			this.path = path;
 		}
 
@@ -21,14 +21,19 @@ class ControlMessage extends Message {
 		public String getPath() {
 			return path;
 		}
+
+
+		public String toString() {
+			return path;
+		}
 	}
 
 
-	class Item {
+	public static class Item {
 		private int id;
 		private Vector<Media> mediaList;
 
-		Item(int id) {
+		public Item(int id) {
 			if (id < 1) {
 				System.err.println("bogus Item ID");
 			}
@@ -38,28 +43,44 @@ class ControlMessage extends Message {
 		}
 
 
-		int getId() {
+		public int getId() {
 			return id;
 		}
 
 
-		void addMedia(Media m) {
-			mediaList.add(m);
+		public boolean add(Media m) {
+			return mediaList.add(m);
 		}
 
 
-		int size() {
+		public int size() {
 			return mediaList.size();
 		}
 
 
-		boolean isEmpty() {
+		public boolean isEmpty() {
 			return mediaList.isEmpty();
 		}
 
 
 		public Iterator<Media> iterator() {
 			return mediaList.iterator();
+		}
+
+
+		public String toString() {
+			return toString(0);
+		}
+
+
+		public String toString(int indent) {
+			StringBuffer sb = new StringBuffer("id=" + id);
+
+			for (Media m: mediaList) {
+				sb.append("\n" + Utils.repeat("  ", indent + 1) + "media:" + m);
+			}
+
+			return sb.toString();
 		}
 	}
 
@@ -74,6 +95,11 @@ class ControlMessage extends Message {
 	}
 
 
+	public ControlMessage(int[] version) {
+		super(version);
+	}
+
+
 	ControlMessage(XMLStreamReader xsr) {
 		super(xsr);
 
@@ -83,6 +109,22 @@ class ControlMessage extends Message {
 
 		sm = StateMachine.INIT;
 	}
+
+
+	public boolean add(Item e) {
+		return itemList.add(e);
+	}
+
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
+		for (Item it: itemList) {
+			sb.append("\n" + "  " + "item:" + it.toString(1));
+		}
+
+		return sb.toString();
+	}
+
 
 	void processXmlEvent(XmlEvent e) {
 		switch (sm) {
@@ -162,7 +204,7 @@ class ControlMessage extends Message {
 	private void processMovieEnd(XmlEvent e) {
 		validateElement(e, XmlEvent.END_ELEMENT, "movie");
 
-		curItem.addMedia(curMedia);
+		curItem.add(curMedia);
 		curMedia = null;
 	}
 

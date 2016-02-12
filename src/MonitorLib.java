@@ -19,6 +19,13 @@ abstract class Message {
 	protected XMLStreamReader xsr;
 	protected int[] version;
 
+
+	Message(int[] version) {
+		assert version.length == 2;
+		this.version = version;
+	}
+
+
 	Message(XMLStreamReader xsr) {
 		this.xsr = xsr;
 		version = null;

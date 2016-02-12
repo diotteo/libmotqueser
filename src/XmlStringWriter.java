@@ -44,6 +44,7 @@ public class XmlStringWriter {
 		writeTag(localName, attributes, null);
 	}
 
+
 	public void writeTag(String localName, String[][] attributes, String value) {
 		try {
 			xsw.writeStartElement(localName);
