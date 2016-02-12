@@ -2,7 +2,7 @@ package ca.dioo.java.MonitorLib;
 
 import javax.xml.stream.XMLStreamReader;
 
-enum XmlEvent {
+public enum XmlEvent {
 	START_ELEMENT(XMLStreamReader.START_ELEMENT),
 	ATTRIBUTE(XMLStreamReader.ATTRIBUTE),
 	NAMESPACE(XMLStreamReader.NAMESPACE),

@@ -1,9 +1,9 @@
-package ca.dioo.java.MonitorLib;
-
 import java.io.StringReader;
 import javax.xml.stream.XMLStreamReader;
 
-class Test {
+import ca.dioo.java.MonitorLib.*;
+
+public class Test {
 	public static void main(String args[]) {
 		XmlStringWriter xsw = new XmlStringWriter("client_message", new int[]{1, 0});
 		xsw.writeTag("action", new String[][] {{"type", "get_message_list"}});
@@ -11,7 +11,12 @@ class Test {
 		System.out.println(xsw.getXmlString());
 
 		XMLStreamReader xsr = XmlStringReader.getFromString(xsw.getXmlString());
-		Message msg = MessageFactory.parse(xsr);
+		Message msg;
+		try {
+			msg = MessageFactory.parse(xsr);
+		} catch (Exception e) {
+			throw new Error(e.getMessage());
+		}
 		assert msg instanceof ClientMessage;
 		System.out.println(((ClientMessage)msg).getXmlString());
 

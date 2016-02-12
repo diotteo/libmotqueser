@@ -3,7 +3,7 @@ package ca.dioo.java.MonitorLib;
 import javax.xml.stream.XMLStreamReader;
 import java.util.ArrayList;
 
-class ServerMessage extends Message {
+public class ServerMessage extends Message {
 	private ArrayList<Item> itemList = new ArrayList<Item>();
 	private StateMachine sm;
 
@@ -103,7 +103,7 @@ class ServerMessage extends Message {
 	}
 
 
-	void processXmlEvent(XmlEvent e) throws MalformedMessageException {
+	public void processXmlEvent(XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
 			if (compareElement(e, XmlEvent.START_ELEMENT, "item")) {

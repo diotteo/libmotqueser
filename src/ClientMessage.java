@@ -4,7 +4,7 @@ import java.util.Vector;
 import javax.xml.stream.XMLStreamReader;
 
 
-class ClientMessage extends Message {
+public class ClientMessage extends Message {
 	private Vector<Action> actionList = new Vector<Action>();
 	private StateMachine sm;
 
@@ -159,7 +159,7 @@ class ClientMessage extends Message {
 	}
 
 
-	void processXmlEvent(XmlEvent e) throws MalformedMessageException {
+	public void processXmlEvent(XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
 			processAction(e);

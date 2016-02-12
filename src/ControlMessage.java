@@ -4,7 +4,7 @@ import java.util.Vector;
 import javax.xml.stream.XMLStreamReader;
 import java.util.Iterator;
 
-class ControlMessage extends Message {
+public class ControlMessage extends Message {
 	private Vector<Item> itemList = new Vector<Item>();
 	private StateMachine sm;
 	private Item curItem;
@@ -126,7 +126,7 @@ class ControlMessage extends Message {
 	}
 
 
-	void processXmlEvent(XmlEvent e) throws MalformedMessageException {
+	public void processXmlEvent(XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
 			processItem(e);

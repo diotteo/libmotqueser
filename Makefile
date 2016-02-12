@@ -4,30 +4,49 @@ JAVAC_ARGS := -Xlint:unchecked
 
 PRGM := monitor-lib
 PKG := ca/dioo/java/MonitorLib
-src := $(wildcard src/*.java)
-objects := $(patsubst src/%.java,$(PKG)/%.class,$(src))
+ROOT_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+BUILD_DIR := $(ROOT_DIR)/build
+BPATH := $(BUILD_DIR)/$(PKG)
 
-tests_src := $(wildcard tests/*.java)
-tests_objects := $(patsubst tests/%.java,$(PKG)/%.class,$(tests_src))
+src := $(wildcard src/*.java)
+objects := $(patsubst src/%.java,$(BPATH)/%.class,$(src))
+
+test_src := $(wildcard tests/*.java)
+test_objects := $(patsubst tests/%.java,$(BUILD_DIR)/%.class,$(test_src))
 
 #libs = libs/java-getopt.jar
-
-ROOT_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
 .PHONY: all
 all: $(objects) $(libs)
 
 
+.PHONY: jar
+jar: monitor-lib.jar
+
+
+monitor-lib.jar: all
+	jar -cf $@ -C $(BUILD_DIR) ca
+
+
 .PHONY: test
-test: all $(PKG)/Test.class
-	$(JAVA) -cp $(subst " ",":",$(libs)):. $(patsubst /,.,$(PKG)/Test) $(ARGS)
+test: all $(test_objects)
+	$(JAVA) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) $(patsubst /,.,Test) $(ARGS)
 
 
-$(objects): $(PKG)/%.class: src/%.java
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(ROOT_DIR) -d $(ROOT_DIR) $< && touch $@
+.PHONY: clean
+clean:
+	@rm -rv $(BUILD_DIR) || true
 
-$(tests_objects): $(PKG)/%.class: tests/%.java
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(ROOT_DIR) -d $(ROOT_DIR) $< && touch $@
+
+$(BUILD_DIR):
+	@[ -d $(BUILD_DIR) ] || mkdir -p $(BUILD_DIR)
+
+
+$(objects): $(BPATH)/%.class: src/%.java $(BUILD_DIR)
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $< && touch $@
+
+$(test_objects): $(BUILD_DIR)/%.class: tests/%.java
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $< && touch $@
 
 
 .PHONY: run
@@ -39,9 +58,10 @@ run: all
 libs: $(libs)
 
 
-$(PKG)/MonitorLib.class : $(patsubst %,$(PKG)/%,Utils.class)
-$(PKG)/ClientMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class XmlStringReader.class XmlStringWriter.class)
-$(PKG)/ServerMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class XmlStringReader.class XmlStringWriter.class)
-$(PKG)/ControlMessage.class : $(patsubst %,$(PKG)/%,MonitorLib.class XmlStringReader.class XmlStringWriter.class)
-$(PKG)/MessageFactory.class : $(patsubst %,$(PKG)/%,ClientMessage.class ControlMessage.class ServerMessage.class)
-$(PKG)/Test.class : $(patsubst %,$(PKG)/%,XmlStringReader.class XmlStringWriter.class)
+$(BPATH)/XmlEvent.class : $(patsubst %,$(BPATH)/%,Utils.class)
+$(BPATH)/Message.class : $(patsubst %,$(BPATH)/%,XmlEvent.class)
+$(BPATH)/ClientMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
+$(BPATH)/ServerMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
+$(BPATH)/ControlMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
+$(BPATH)/MessageFactory.class : $(patsubst %,$(BPATH)/%,ClientMessage.class ControlMessage.class ServerMessage.class)
+$(BUILD_DIR)/Test.class : $(patsubst %,$(BPATH)/%,XmlStringReader.class XmlStringWriter.class)
