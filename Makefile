@@ -24,10 +24,10 @@ all: $(objects) $(libs)
 
 
 $(objects): $(PKG)/%.class: src/%.java
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(ROOT_DIR) -d $(ROOT_DIR) $<
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(ROOT_DIR) -d $(ROOT_DIR) $< && touch $@
 
 $(tests_objects): $(PKG)/%.class: tests/%.java
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(ROOT_DIR) -d $(ROOT_DIR) $<
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(ROOT_DIR) -d $(ROOT_DIR) $< && touch $@
 
 
 .PHONY: run
