@@ -16,7 +16,14 @@ class ClientMessage extends Message {
 	}
 
 
-	static public class Action {
+	public static class BadActionTypeException extends MalformedMessageException {
+		public BadActionTypeException(String msg) {
+			super(msg);
+		}
+	}
+
+
+	public static class Action {
 		private ActionType at;
 		private int id = -1;
 		private int prevId = -1;
@@ -196,7 +203,7 @@ class ClientMessage extends Message {
 					at = Action.ActionType.SNOOZE;
 					break;
 				default:
-					throw new MalformedMessageError("bad action type");
+					throw new MalformedMessageException("bad action type");
 				}
 				break;
 			case "prev_id":

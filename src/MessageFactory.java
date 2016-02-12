@@ -10,7 +10,7 @@ public class MessageFactory {
 	private MessageFactory() {}
 
 
-	public static Message parse(XMLStreamReader xsr) {
+	public static Message parse(XMLStreamReader xsr) throws MalformedMessageException {
 		Hashtable<String,Class<? extends Message>> ht = new Hashtable<String,Class<? extends Message>>();
 		ht.put("client_message", ClientMessage.class);
 		ht.put("control_message", ControlMessage.class);
@@ -37,7 +37,7 @@ public class MessageFactory {
 			IllegalArgumentException,
 			InstantiationException,
 			InvocationTargetException,
-			ExceptionInInitializerError
+			MalformedMessageException
 			{
 		boolean is_bogus = false;
 		String errMsg = null;

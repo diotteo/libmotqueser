@@ -180,7 +180,7 @@ class ControlMessage extends Message {
 		}
 
 		if (id < 0) {
-			throw new MalformedMessageError("item without id");
+			throw new MalformedMessageException("item without id");
 		}
 
 		curItem = new Item(id);
@@ -192,9 +192,9 @@ class ControlMessage extends Message {
 	}
 
 
-	private void processMoviePath(XmlEvent e) {
+	private void processMoviePath(XmlEvent e) throws MalformedMessageException {
 		if (e != XmlEvent.CHARACTERS) {
-			throw new MalformedMessageError("unexpected XML event");
+			throw new MalformedMessageException("unexpected XML event");
 		}
 
 		curMedia = new Media(xsr.getText());
@@ -212,7 +212,7 @@ class ControlMessage extends Message {
 	private void processItemEnd(XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlEvent.END_ELEMENT, "item");
 		if (curItem.isEmpty()) {
-			throw new MalformedMessageError("empty item");
+			throw new MalformedMessageException("empty item");
 		}
 		curItem = null;
 	}
