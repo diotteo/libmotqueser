@@ -58,8 +58,8 @@ run: all
 libs: $(libs)
 
 
-$(BPATH)/XmlEvent.class : $(patsubst %,$(BPATH)/%,Utils.class)
-$(BPATH)/Message.class : $(patsubst %,$(BPATH)/%,XmlEvent.class)
+$(BPATH)/XmlParser.class : $(patsubst %,$(BPATH)/%,Utils.class)
+$(BPATH)/Message.class : $(patsubst %,$(BPATH)/%,XmlParser.class)
 $(BPATH)/ClientMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
 $(BPATH)/ServerMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
 $(BPATH)/ControlMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
