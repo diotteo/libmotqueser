@@ -25,7 +25,7 @@ jar: monitor-lib.jar
 
 
 monitor-lib.jar: all
-	jar -cf $@ -C $(BUILD_DIR) ca
+	jar -cf $@ -C $(BUILD_DIR) .
 
 
 .PHONY: test
