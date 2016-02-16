@@ -103,16 +103,16 @@ public class ServerMessage extends Message {
 	}
 
 
-	public void processXmlEvent(XmlEvent e) throws MalformedMessageException {
+	public void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
-			if (compareElement(e, XmlEvent.START_ELEMENT, "item")) {
+			if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, "item")) {
 				processItem(e);
 				sm = StateMachine.ITEM;
-			} else if (compareElement(e, XmlEvent.START_ELEMENT, "item_list")) {
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, "item_list")) {
 				processItemList(e);
 				sm = StateMachine.ITEM_LIST;
-			} else if (compareElement(e, XmlEvent.START_ELEMENT, "snooze_ack")) {
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, "snooze_ack")) {
 				processSnoozeAck(e);
 				sm = StateMachine.SNOOZE_ACK;
 			}
@@ -123,7 +123,7 @@ public class ServerMessage extends Message {
 			break;
 		case ITEM_LIST_ITEM:
 			//Ignore both </item> and </item_list>
-			if (e == XmlEvent.END_ELEMENT) {
+			if (e == XmlParser.XmlEvent.END_ELEMENT) {
 				//ITEM_LIST_END
 			} else {
 				processItemListItem(e);
@@ -134,23 +134,23 @@ public class ServerMessage extends Message {
 	}
 
 
-	private void processItem(XmlEvent e) throws MalformedMessageException {
+	private void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		//FIXME: Stub
 	}
 
 
-	private void processItemList(XmlEvent e) throws MalformedMessageException {
+	private void processItemList(XmlParser.XmlEvent e) throws MalformedMessageException {
 		//Pass
 	}
 
 
-	private void processSnoozeAck(XmlEvent e) throws MalformedMessageException {
+	private void processSnoozeAck(XmlParser.XmlEvent e) throws MalformedMessageException {
 		//FIXME: Stub
 	}
 
 
-	private void processItemListItem(XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlEvent.START_ELEMENT, "item");
+	private void processItemListItem(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "item");
 
 		int id = -1;
 		int attrCount = xsr.getAttributeCount();

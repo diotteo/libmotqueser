@@ -46,7 +46,7 @@ public class MessageFactory {
 		try {
 			while (xsr.hasNext() && !is_bogus) {
 				int evt = xsr.next();
-				XmlEvent e = XmlEvent.getEventFromValue(evt);
+				XmlParser.XmlEvent e = XmlParser.XmlEvent.getEventFromValue(evt);
 				System.out.println(e.value() + " : " + e.toString());
 
 				switch (e) {

@@ -35,10 +35,10 @@ public abstract class Message {
 	}
 
 
-	public abstract void processXmlEvent(XmlEvent e) throws MalformedMessageException;
+	public abstract void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException;
 
 
-	protected boolean compareElement(XmlEvent e, XmlEvent type, String name) {
+	protected boolean compareElement(XmlParser.XmlEvent e, XmlParser.XmlEvent type, String name) {
 		String n;
 
 		if (e != type) {
@@ -51,7 +51,7 @@ public abstract class Message {
 	}
 
 
-	protected void validateElement(XmlEvent e, XmlEvent type, String name) throws MalformedMessageException {
+	protected void validateElement(XmlParser.XmlEvent e, XmlParser.XmlEvent type, String name) throws MalformedMessageException {
 		String n;
 
 		if (e != type) {

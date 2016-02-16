@@ -159,7 +159,7 @@ public class ClientMessage extends Message {
 	}
 
 
-	public void processXmlEvent(XmlEvent e) throws MalformedMessageException {
+	public void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
 			processAction(e);
@@ -167,7 +167,7 @@ public class ClientMessage extends Message {
 			break;
 		case ACTION:
 			//Allow an empty pair of elements as well (ignore the end element)
-			if (e != XmlEvent.END_ELEMENT) {
+			if (e != XmlParser.XmlEvent.END_ELEMENT) {
 				processAction(e);
 			}
 			break;
@@ -175,8 +175,9 @@ public class ClientMessage extends Message {
 		}
 	}
 
-	private void processAction(XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlEvent.START_ELEMENT, "action");
+
+	private void processAction(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "action");
 
 		Action.ActionType at = null;
 		int id = -1;

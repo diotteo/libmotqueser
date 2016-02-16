@@ -126,7 +126,7 @@ public class ControlMessage extends Message {
 	}
 
 
-	public void processXmlEvent(XmlEvent e) throws MalformedMessageException {
+	public void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
 			processItem(e);
@@ -156,8 +156,8 @@ public class ControlMessage extends Message {
 	}
 
 
-	private void processItem(XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlEvent.START_ELEMENT, "item");
+	private void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "item");
 
 		int id = -1;
 
@@ -187,13 +187,13 @@ public class ControlMessage extends Message {
 	}
 
 
-	private void processMovie(XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlEvent.START_ELEMENT, "movie");
+	private void processMovie(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "movie");
 	}
 
 
-	private void processMoviePath(XmlEvent e) throws MalformedMessageException {
-		if (e != XmlEvent.CHARACTERS) {
+	private void processMoviePath(XmlParser.XmlEvent e) throws MalformedMessageException {
+		if (e != XmlParser.XmlEvent.CHARACTERS) {
 			throw new MalformedMessageException("unexpected XML event");
 		}
 
@@ -201,16 +201,16 @@ public class ControlMessage extends Message {
 	}
 
 
-	private void processMovieEnd(XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlEvent.END_ELEMENT, "movie");
+	private void processMovieEnd(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.END_ELEMENT, "movie");
 
 		curItem.add(curMedia);
 		curMedia = null;
 	}
 
 
-	private void processItemEnd(XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlEvent.END_ELEMENT, "item");
+	private void processItemEnd(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.END_ELEMENT, "item");
 		if (curItem.isEmpty()) {
 			throw new MalformedMessageException("empty item");
 		}
