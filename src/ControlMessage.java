@@ -3,7 +3,7 @@ package ca.dioo.java.MonitorLib;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class ControlMessage extends Message {
+public class ControlMessage extends Message implements Iterable<ControlMessage.Item> {
 	public static final int VERSION[] = {1, 0};
 	private ArrayList<Item> itemList = new ArrayList<Item>();
 	private StateMachine sm;
@@ -29,7 +29,7 @@ public class ControlMessage extends Message {
 	}
 
 
-	public static class Item {
+	public static class Item implements Iterable<Media> {
 		private int id;
 		private ArrayList<Media> mediaList;
 
@@ -63,11 +63,6 @@ public class ControlMessage extends Message {
 		}
 
 
-		public Iterator<Media> iterator() {
-			return mediaList.iterator();
-		}
-
-
 		public String toString() {
 			return toString(0);
 		}
@@ -85,7 +80,13 @@ public class ControlMessage extends Message {
 
 
 		public String[][] getAttributeList() {
-			return new String[][]{{"id", id}};
+			return new String[][]{{"id", Integer.toString(id)}};
+		}
+
+
+		/* Iterable interface methods */
+		public Iterator<Media> iterator() {
+			return mediaList.iterator();
 		}
 	}
 
