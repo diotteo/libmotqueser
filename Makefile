@@ -46,7 +46,8 @@ $(objects): $(BPATH)/%.class: src/%.java $(BUILD_DIR)
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
 
 $(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer): $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
+	@echo all deps: $^
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
 
 $(test_objects): $(BUILD_DIR)/%.class: tests/%.java
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
@@ -60,8 +61,7 @@ run: all
 .PHONY: libs
 libs: $(libs)
 
-
-$(BPATH)/XmlFactory.class : $(patsubst %,$(BPATH)/%,Utils.class ProgrammerBrainNotFoundError.class XmlParserException.class)
+$(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer) : $(patsubst %,$(BPATH)/%,Utils.class ProgrammerBrainNotFoundError.class XmlParserException.class)
 $(BPATH)/Message.class : $(patsubst %,$(BPATH)/%,XmlParser.class XmlSerializer.class)
 $(BPATH)/ClientMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
 $(BPATH)/ServerMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
