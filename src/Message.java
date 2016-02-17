@@ -3,7 +3,7 @@ package ca.dioo.java.MonitorLib;
 import javax.xml.stream.XMLStreamReader;
 
 public abstract class Message {
-	protected XMLStreamReader xsr;
+	protected XmlParser xp;
 	protected int[] version;
 
 
@@ -13,14 +13,14 @@ public abstract class Message {
 	}
 
 
-	public Message(XMLStreamReader xsr) {
-		this.xsr = xsr;
+	public Message(XmlParser xp) {
+		this.xp = xp;
 		version = null;
 
-		int attrCount = xsr.getAttributeCount();
+		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
-			String attrName = xsr.getAttributeName(i).toString();
-			String attrVal = xsr.getAttributeValue(i);
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("version")) {
 				version = new int[2];
@@ -43,7 +43,7 @@ public abstract class Message {
 
 		if (e != type) {
 			return false;
-		} else if (!(n = xsr.getLocalName()).equals(name)) {
+		} else if (!(n = xp.getLocalName()).equals(name)) {
 			return false;
 		}
 
@@ -56,7 +56,7 @@ public abstract class Message {
 
 		if (e != type) {
 			throw new MalformedMessageException("unexpected XML event");
-		} else if (!(n = xsr.getLocalName()).equals(name)) {
+		} else if (!(n = xp.getLocalName()).equals(name)) {
 			throw new MalformedMessageException("bad tag name (" + n + ")");
 		}
 	}

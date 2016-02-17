@@ -1,6 +1,5 @@
 package ca.dioo.java.MonitorLib;
 
-import javax.xml.stream.XMLStreamReader;
 import java.util.ArrayList;
 
 public class ServerMessage extends Message {
@@ -61,8 +60,8 @@ public class ServerMessage extends Message {
 	}
 
 
-	public ServerMessage(XMLStreamReader xsr) {
-		super(xsr);
+	public ServerMessage(XmlParser xp) {
+		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
 			throw new Error("unsupported version " + version[0] + "." + version[1]);
@@ -153,10 +152,10 @@ public class ServerMessage extends Message {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "item");
 
 		int id = -1;
-		int attrCount = xsr.getAttributeCount();
+		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
-			String attrName = xsr.getAttributeName(i).toString();
-			String attrVal = xsr.getAttributeValue(i);
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
 
 			switch (attrName) {
 			case "id":

@@ -1,7 +1,6 @@
 package ca.dioo.java.MonitorLib;
 
 import java.util.Vector;
-import javax.xml.stream.XMLStreamReader;
 import java.util.Iterator;
 
 public class ControlMessage extends Message {
@@ -100,8 +99,8 @@ public class ControlMessage extends Message {
 	}
 
 
-	public ControlMessage(XMLStreamReader xsr) {
-		super(xsr);
+	public ControlMessage(XmlParser xp) {
+		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
 			throw new Error("unsupported version " + version[0] + "." + version[1]);
@@ -161,10 +160,10 @@ public class ControlMessage extends Message {
 
 		int id = -1;
 
-		int attrCount = xsr.getAttributeCount();
+		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
-			String attrName = xsr.getAttributeName(i).toString();
-			String attrVal = xsr.getAttributeValue(i);
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
 
 			switch (attrName) {
 			case "id":
@@ -197,7 +196,7 @@ public class ControlMessage extends Message {
 			throw new MalformedMessageException("unexpected XML event");
 		}
 
-		curMedia = new Media(xsr.getText());
+		curMedia = new Media(xp.getText());
 	}
 
 

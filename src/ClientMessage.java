@@ -1,7 +1,6 @@
 package ca.dioo.java.MonitorLib;
 
 import java.util.Vector;
-import javax.xml.stream.XMLStreamReader;
 
 
 public class ClientMessage extends Message {
@@ -117,8 +116,8 @@ public class ClientMessage extends Message {
 	}
 
 
-	public ClientMessage(XMLStreamReader xsr) {
-		super(xsr);
+	public ClientMessage(XmlParser xp) {
+		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
 			throw new Error("unsupported version " + version[0] + "." + version[1]);
@@ -183,10 +182,10 @@ public class ClientMessage extends Message {
 		int id = -1;
 		int minutes = -1;
 		int prevId = -1;
-		int attrCount = xsr.getAttributeCount();
+		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
-			String attrName = xsr.getAttributeName(i).toString();
-			String attrVal = xsr.getAttributeValue(i);
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
 
 			switch (attrName) {
 			case "type":

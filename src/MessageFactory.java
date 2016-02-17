@@ -1,23 +1,21 @@
 package ca.dioo.java.MonitorLib;
 
 import java.util.Hashtable;
-import javax.xml.stream.XMLStreamReader;
 import java.lang.reflect.Constructor;
-import javax.xml.stream.XMLStreamException;
 import java.lang.reflect.InvocationTargetException;
 
 public class MessageFactory {
 	private MessageFactory() {}
 
 
-	public static Message parse(XMLStreamReader xsr) throws MalformedMessageException {
+	public static Message parse(XmlParser xp) throws MalformedMessageException {
 		Hashtable<String,Class<? extends Message>> ht = new Hashtable<String,Class<? extends Message>>();
 		ht.put("client_message", ClientMessage.class);
 		ht.put("control_message", ControlMessage.class);
 		ht.put("server_message", ServerMessage.class);
 
 		try {
-			return parse(ht, xsr);
+			return parse(ht, xp);
 		} catch (
 				NoSuchMethodException|
 				IllegalAccessException|
@@ -31,7 +29,7 @@ public class MessageFactory {
 
 
 	public static Message parse(Hashtable<String,Class<? extends Message>> map,
-			XMLStreamReader xsr)
+			XmlParser xp)
 			throws NoSuchMethodException,
 			IllegalAccessException,
 			IllegalArgumentException,
@@ -44,14 +42,14 @@ public class MessageFactory {
 		Message message = null;
 
 		try {
-			while (xsr.hasNext() && !is_bogus) {
-				int evt = xsr.next();
+			while (xp.hasNext() && !is_bogus) {
+				int evt = xp.next();
 				XmlParser.XmlEvent e = XmlParser.XmlEvent.getEventFromValue(evt);
 				System.out.println(e.value() + " : " + e.toString());
 
 				switch (e) {
 				case START_ELEMENT:
-					String name = xsr.getLocalName();
+					String name = xp.getLocalName();
 
 					if (message == null) {
 						Class<? extends Message> mc = map.get(name);
@@ -59,19 +57,19 @@ public class MessageFactory {
 							is_bogus = true;
 							errMsg = "unknown root element \"" + name + "\"";
 						} else {
-							Constructor<? extends Message> c = mc.getConstructor(XMLStreamReader.class);
-							message = c.newInstance(xsr);
+							Constructor<? extends Message> c = mc.getConstructor(XmlParser.class);
+							message = c.newInstance(xp);
 						}
 						/*
 						switch (name) {
 						case "client_message":
-							message = new ClientMessage(xsr);
+							message = new ClientMessage(xp);
 							break;
 						case "control_message":
-							message = new ControlMessage(xsr);
+							message = new ControlMessage(xp);
 							break;
 						case "server_message":
-							message = new ServerMessage(xsr);
+							message = new ServerMessage(xp);
 							break;
 						default:
 							break;
@@ -82,21 +80,21 @@ public class MessageFactory {
 					}
 
 					/*
-					int attrCount = xsr.getAttributeCount();
-					System.out.println(" " + xsr.getLocalName() + " " + attrCount);
+					int attrCount = xp.getAttributeCount();
+					System.out.println(" " + xp.getLocalName() + " " + attrCount);
 					for (int i = 0; i < attrCount; i++) {
-						System.out.println("  ATTR " + i + " : " + xsr.getAttributeName(i) +
-								"=" + xsr.getAttributeValue(i));
+						System.out.println("  ATTR " + i + " : " + xp.getAttributeName(i) +
+								"=" + xp.getAttributeValue(i));
 					}
 					*/
 					break;
 				case CHARACTERS:
-					//System.out.println(" " + xsr.getText());
+					//System.out.println(" " + xp.getText());
 					message.processXmlEvent(e);
 					break;
 
 				case END_ELEMENT:
-					//System.out.println(" " + xsr.getLocalName());
+					//System.out.println(" " + xp.getLocalName());
 					message.processXmlEvent(e);
 					break;
 				case COMMENT:
@@ -108,7 +106,7 @@ public class MessageFactory {
 					break;
 				}
 			}
-		} catch (XMLStreamException e) {
+		} catch (XmlParserException e) {
 			throw new Error(e.getMessage());
 		}
 
