@@ -42,8 +42,8 @@ public class XmlFactory {
 			parserFactory = newParserFactory.invoke(parserFactoryClass);
 			serFactory = newSerFactory.invoke(serFactoryClass);
 
-			newParser = parserFactoryClass.getDeclaredMethod("newPullParser");
-			newSer = serFactoryClass.getDeclaredMethod("newSerializer");
+			newParser = parserFactoryClass.getMethod("newPullParser");
+			newSer = serFactoryClass.getMethod("newSerializer");
 
 			rt = Runtime.ANDROID;
 		} catch (ClassNotFoundException e) {
