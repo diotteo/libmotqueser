@@ -95,7 +95,7 @@ public class ServerMessage extends Message {
 
 		xsw.writeTag("item_list", null, null);
 		for (Item it: itemList) {
-			xsw.writeEmptyTag("item", it.getAttributeList());
+			xsw.writeTag("item", it.getAttributeList());
 		}
 
 		return xsw.getXmlString();

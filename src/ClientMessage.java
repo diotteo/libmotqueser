@@ -151,7 +151,7 @@ public class ClientMessage extends Message {
 		XmlStringWriter xsw = new XmlStringWriter("client_message", new int[]{1, 0});
 
 		for (Action a: actionList) {
-			xsw.writeEmptyTag("action", a.getAttributeList());
+			xsw.writeTag("action", a.getAttributeList());
 		}
 
 		return xsw.getXmlString();
