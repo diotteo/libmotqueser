@@ -20,6 +20,7 @@ public class XmlStringWriter {
 		if (!ser.isClosed()) {
 			ser.writeEndDocument();
 		}
+		sw.flush();
 		return sw.toString();
 	}
 

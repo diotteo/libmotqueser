@@ -84,9 +84,22 @@ public class XmlSerializer {
 	}
 
 
+	public void flush() {
+		switch (XmlFactory.curRt) {
+		case ANDROID:
+		case JDK_1_6:
+			XmlFactory.invokeSerMethod(ser, "flush", null, null);
+			break;
+		default:
+			throw new ProgrammerBrainNotFoundError();
+		}
+	}
+
+
 	public void writeEndDocument() {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
+			flush();
 			XmlFactory.invokeSerMethod(ser, "endDocument", null, null);
 			tagStack = null;
 			break;
