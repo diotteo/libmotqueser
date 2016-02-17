@@ -1,4 +1,5 @@
 JAVA := java
+JAVA_ARGS :=
 JAVAC := javac
 JAVAC_ARGS := -Xlint:unchecked
 
@@ -21,16 +22,19 @@ all: $(objects) $(libs)
 
 
 .PHONY: jar
-jar: monitor-lib.jar
+jar: del_test monitor-lib.jar
 
+.PHONY: del_test
+del_test:
+	@rm $(test_objects)
 
 monitor-lib.jar: all
 	jar -cf $@ -C $(BUILD_DIR) .
 
 
 .PHONY: test
-test: all $(test_objects)
-	$(JAVA) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) $(patsubst /,.,Test) $(ARGS)
+test: $(test_objects)
+	$(JAVA) -ea $(JAVA_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) $(patsubst /,.,Test) $(ARGS)
 
 
 .PHONY: clean
@@ -48,13 +52,13 @@ $(objects): $(BPATH)/%.class: src/%.java $(BUILD_DIR)
 $(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer): $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
 
-$(test_objects): $(BUILD_DIR)/%.class: tests/%.java
+$(test_objects): $(BUILD_DIR)/%.class: tests/%.java all
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
 
 
 .PHONY: run
 run: all
-	$(JAVA) -cp $(subst " ",":",$(libs)):. $(PRGM) $(ARGS)
+	$(JAVA) $(JAVA_ARGS) -cp $(subst " ",":",$(libs)):. $(PRGM) $(ARGS)
 
 
 .PHONY: libs
