@@ -31,7 +31,7 @@ public class XmlFactory {
 
 		try {
 			parserFactoryClass = Class.forName("org.xmlpull.v1.XmlPullParserFactory");
-			serFactoryClass = serFactoryClass;
+			serFactoryClass = parserFactoryClass;
 
 			parserClass = Class.forName("org.xmlpull.v1.XmlPullParser");
 			serClass = Class.forName("org.xmlpull.v1.XmlSerializer");
