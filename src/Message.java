@@ -33,7 +33,13 @@ public abstract class Message {
 	}
 
 
+	public int[] getVersion() {
+		return version;
+	}
+
+
 	public abstract void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException;
+	public abstract String getXmlString();
 
 
 	protected boolean compareElement(XmlParser.XmlEvent e, XmlParser.XmlEvent type, String name) {

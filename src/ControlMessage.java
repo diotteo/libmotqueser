@@ -74,13 +74,18 @@ public class ControlMessage extends Message {
 
 
 		public String toString(int indent) {
-			StringBuffer sb = new StringBuffer("id=" + id);
+			StringBuffer sb = new StringBuffer(Utils.join(" ", ":", getAttributeList()));
 
 			for (Media m: mediaList) {
 				sb.append("\n" + Utils.repeat("  ", indent + 1) + "media:" + m);
 			}
 
 			return sb.toString();
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{"id", id}};
 		}
 	}
 
@@ -128,6 +133,21 @@ public class ControlMessage extends Message {
 		}
 
 		return sb.toString();
+	}
+
+
+	public String getXmlString() {
+		XmlStringWriter xsw = new XmlStringWriter("control_message", getVersion());
+
+		for (Item it: itemList) {
+			xsw.writeTag("item", it.getAttributeList());
+			for (Media m: it) {
+				xsw.writeTag("media", null, m.getPath());
+			}
+			xsw.writeEndTag();
+		}
+
+		return xsw.getXmlString();
 	}
 
 

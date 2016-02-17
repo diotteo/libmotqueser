@@ -153,7 +153,7 @@ public class ClientMessage extends Message {
 
 
 	public String getXmlString() {
-		XmlStringWriter xsw = new XmlStringWriter("client_message", new int[]{1, 0});
+		XmlStringWriter xsw = new XmlStringWriter("client_message", getVersion());
 
 		for (Action a: actionList) {
 			xsw.writeTag("action", a.getAttributeList());

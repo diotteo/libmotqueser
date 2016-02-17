@@ -96,7 +96,7 @@ public class ServerMessage extends Message {
 
 
 	public String getXmlString() {
-		XmlStringWriter xsw = new XmlStringWriter("server_message", new int[]{1, 0});
+		XmlStringWriter xsw = new XmlStringWriter("server_message", getVersion());
 
 		xsw.writeTag("item_list", null, null);
 		for (Item it: itemList) {
