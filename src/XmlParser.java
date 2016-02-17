@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.io.InputStream;
 
-
 public class XmlParser {
 	private Object parser;
 	private boolean hasMore = true;
@@ -30,32 +29,35 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return ((Integer)XmlFactory.invokeMethod(parser, methodName, paramTypes,
+		return ((Integer)XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
 				args)).intValue();
 	}
 
 
 	public String getAttributeName(int index) {
 		String methodName;
-		Class<?>[] paramTypes = {Integer.class};
+		Class<?>[] paramTypes = {int.class};
 		Object[] args = {index};
 
 		switch (XmlFactory.curRt) {
 		case ANDROID:
-		case JDK_1_6:
 			methodName = "getAttributeName";
+			break;
+		case JDK_1_6:
+			//TODO: getName().getNamespaceURI() + getName().getLocalPart()
+			methodName = "getAttributeLocalName";
 			break;
 		default:
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)XmlFactory.invokeMethod(parser, methodName, paramTypes, args);
+		return (String)XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
 	}
 
 
 	public String getAttributeValue(int index) {
 		String methodName;
-		Class<?>[] paramTypes = {Integer.class};
+		Class<?>[] paramTypes = {int.class};
 		Object[] args = {index};
 
 		switch (XmlFactory.curRt) {
@@ -67,7 +69,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)XmlFactory.invokeMethod(parser, methodName, paramTypes, args);
+		return (String)XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -88,7 +90,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)XmlFactory.invokeMethod(parser, methodName, paramTypes, args);
+		return (String)XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -106,7 +108,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)XmlFactory.invokeMethod(parser, methodName, paramTypes, args);
+		return (String)XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -124,7 +126,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		int i = ((Integer)XmlFactory.invokeMethod(parser, methodName, paramTypes,
+		int i = ((Integer)XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
 				args)).intValue();
 		XmlEvent e = XmlEvent.getEventFromValue(i);
 		if (XmlFactory.curRt == XmlFactory.Runtime.ANDROID &&
@@ -151,7 +153,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return ((Boolean)XmlFactory.invokeMethod(parser, methodName, paramTypes,
+		return ((Boolean)XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
 				args)).booleanValue();
 	}
 
@@ -161,7 +163,7 @@ public class XmlParser {
 		int i;
 
 		try {
-			f = XmlFactory.parserClass.getDeclaredField(s);
+			f = XmlFactory.parserClass.getField(s);
 			i = f.getInt(XmlFactory.parserClass);
 		} catch (NoSuchFieldException|IllegalAccessException e) {
 			throw new Error("Programmer error: field " + s + " exception " +

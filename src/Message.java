@@ -1,7 +1,5 @@
 package ca.dioo.java.MonitorLib;
 
-import javax.xml.stream.XMLStreamReader;
-
 public abstract class Message {
 	protected XmlParser xp;
 	protected int[] version;

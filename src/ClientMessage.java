@@ -2,7 +2,6 @@ package ca.dioo.java.MonitorLib;
 
 import java.util.ArrayList;
 
-
 public class ClientMessage extends Message {
 	private ArrayList<Action> actionList = new ArrayList<Action>();
 	private StateMachine sm;

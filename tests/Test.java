@@ -1,7 +1,9 @@
 import java.io.StringReader;
-import javax.xml.stream.XMLStreamReader;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import ca.dioo.java.MonitorLib.*;
+import ca.dioo.java.MonitorLib.MessageFactory;
 
 public class Test {
 	public static void main(String args[]) {
@@ -10,10 +12,10 @@ public class Test {
 
 		System.out.println(xsw.getXmlString());
 
-		XMLStreamReader xsr = XmlStringReader.getFromString(xsw.getXmlString());
+		XmlParser xp = XmlStringReader.getFromString(xsw.getXmlString());
 		Message msg;
 		try {
-			msg = MessageFactory.parse(xsr);
+			msg = MessageFactory.parse(xp);
 		} catch (Exception e) {
 			throw new Error(e.getMessage());
 		}
@@ -32,7 +34,7 @@ public class Test {
 
 		System.out.println(xsw.getXmlString());
 
-		xsr = XmlStringReader.getFromString(xsw.getXmlString());
+		xp = XmlStringReader.getFromString(xsw.getXmlString());
 
 
 		ControlMessage cm = new ControlMessage(new int[]{1, 0});

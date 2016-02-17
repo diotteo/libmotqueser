@@ -57,4 +57,15 @@ public class Utils {
 	public static int bool2int(boolean b) {
 		return b ? 1 : 0;
 	}
+
+
+	public static String getPrettyStackTrace(Throwable t) {
+		StringBuffer sb = new StringBuffer(t.toString());
+
+		for (StackTraceElement e: t.getStackTrace()) {
+			sb.append("\n    at " + e.getClassName() + "." + e.getMethodName() + "(" + e.getFileName() + ":" + e.getLineNumber() + ")");
+		}
+
+		return sb.toString();
+	}
 }

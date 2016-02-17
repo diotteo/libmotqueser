@@ -27,15 +27,15 @@ public class XmlSerializer {
 	public void writeStartDocument(String encoding) {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
-			XmlFactory.invokeMethod(ser, "setProperty",
+			XmlFactory.invokeSerMethod(ser, "setProperty",
 					new Class<?>[]{String.class, String.class},
 					new Object[]{"version", "1.0"});
-			XmlFactory.invokeMethod(ser, "startDocument",
+			XmlFactory.invokeSerMethod(ser, "startDocument",
 					new Class<?>[]{String.class, Boolean.class},
 					new Object[]{encoding, null});
 			break;
 		case JDK_1_6:
-			XmlFactory.invokeMethod(ser, "writeStartDocument",
+			XmlFactory.invokeSerMethod(ser, "writeStartDocument",
 					new Class<?>[]{String.class, String.class},
 					new Object[]{encoding, "1.0"});
 			break;
@@ -48,13 +48,13 @@ public class XmlSerializer {
 	public void writeStartTag(String localName) {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
-			XmlFactory.invokeMethod(ser, "startTag",
+			XmlFactory.invokeSerMethod(ser, "startTag",
 					new Class<?>[]{String.class, String.class},
 					new Object[]{null, localName});
 			tagStack.push(localName);
 			break;
 		case JDK_1_6:
-			XmlFactory.invokeMethod(ser, "writeStartElement",
+			XmlFactory.invokeSerMethod(ser, "writeStartElement",
 					new Class<?>[]{String.class},
 					new Object[]{localName});
 			break;
@@ -67,12 +67,12 @@ public class XmlSerializer {
 	public void writeAttribute(String localName, String value) {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
-			XmlFactory.invokeMethod(ser, "attribute",
+			XmlFactory.invokeSerMethod(ser, "attribute",
 					new Class<?>[]{String.class, String.class, String.class},
 					new Object[]{null, localName, value});
 			break;
 		case JDK_1_6:
-			XmlFactory.invokeMethod(ser, "writeAttribute",
+			XmlFactory.invokeSerMethod(ser, "writeAttribute",
 					new Class<?>[]{String.class, String.class},
 					new Object[]{localName, value});
 			break;
@@ -90,12 +90,12 @@ public class XmlSerializer {
 	public void writeEndDocument() {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
-			XmlFactory.invokeMethod(ser, "endDocument", null, null);
+			XmlFactory.invokeSerMethod(ser, "endDocument", null, null);
 			tagStack = null;
 			break;
 		case JDK_1_6:
-			XmlFactory.invokeMethod(ser, "writeEndDocument", null, null);
-			XmlFactory.invokeMethod(ser, "close", null, null);
+			XmlFactory.invokeSerMethod(ser, "writeEndDocument", null, null);
+			XmlFactory.invokeSerMethod(ser, "close", null, null);
 			break;
 		default:
 			throw new ProgrammerBrainNotFoundError();
@@ -108,12 +108,12 @@ public class XmlSerializer {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
 			String localName = tagStack.pop();
-			XmlFactory.invokeMethod(ser, "endTag",
+			XmlFactory.invokeSerMethod(ser, "endTag",
 					new Class<?>[]{String.class, String.class},
 					new Object[]{null, localName});
 			break;
 		case JDK_1_6:
-			XmlFactory.invokeMethod(ser, "writeEndElement", null, null);
+			XmlFactory.invokeSerMethod(ser, "writeEndElement", null, null);
 			break;
 		default:
 			throw new ProgrammerBrainNotFoundError();
@@ -124,12 +124,12 @@ public class XmlSerializer {
 	public void writeText(String text) {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
-			XmlFactory.invokeMethod(ser, "text",
+			XmlFactory.invokeSerMethod(ser, "text",
 					new Class<?>[]{String.class},
 					new Object[]{text});
 			break;
 		case JDK_1_6:
-			XmlFactory.invokeMethod(ser, "writeCharacters",
+			XmlFactory.invokeSerMethod(ser, "writeCharacters",
 					new Class<?>[]{String.class},
 					new Object[]{text});
 			break;

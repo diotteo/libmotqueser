@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.io.Reader;
 import java.io.Writer;
 
-
 public class XmlFactory {
 	private static Class parserFactoryClass;
 	private static Class serFactoryClass;
@@ -59,7 +58,7 @@ public class XmlFactory {
 				newSerFactory = serFactoryClass.getDeclaredMethod("newInstance");
 
 				parserFactory = newParserFactory.invoke(parserFactoryClass);
-				serFactory = newParserFactory.invoke(parserFactoryClass);
+				serFactory = newSerFactory.invoke(serFactoryClass);
 
 				newParser = parserFactoryClass.
 						getDeclaredMethod("createXMLStreamReader", Reader.class);
@@ -133,13 +132,23 @@ public class XmlFactory {
 	}
 
 
-	static Object invokeMethod(Object obj, String methodName, Class<?>[] parameterTypes, Object[] args) {
+	static Object invokeSerMethod(Object obj, String methodName, Class<?>[] parameterTypes, Object[] args) {
+		return invokeMethod(serClass, obj, methodName, parameterTypes, args);
+	}
+
+
+	static Object invokeParserMethod(Object obj, String methodName, Class<?>[] parameterTypes, Object[] args) {
+		return invokeMethod(parserClass, obj, methodName, parameterTypes, args);
+	}
+
+
+	private static Object invokeMethod(Class clazz, Object obj, String methodName, Class<?>[] parameterTypes, Object[] args) {
 
 		Method m;
 		Object o;
 
 		try {
-			m = parserClass.getDeclaredMethod(methodName, parameterTypes);
+			m = clazz.getDeclaredMethod(methodName, parameterTypes);
 			o = m.invoke(obj, args);
 		} catch (NoSuchMethodException|IllegalAccessException|
 				InvocationTargetException e) {
