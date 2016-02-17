@@ -165,16 +165,12 @@ public class ControlMessage extends Message {
 			String attrName = xp.getAttributeName(i).toString();
 			String attrVal = xp.getAttributeValue(i);
 
-			switch (attrName) {
-			case "id":
-				{
-					int nb = new Integer(attrVal);
-					if (nb < 0) {
-						throw new Error(attrName + " lower than 0 not allowed");
-					}
-					id = nb;
+			if (attrName.equals("id")) {
+				int nb = new Integer(attrVal);
+				if (nb < 0) {
+					throw new Error(attrName + " lower than 0 not allowed");
 				}
-				break;
+				id = nb;
 			}
 		}
 

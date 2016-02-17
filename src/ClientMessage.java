@@ -186,52 +186,36 @@ public class ClientMessage extends Message {
 			String attrName = xp.getAttributeName(i).toString();
 			String attrVal = xp.getAttributeValue(i);
 
-			switch (attrName) {
-			case "type":
-				switch (attrVal) {
-				case "get_message_list":
+			if (attrName.equals("type")) {
+				if (attrVal.equals("get_message_list")) {
 					at = Action.ActionType.GET_MSG_LIST;
-					break;
-				case "get_message":
+				} else if (attrVal.equals("get_message")) {
 					at = Action.ActionType.GET_MSG;
-					break;
-				case "delete_message":
+				} else if (attrVal.equals("delete_message")) {
 					at = Action.ActionType.DEL_MSG;
-					break;
-				case "snooze":
+				} else if (attrVal.equals("snooze")) {
 					at = Action.ActionType.SNOOZE;
-					break;
-				default:
+				} else {
 					throw new MalformedMessageException("bad action type");
 				}
-				break;
-			case "prev_id":
-				{
-					int nb = new Integer(attrVal);
-					if (nb < 0) {
-						throw new Error(attrName + " lower than 0 not allowed");
-					}
-					prevId = nb;
+			} else if (attrName.equals("prev_id")) {
+				int nb = new Integer(attrVal);
+				if (nb < 0) {
+					throw new Error(attrName + " lower than 0 not allowed");
 				}
-				break;
-			case "id":
-				{
-					int nb = new Integer(attrVal);
-					if (nb < 0) {
-						throw new Error(attrName + " lower than 0 not allowed");
-					}
-					id = nb;
+				prevId = nb;
+			} else if (attrName.equals("id")) {
+				int nb = new Integer(attrVal);
+				if (nb < 0) {
+					throw new Error(attrName + " lower than 0 not allowed");
 				}
-				break;
-			case "minutes":
-				{
-					int nb = new Integer(attrVal);
-					if (nb < 0) {
-						throw new Error(attrName + " lower than 0 not allowed");
-					}
-					minutes = nb;
+				id = nb;
+			} else if (attrName.equals("minutes")) {
+				int nb = new Integer(attrVal);
+				if (nb < 0) {
+					throw new Error(attrName + " lower than 0 not allowed");
 				}
-				break;
+				minutes = nb;
 			}
 		}
 

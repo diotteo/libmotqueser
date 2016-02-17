@@ -68,15 +68,25 @@ public class XmlFactory {
 				rt = Runtime.JDK_1_6;
 			} catch (ClassNotFoundException e2) {
 				throw new Error("This class requires JDK 1.6+ or Android, neither was found");
-			} catch (NoSuchMethodException|IllegalAccessException|
-					InvocationTargetException e2) {
+			} catch (InvocationTargetException e2) {
+				Throwable t = e2.getCause();
+				System.err.println(Utils.getPrettyStackTrace(t));
+				throw new Error(t + " : " + t.getMessage());
+			} catch (NoSuchMethodException e2) {
 				throw new Error("Programmer is stupid, please report: " + e2.toString() +
 						" msg:" + e2.getMessage());
+			} catch (IllegalAccessException e2) {
+				throw new Error(e.getMessage());
 			}
-		} catch (NoSuchMethodException|IllegalAccessException|
-				InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
+			Throwable t = e.getCause();
+			System.err.println(Utils.getPrettyStackTrace(t));
+			throw new Error(t + " : " + t.getMessage());
+		} catch (NoSuchMethodException e) {
 			throw new Error("Programmer is stupid, please report: " + e.toString() +
 					" msg:" + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new Error(e.getMessage());
 		}
 
 		curRt = rt;
@@ -98,10 +108,15 @@ public class XmlFactory {
 				parser = newParser.invoke(parserFactory, r);
 				break;
 			}
-		} catch (NoSuchMethodException|IllegalAccessException|
-				InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
+			Throwable t = e.getCause();
+			System.err.println(Utils.getPrettyStackTrace(t));
+			throw new Error(t + " : " + t.getMessage());
+		} catch (NoSuchMethodException e) {
 			throw new Error("Programmer is stupid, please report: " + e.toString() +
 					" msg:" + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new Error(e.getMessage());
 		}
 
 		return new XmlParser(parser);
@@ -116,16 +131,21 @@ public class XmlFactory {
 			case ANDROID:
 				ser = newSer.invoke(serFactory);
 				Method setOutput = serClass.getDeclaredMethod("setOutput", Writer.class);
-				setOutput.invoke(ser, w, null);
+				setOutput.invoke(ser, w);
 				break;
 			case JDK_1_6:
 				ser = newSer.invoke(serFactory, w);
 				break;
 			}
-		} catch (NoSuchMethodException|IllegalAccessException|
-				InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
+			Throwable t = e.getCause();
+			System.err.println(Utils.getPrettyStackTrace(t));
+			throw new Error(t + " : " + t.getMessage());
+		} catch (NoSuchMethodException e) {
 			throw new Error("Programmer is stupid, please report: " + e.toString() +
 					" msg:" + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new Error(e.getMessage());
 		}
 
 		return new XmlSerializer(ser);
@@ -150,10 +170,15 @@ public class XmlFactory {
 		try {
 			m = clazz.getDeclaredMethod(methodName, parameterTypes);
 			o = m.invoke(obj, args);
-		} catch (NoSuchMethodException|IllegalAccessException|
-				InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
+			Throwable t = e.getCause();
+			System.err.println(Utils.getPrettyStackTrace(t));
+			throw new Error(t + " : " + t.getMessage());
+		} catch (NoSuchMethodException e) {
 			throw new Error("Programmer is stupid, please report: " + e.toString() +
 					" msg:" + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new Error(e.getMessage());
 		}
 
 		return o;

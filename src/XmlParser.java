@@ -165,9 +165,11 @@ public class XmlParser {
 		try {
 			f = XmlFactory.parserClass.getField(s);
 			i = f.getInt(XmlFactory.parserClass);
-		} catch (NoSuchFieldException|IllegalAccessException e) {
+		} catch (NoSuchFieldException e) {
 			throw new Error("Programmer error: field " + s + " exception " +
 					e.toString() + ": " + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new Error(e.getMessage());
 		}
 
 		return i;

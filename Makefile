@@ -1,7 +1,10 @@
 JAVA := java
 JAVA_ARGS :=
 JAVAC := javac
-JAVAC_ARGS := -Xlint:unchecked
+
+#1.7 changed InvocationTargetException to extend a new class: ReflectiveOperationException
+# and older Android APIs don't like that
+JAVAC_ARGS := -Xlint:unchecked -source 1.6 -bootclasspath ${HOME}/java/jdk1.6.0_45/jre/lib/rt.jar
 
 PRGM := monitor-lib
 PKG := ca/dioo/java/MonitorLib

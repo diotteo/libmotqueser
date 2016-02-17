@@ -20,12 +20,15 @@ public class MessageFactory {
 			Throwable t = e.getCause();
 			System.err.println(Utils.getPrettyStackTrace(t));
 			throw new Error(t + " : " + t.getMessage());
-		} catch (
-				NoSuchMethodException|
-				IllegalAccessException|
-				IllegalArgumentException|
-				InstantiationException|
-				ExceptionInInitializerError e) {
+		} catch (NoSuchMethodException e) {
+			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+		} catch ( IllegalAccessException e) {
+			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+		} catch (IllegalArgumentException e) {
+			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+		} catch (InstantiationException e) {
+			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+		} catch (ExceptionInInitializerError e) {
 			throw new Error(e.getClass().getName() + ":" + e.getMessage());
 		}
 	}
