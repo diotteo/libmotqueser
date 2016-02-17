@@ -28,7 +28,7 @@ public class XmlSerializer {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
 			XmlFactory.invokeSerMethod(ser, "setProperty",
-					new Class<?>[]{String.class, String.class},
+					new Class<?>[]{String.class, Object.class},
 					new Object[]{"version", "1.0"});
 			XmlFactory.invokeSerMethod(ser, "startDocument",
 					new Class<?>[]{String.class, Boolean.class},
