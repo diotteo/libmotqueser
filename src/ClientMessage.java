@@ -1,10 +1,10 @@
 package ca.dioo.java.MonitorLib;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 
 public class ClientMessage extends Message {
-	private Vector<Action> actionList = new Vector<Action>();
+	private ArrayList<Action> actionList = new ArrayList<Action>();
 	private StateMachine sm;
 
 

@@ -1,10 +1,10 @@
 package ca.dioo.java.MonitorLib;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ControlMessage extends Message {
-	private Vector<Item> itemList = new Vector<Item>();
+	private ArrayList<Item> itemList = new ArrayList<Item>();
 	private StateMachine sm;
 	private Item curItem;
 	private Media curMedia;
@@ -30,7 +30,7 @@ public class ControlMessage extends Message {
 
 	public static class Item {
 		private int id;
-		private Vector<Media> mediaList;
+		private ArrayList<Media> mediaList;
 
 		public Item(int id) {
 			if (id < 1) {
@@ -38,7 +38,7 @@ public class ControlMessage extends Message {
 			}
 
 			this.id = id;
-			mediaList = new Vector<Media>();
+			mediaList = new ArrayList<Media>();
 		}
 
 
