@@ -1,16 +1,18 @@
-JAVA := java
-JAVA_ARGS :=
-JAVAC := javac
+JAVA ?= java
+JAVA_ARGS ?=
+JAVAC ?= javac
 
 #1.7 changed InvocationTargetException to extend a new class: ReflectiveOperationException
 # and older Android APIs don't like that
-JAVAC_ARGS := -Xlint:unchecked -source 1.6 -bootclasspath ${HOME}/java/jdk1.6.0_45/jre/lib/rt.jar
+JAVAC_ARGS ?= -Xlint:unchecked -source 1.6 -bootclasspath ${HOME}/java/jdk1.6.0_45/jre/lib/rt.jar
 
 PRGM := monitor-lib
 PKG := ca/dioo/java/MonitorLib
 ROOT_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 BUILD_DIR := $(ROOT_DIR)/build
 BPATH := $(BUILD_DIR)/$(PKG)
+empty :=
+space := $(empty) $(empty)
 
 src := $(wildcard src/*.java)
 objects := $(patsubst src/%.java,$(BPATH)/%.class,$(src))
@@ -37,12 +39,12 @@ monitor-lib.jar: all
 
 .PHONY: test
 test: $(test_objects)
-	$(JAVA) -ea $(JAVA_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) $(patsubst /,.,Test) $(ARGS)
+	$(JAVA) -ea $(JAVA_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) $(patsubst /,.,Test) $(ARGS)
 
 
 .PHONY: clean
 clean:
-	@rm -rv $(BUILD_DIR) || true
+	@[ ! -e $(BUILD_DIR) ] || rm -rv $(BUILD_DIR)
 
 
 $(BUILD_DIR):
@@ -50,18 +52,18 @@ $(BUILD_DIR):
 
 
 $(objects): $(BPATH)/%.class: src/%.java $(BUILD_DIR)
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
 
 $(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer): $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
 
 $(test_objects): $(BUILD_DIR)/%.class: tests/%.java all
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst " ",":",$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
 
 
 .PHONY: run
 run: all
-	$(JAVA) $(JAVA_ARGS) -cp $(subst " ",":",$(libs)):. $(PRGM) $(ARGS)
+	$(JAVA) $(JAVA_ARGS) -cp $(subst $(space),:,$(libs)):. $(PRGM) $(ARGS)
 
 
 .PHONY: libs
