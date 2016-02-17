@@ -19,6 +19,9 @@ public class XmlParser {
 	private static Method newParser;
 	private static Runtime curRt;
 
+	private Object parser;
+	private boolean hasMore = true;
+
 	private static enum Runtime {
 		ANDROID,
 		JDK_1_6,
@@ -62,35 +65,187 @@ public class XmlParser {
 
 
 	public static XmlParser newInstance(InputStream is) {
-		XmlParser xp;
+		Object parser = null;
 
 		try {
-			xp = (XmlParser) newParser.invoke(factory);
-			Method setInput = Class.forName("org.xmlpull.v1.XmlPullParser").
-					getDeclaredMethod("setInput", InputStream.class, String.class);
-			setInput.invoke(xp, is, null);
-
-		} catch (ClassNotFoundException e) {
-			try {
-				xp = (XmlParser) newParser.invoke(factory, is);
-			} catch (IllegalAccessException|InvocationTargetException e2) {
-				throw new Error("Programmer is stupid, please report: " + e2.toString() +
-						" msg:" + e2.getMessage());
+			switch (curRt) {
+			case ANDROID:
+				parser = newParser.invoke(factory);
+				Method setInput = parserClass.getDeclaredMethod("setInput",
+						InputStream.class, String.class);
+				setInput.invoke(parser, is, null);
+				break;
+			case JDK_1_6:
+				parser = newParser.invoke(factory, is);
+				break;
 			}
-
 		} catch (NoSuchMethodException|IllegalAccessException|
 				InvocationTargetException e) {
 			throw new Error("Programmer is stupid, please report: " + e.toString() +
 					" msg:" + e.getMessage());
 		}
 
-		return xp;
+		return new XmlParser(parser);
 	}
 
 
-	private XmlParser() {
+	private XmlParser(Object parser) {
+		this.parser = parser;
 	}
 
+
+	private static Object invokeMethod(Object obj, String methodName, Class<?>[] parameterTypes, Object[] args) {
+
+		Method m;
+		Object o;
+
+		try {
+			m = parserClass.getDeclaredMethod(methodName, parameterTypes);
+			o = m.invoke(obj, args);
+		} catch (NoSuchMethodException|IllegalAccessException|
+				InvocationTargetException e) {
+			throw new Error("Programmer is stupid, please report: " + e.toString() +
+					" msg:" + e.getMessage());
+		}
+
+		return o;
+	}
+
+
+	public int getAttributeCount() {
+		String methodName;
+		Class<?>[] paramTypes = null;
+		Object[] args = null;
+
+		switch (curRt) {
+		case ANDROID:
+		case JDK_1_6:
+			methodName = "getAttributeCount";
+			break;
+		default:
+			throw new ProgrammerBrainNotFoundError();
+		}
+
+		return ((Integer)invokeMethod(parser, methodName, paramTypes, args)).intValue();
+	}
+
+
+	public String getAttributeName(int index) {
+		String methodName;
+		Class<?>[] paramTypes = {Integer.class};
+		Object[] args = {index};
+
+		switch (curRt) {
+		case ANDROID:
+		case JDK_1_6:
+			methodName = "getAttributeName";
+			break;
+		default:
+			throw new ProgrammerBrainNotFoundError();
+		}
+
+		return (String)invokeMethod(parser, methodName, paramTypes, args);
+	}
+
+
+	public String getAttributeValue(int index) {
+		String methodName;
+		Class<?>[] paramTypes = {Integer.class};
+		Object[] args = {index};
+
+		switch (curRt) {
+		case ANDROID:
+		case JDK_1_6:
+			methodName = "getAttributeValue";
+			break;
+		default:
+			throw new ProgrammerBrainNotFoundError();
+		}
+
+		return (String)invokeMethod(parser, methodName, paramTypes, args);
+	}
+
+
+	public String getLocalName() {
+		String methodName;
+		Class<?>[] paramTypes = null;
+		Object[] args = null;
+
+		switch (curRt) {
+		case ANDROID:
+			methodName = "getName";
+			break;
+		case JDK_1_6:
+			//TODO: getName().getNamespaceURI() + getName().getLocalPart()
+			methodName = "getLocalName";
+			break;
+		default:
+			throw new ProgrammerBrainNotFoundError();
+		}
+
+		return (String)invokeMethod(parser, methodName, paramTypes, args);
+	}
+
+
+	public String getText() {
+		String methodName;
+		Class<?>[] paramTypes = null;
+		Object[] args = null;
+
+		switch (curRt) {
+		case ANDROID:
+		case JDK_1_6:
+			methodName = "getText";
+			break;
+		default:
+			throw new ProgrammerBrainNotFoundError();
+		}
+
+		return (String)invokeMethod(parser, methodName, paramTypes, args);
+	}
+
+
+	public XmlEvent next() {
+		String methodName;
+		Class<?>[] paramTypes = null;
+		Object[] args = null;
+
+		switch (curRt) {
+		case ANDROID:
+		case JDK_1_6:
+			methodName = "next";
+			break;
+		default:
+			throw new ProgrammerBrainNotFoundError();
+		}
+
+		int i = ((Integer)invokeMethod(parser, methodName, paramTypes, args)).intValue();
+		XmlEvent e = XmlEvent.getEventFromValue(i);
+		if (curRt == Runtime.ANDROID && e == XmlEvent.END_DOCUMENT) {
+			hasMore = false;
+		}
+
+		return e;
+	}
+
+
+	public boolean hasNext() {
+		String methodName;
+		Class<?>[] paramTypes = null;
+		Object[] args = null;
+
+		switch (curRt) {
+		case ANDROID:
+			return hasMore;
+		case JDK_1_6:
+			methodName = "hasNext";
+			break;
+		default:
+			throw new ProgrammerBrainNotFoundError();
+		}
+
+		return ((Boolean)invokeMethod(parser, methodName, paramTypes, args)).booleanValue();
+	}
 
 
 	private static int getFieldIntValue(String s) {
@@ -310,6 +465,10 @@ public class XmlParser {
 		}
 
 
+		/**
+		 * Takes a event type value from the underlying, runtime-dependent parser
+		 * and returns the associated enum wrapper-value
+		 */
 		public static XmlEvent getEventFromValue(int value) {
 			return list[value];
 		}

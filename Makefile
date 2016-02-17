@@ -58,7 +58,7 @@ run: all
 libs: $(libs)
 
 
-$(BPATH)/XmlParser.class : $(patsubst %,$(BPATH)/%,Utils.class)
+$(BPATH)/XmlParser.class : $(patsubst %,$(BPATH)/%,Utils.class ProgrammerBrainNotFoundError.class XmlParserException.class)
 $(BPATH)/Message.class : $(patsubst %,$(BPATH)/%,XmlParser.class)
 $(BPATH)/ClientMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
 $(BPATH)/ServerMessage.class : $(patsubst %,$(BPATH)/%,Message.class XmlStringReader.class XmlStringWriter.class)
