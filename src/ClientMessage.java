@@ -115,7 +115,7 @@ public class ClientMessage extends Message {
 	}
 
 
-	public ClientMessage(XmlParser xp) {
+	ClientMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {

@@ -60,7 +60,7 @@ public class ServerMessage extends Message {
 	}
 
 
-	public ServerMessage(XmlParser xp) {
+	ServerMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
@@ -135,16 +135,18 @@ public class ServerMessage extends Message {
 
 	private void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		//FIXME: Stub
+		throw new UnsupportedOperationException("not implemented");
 	}
 
 
-	private void processItemList(XmlParser.XmlEvent e) throws MalformedMessageException {
+	private void processItemList(XmlParser.XmlEvent e) {
 		//Pass
 	}
 
 
 	private void processSnoozeAck(XmlParser.XmlEvent e) throws MalformedMessageException {
 		//FIXME: Stub
+		throw new UnsupportedOperationException("not implemented");
 	}
 
 

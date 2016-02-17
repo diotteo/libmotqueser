@@ -99,7 +99,7 @@ public class ControlMessage extends Message {
 	}
 
 
-	public ControlMessage(XmlParser xp) {
+	ControlMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
