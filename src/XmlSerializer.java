@@ -27,9 +27,6 @@ public class XmlSerializer {
 	public void writeStartDocument(String encoding) {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
-			XmlFactory.invokeSerMethod(ser, "setProperty",
-					new Class<?>[]{String.class, Object.class},
-					new Object[]{"XMLDECL VERSION", "1.0"});
 			XmlFactory.invokeSerMethod(ser, "startDocument",
 					new Class<?>[]{String.class, Boolean.class},
 					new Object[]{encoding, null});
