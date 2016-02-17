@@ -6,109 +6,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.io.InputStream;
 
 
-interface XmlParserFactory {
-	void newInstance();
-}
-
-
 public class XmlParser {
-	private static Class factoryClass;
-	private static Class parserClass;
-	private static XmlParserFactory factory;
-	private static Method newFactory;
-	private static Method newParser;
-	private static Runtime curRt;
-
 	private Object parser;
 	private boolean hasMore = true;
 
-	private static enum Runtime {
-		ANDROID,
-		JDK_1_6,
-		;
-	}
 
-	static {
-		try {
-			factoryClass = Class.forName("org.xmlpull.v1.XmlPullParserFactory");
-			parserClass = Class.forName("org.xmlpull.v1.XmlPullParser");
-			newFactory = factoryClass.getDeclaredMethod("newInstance");
-			factory = (XmlParserFactory) newFactory.invoke(factoryClass);
-			newParser = factoryClass.getDeclaredMethod("newPullParser");
-			curRt = Runtime.ANDROID;
-		} catch (ClassNotFoundException e) {
-			try {
-				factoryClass = Class.forName("javax.xml.stream.XMLInputFactory");
-				parserClass = Class.forName("javax.xml.stream.XMLStreamReader");
-			} catch (ClassNotFoundException e2) {
-				throw new Error("This class requires JDK 1.6+ or Android, neither was found");
-			}
-
-			try {
-				newFactory = factoryClass.getDeclaredMethod("newInstance");
-				factory = (XmlParserFactory) newFactory.invoke(factoryClass);
-				Method newParser = factoryClass.
-						getDeclaredMethod("createXMLStreamReader", InputStream.class);
-			} catch (NoSuchMethodException|IllegalAccessException|
-					InvocationTargetException e2) {
-				throw new Error("Programmer is stupid, please report: " + e2.toString() +
-						" msg:" + e2.getMessage());
-			}
-
-			curRt = Runtime.JDK_1_6;
-		} catch (NoSuchMethodException|IllegalAccessException|
-				InvocationTargetException e) {
-			throw new Error("Programmer is stupid, please report: " + e.toString() +
-					" msg:" + e.getMessage());
-		}
-	}
-
-
-	public static XmlParser newInstance(InputStream is) {
-		Object parser = null;
-
-		try {
-			switch (curRt) {
-			case ANDROID:
-				parser = newParser.invoke(factory);
-				Method setInput = parserClass.getDeclaredMethod("setInput",
-						InputStream.class, String.class);
-				setInput.invoke(parser, is, null);
-				break;
-			case JDK_1_6:
-				parser = newParser.invoke(factory, is);
-				break;
-			}
-		} catch (NoSuchMethodException|IllegalAccessException|
-				InvocationTargetException e) {
-			throw new Error("Programmer is stupid, please report: " + e.toString() +
-					" msg:" + e.getMessage());
-		}
-
-		return new XmlParser(parser);
-	}
-
-
-	private XmlParser(Object parser) {
+	XmlParser(Object parser) {
 		this.parser = parser;
-	}
-
-
-	private static Object invokeMethod(Object obj, String methodName, Class<?>[] parameterTypes, Object[] args) {
-
-		Method m;
-		Object o;
-
-		try {
-			m = parserClass.getDeclaredMethod(methodName, parameterTypes);
-			o = m.invoke(obj, args);
-		} catch (NoSuchMethodException|IllegalAccessException|
-				InvocationTargetException e) {
-			throw new Error("Programmer is stupid, please report: " + e.toString() +
-					" msg:" + e.getMessage());
-		}
-
-		return o;
 	}
 
 
@@ -117,7 +21,7 @@ public class XmlParser {
 		Class<?>[] paramTypes = null;
 		Object[] args = null;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 		case JDK_1_6:
 			methodName = "getAttributeCount";
@@ -126,7 +30,8 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return ((Integer)invokeMethod(parser, methodName, paramTypes, args)).intValue();
+		return ((Integer)XmlFactory.invokeMethod(parser, methodName, paramTypes,
+				args)).intValue();
 	}
 
 
@@ -135,7 +40,7 @@ public class XmlParser {
 		Class<?>[] paramTypes = {Integer.class};
 		Object[] args = {index};
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 		case JDK_1_6:
 			methodName = "getAttributeName";
@@ -144,7 +49,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)invokeMethod(parser, methodName, paramTypes, args);
+		return (String)XmlFactory.invokeMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -153,7 +58,7 @@ public class XmlParser {
 		Class<?>[] paramTypes = {Integer.class};
 		Object[] args = {index};
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 		case JDK_1_6:
 			methodName = "getAttributeValue";
@@ -162,7 +67,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)invokeMethod(parser, methodName, paramTypes, args);
+		return (String)XmlFactory.invokeMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -171,7 +76,7 @@ public class XmlParser {
 		Class<?>[] paramTypes = null;
 		Object[] args = null;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			methodName = "getName";
 			break;
@@ -183,7 +88,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)invokeMethod(parser, methodName, paramTypes, args);
+		return (String)XmlFactory.invokeMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -192,7 +97,7 @@ public class XmlParser {
 		Class<?>[] paramTypes = null;
 		Object[] args = null;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 		case JDK_1_6:
 			methodName = "getText";
@@ -201,7 +106,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)invokeMethod(parser, methodName, paramTypes, args);
+		return (String)XmlFactory.invokeMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -210,7 +115,7 @@ public class XmlParser {
 		Class<?>[] paramTypes = null;
 		Object[] args = null;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 		case JDK_1_6:
 			methodName = "next";
@@ -219,9 +124,11 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		int i = ((Integer)invokeMethod(parser, methodName, paramTypes, args)).intValue();
+		int i = ((Integer)XmlFactory.invokeMethod(parser, methodName, paramTypes,
+				args)).intValue();
 		XmlEvent e = XmlEvent.getEventFromValue(i);
-		if (curRt == Runtime.ANDROID && e == XmlEvent.END_DOCUMENT) {
+		if (XmlFactory.curRt == XmlFactory.Runtime.ANDROID &&
+				e == XmlEvent.END_DOCUMENT) {
 			hasMore = false;
 		}
 
@@ -234,7 +141,7 @@ public class XmlParser {
 		Class<?>[] paramTypes = null;
 		Object[] args = null;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			return hasMore;
 		case JDK_1_6:
@@ -244,7 +151,8 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return ((Boolean)invokeMethod(parser, methodName, paramTypes, args)).booleanValue();
+		return ((Boolean)XmlFactory.invokeMethod(parser, methodName, paramTypes,
+				args)).booleanValue();
 	}
 
 
@@ -253,8 +161,8 @@ public class XmlParser {
 		int i;
 
 		try {
-			f = parserClass.getDeclaredField(s);
-			i = f.getInt(parserClass);
+			f = XmlFactory.parserClass.getDeclaredField(s);
+			i = f.getInt(XmlFactory.parserClass);
 		} catch (NoSuchFieldException|IllegalAccessException e) {
 			throw new Error("Programmer error: field " + s + " exception " +
 					e.toString() + ": " + e.getMessage());
@@ -268,7 +176,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "START_TAG";
 			break;
@@ -276,7 +184,7 @@ public class XmlParser {
 			s = "START_ELEMENT";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
@@ -287,7 +195,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "END_TAG";
 			break;
@@ -295,7 +203,7 @@ public class XmlParser {
 			s = "END_ELEMENT";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
@@ -306,7 +214,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "TEXT";
 			break;
@@ -314,7 +222,7 @@ public class XmlParser {
 			s = "CHARACTERS";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
@@ -325,7 +233,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "COMMENT";
 			break;
@@ -333,7 +241,7 @@ public class XmlParser {
 			s = "COMMENT";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
@@ -344,7 +252,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "START_DOCUMENT";
 			break;
@@ -352,7 +260,7 @@ public class XmlParser {
 			s = "START_DOCUMENT";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
@@ -363,7 +271,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "END_DOCUMENT";
 			break;
@@ -371,7 +279,7 @@ public class XmlParser {
 			s = "END_DOCUMENT";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
@@ -382,7 +290,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "PROCESSING_INSTRUCTION";
 			break;
@@ -390,7 +298,7 @@ public class XmlParser {
 			s = "PROCESSING_INSTRUCTION";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
@@ -401,7 +309,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "ENTITY_REF";
 			break;
@@ -409,7 +317,7 @@ public class XmlParser {
 			s = "ENTITY_REFERENCE";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
@@ -420,7 +328,7 @@ public class XmlParser {
 		Field f;
 		String s;
 
-		switch (curRt) {
+		switch (XmlFactory.curRt) {
 		case ANDROID:
 			s = "DOCDECL";
 			break;
@@ -428,7 +336,7 @@ public class XmlParser {
 			s = "DTD";
 			break;
 		default:
-			throw new Error("Programmer error: " + curRt.name());
+			throw new Error("Programmer error: " + XmlFactory.curRt.name());
 		}
 
 		return getFieldIntValue(s);
