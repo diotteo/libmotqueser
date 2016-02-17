@@ -26,7 +26,7 @@ jar: del_test monitor-lib.jar
 
 .PHONY: del_test
 del_test:
-	@rm $(test_objects)
+	@rm $(test_objects) || true
 
 monitor-lib.jar: all
 	jar -cf $@ -C $(BUILD_DIR) .
