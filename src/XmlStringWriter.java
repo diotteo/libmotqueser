@@ -39,7 +39,9 @@ public class XmlStringWriter {
 			}
 		}
 
-		ser.writeText(value);
+		if (value != null) {
+			ser.writeText(value);
+		}
 	}
 
 
