@@ -102,8 +102,6 @@ public class MessageFactory {
 				case COMMENT:
 					//Ignore
 					break;
-				case ATTRIBUTE:
-					//Apparently never used by the default implementation?
 				default:
 					errMsg = "disallowed token type " + e.toString();
 					is_bogus = true;
