@@ -8,18 +8,6 @@ public class XmlSerializer {
 	private boolean is_closed;
 
 
-	//TODO: Put in some wrapper "simple" class
-	public XmlSerializer(String rootElement, int[] version) {
-		is_closed = false;
-
-		//sw = new StringWriter();
-		//XmlSerializer.newInstance(sw);
-		writeStartDocument("utf-8");
-		writeStartTag(rootElement);
-		writeAttribute("version", version[0] + "." + version[1]);
-	}
-
-
 	XmlSerializer(Object ser) {
 		this.ser = ser;
 
@@ -94,6 +82,11 @@ public class XmlSerializer {
 	}
 
 
+	public boolean isClosed() {
+		return is_closed;
+	}
+
+
 	public void writeEndDocument() {
 		switch (XmlFactory.curRt) {
 		case ANDROID:
@@ -143,33 +136,5 @@ public class XmlSerializer {
 		default:
 			throw new ProgrammerBrainNotFoundError();
 		}
-	}
-
-
-	public String getXmlString() {
-		if (!is_closed) {
-			writeEndDocument();
-		}
-		//return sw.toString();
-		return "";
-	}
-
-
-	public void writeTag(String localName, String[][] attributes) {
-		writeTag(localName, attributes, null);
-	}
-
-
-	public void writeTag(String localName, String[][] attributes, String value) {
-		writeStartTag(localName);
-
-		if (attributes != null) {
-			for (String[] at: attributes) {
-				assert at.length == 2;
-				writeAttribute(at[0], at[1]);
-			}
-		}
-
-		writeText(value);
 	}
 }
