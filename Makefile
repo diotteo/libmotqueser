@@ -23,7 +23,7 @@ test_objects := $(patsubst tests/%.java,$(BUILD_DIR)/%.class,$(test_src))
 #libs = libs/java-getopt.jar
 
 .PHONY: all
-all: $(objects) $(libs)
+all: $(objects)
 
 
 .PHONY: jar
@@ -33,7 +33,7 @@ jar: del_test monitor-lib.jar
 del_test:
 	@for i in $(test_objects); do [ ! -e "$$i" ] || rm "$$i"; done
 
-monitor-lib.jar: all
+monitor-lib.jar: $(objects)
 	jar -cf $@ -C $(BUILD_DIR) .
 
 
@@ -51,18 +51,18 @@ $(BUILD_DIR):
 	@[ -d $(BUILD_DIR) ] || mkdir -p $(BUILD_DIR)
 
 
-$(objects): $(BPATH)/%.class: src/%.java $(BUILD_DIR)
+$(objects): $(BPATH)/%.class: src/%.java $(libs) $(BUILD_DIR)
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
 
 $(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer): $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
 
-$(test_objects): $(BUILD_DIR)/%.class: tests/%.java all
+$(test_objects): $(BUILD_DIR)/%.class: tests/%.java $(objects)
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
 
 
 .PHONY: run
-run: all
+run: $(objects)
 	$(JAVA) $(JAVA_ARGS) -cp $(subst $(space),:,$(libs)):. $(PRGM) $(ARGS)
 
 
