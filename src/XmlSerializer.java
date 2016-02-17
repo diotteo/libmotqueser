@@ -29,7 +29,7 @@ public class XmlSerializer {
 		case ANDROID:
 			XmlFactory.invokeSerMethod(ser, "setProperty",
 					new Class<?>[]{String.class, Object.class},
-					new Object[]{"version", "1.0"});
+					new Object[]{"XMLDECL VERSION", "1.0"});
 			XmlFactory.invokeSerMethod(ser, "startDocument",
 					new Class<?>[]{String.class, Boolean.class},
 					new Object[]{encoding, null});
