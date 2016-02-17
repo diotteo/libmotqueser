@@ -41,7 +41,9 @@ public class MessageFactory {
 		String errMsg = null;
 		Message message = null;
 
+		/*
 		try {
+		*/
 			while (xp.hasNext() && !is_bogus) {
 				XmlParser.XmlEvent e = xp.next();
 				System.out.println(e.value() + " : " + e.toString());
@@ -105,9 +107,11 @@ public class MessageFactory {
 					break;
 				}
 			}
+		/*
 		} catch (XmlParserException e) {
 			throw new Error(e.getMessage());
 		}
+		*/
 
 		return message;
 	}
