@@ -3,6 +3,7 @@ package ca.dioo.java.MonitorLib;
 import java.util.ArrayList;
 
 public class ClientMessage extends Message {
+	public static final int VERSION[] = {1, 0};
 	private ArrayList<Action> actionList = new ArrayList<Action>();
 	private StateMachine sm;
 
@@ -107,6 +108,11 @@ public class ClientMessage extends Message {
 
 			this.id = id;
 		}
+	}
+
+
+	public ClientMessage() {
+		this(VERSION);
 	}
 
 

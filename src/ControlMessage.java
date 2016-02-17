@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ControlMessage extends Message {
+	public static final int VERSION[] = {1, 0};
 	private ArrayList<Item> itemList = new ArrayList<Item>();
 	private StateMachine sm;
 	private Item curItem;
@@ -91,6 +92,11 @@ public class ControlMessage extends Message {
 		MOVIE_PATH,
 		MOVIE_END,
 		ITEM_END
+	}
+
+
+	public ControlMessage() {
+		this(VERSION);
 	}
 
 

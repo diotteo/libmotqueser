@@ -3,6 +3,7 @@ package ca.dioo.java.MonitorLib;
 import java.util.ArrayList;
 
 public class ServerMessage extends Message {
+	public static final int VERSION[] = {1, 0};
 	private ArrayList<Item> itemList = new ArrayList<Item>();
 	private StateMachine sm;
 
@@ -53,6 +54,10 @@ public class ServerMessage extends Message {
 		}
 	}
 
+
+	public ServerMessage() {
+		this(VERSION);
+	}
 
 
 	public ServerMessage(int[] version) {
