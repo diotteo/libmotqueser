@@ -94,6 +94,21 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 		}
 
 
+		int getMinutes() {
+			return minutes;
+		}
+
+
+		int getPrevId() {
+			return prevId;
+		}
+
+
+		int getId() {
+			return id;
+		}
+
+
 		void setMinutes(int min) throws BadActionTypeException {
 			if (at != ActionType.SNOOZE) {
 				throw new BadActionTypeException("only snooze has minutes");
