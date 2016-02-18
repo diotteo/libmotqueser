@@ -238,10 +238,10 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 				id = nb;
 			} else if (attrName.equals("minutes")) {
 				int nb = new Integer(attrVal);
-				if (nb < 0) {
-					throw new Error(attrName + " lower than 0 not allowed");
+				if (nb >= 0) {
+					minutes = nb;
+					//throw new Error(attrName + " lower than 0 not allowed");
 				}
-				minutes = nb;
 			}
 		}
 
