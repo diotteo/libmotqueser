@@ -10,9 +10,9 @@ public class MessageFactory {
 
 	public static Message parse(XmlParser xp) throws MalformedMessageException {
 		Hashtable<String,Class<? extends Message>> ht = new Hashtable<String,Class<? extends Message>>();
-		ht.put("client_message", ClientMessage.class);
-		ht.put("control_message", ControlMessage.class);
-		ht.put("server_message", ServerMessage.class);
+		ht.put(ClientMessage.getXmlRootName(), ClientMessage.class);
+		ht.put(ControlMessage.getXmlRootName(), ControlMessage.class);
+		ht.put(ServerMessage.getXmlRootName(), ServerMessage.class);
 
 		try {
 			return parse(ht, xp);
@@ -21,15 +21,17 @@ public class MessageFactory {
 			System.err.println(Utils.getPrettyStackTrace(t));
 			throw new Error(t + " : " + t.getMessage());
 		} catch (NoSuchMethodException e) {
-			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+			Throwable t = e.getCause();
+			System.err.println(Utils.getPrettyStackTrace(t));
+			throw new Error(e.getClass().getName() + ":" + e.getMessage(), e);
 		} catch ( IllegalAccessException e) {
-			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+			throw new Error(e.getClass().getName() + ":" + e.getMessage(), e);
 		} catch (IllegalArgumentException e) {
-			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+			throw new Error(e.getClass().getName() + ":" + e.getMessage(), e);
 		} catch (InstantiationException e) {
-			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+			throw new Error(e.getClass().getName() + ":" + e.getMessage(), e);
 		} catch (ExceptionInInitializerError e) {
-			throw new Error(e.getClass().getName() + ":" + e.getMessage());
+			throw new Error(e.getClass().getName() + ":" + e.getMessage(), e);
 		}
 	}
 
@@ -43,39 +45,41 @@ public class MessageFactory {
 			InvocationTargetException,
 			MalformedMessageException
 			{
-		boolean is_bogus = false;
-		String errMsg = null;
 		Message message = null;
+		String rootName = null;
+		boolean is_complete = false;
 
-		while (xp.hasNext() && !is_bogus) {
+		while (!is_complete && xp.hasNext()) {
 			XmlParser.XmlEvent e = xp.next();
 			//System.out.println(e.value() + " : " + e.toString());
 
 			switch (e) {
 			case START_ELEMENT:
-				String name = xp.getLocalName();
+				{
+					String name = xp.getLocalName();
 
-				if (message == null) {
-					Class<? extends Message> mc = map.get(name);
-					if (mc == null) {
-						is_bogus = true;
-						errMsg = "unknown root element \"" + name + "\"";
+					if (message == null) {
+						Class<? extends Message> mc = map.get(name);
+						if (mc == null) {
+							throw new MalformedMessageException("unknown root element \"" + name + "\"");
+						} else {
+							Constructor<? extends Message> c = mc.getConstructor(XmlParser.class);
+							message = c.newInstance(xp);
+							rootName = name;
+						}
 					} else {
-						Constructor<? extends Message> c = mc.getConstructor(XmlParser.class);
-						message = c.newInstance(xp);
+						message.processXmlEvent(e);
 					}
-				} else {
-					message.processXmlEvent(e);
-				}
 
-				/*
-				int attrCount = xp.getAttributeCount();
-				System.out.println(" " + xp.getLocalName() + " " + attrCount);
-				for (int i = 0; i < attrCount; i++) {
-					System.out.println("  ATTR " + i + " : " + xp.getAttributeName(i) +
-							"=" + xp.getAttributeValue(i));
+					/*
+					int attrCount = xp.getAttributeCount();
+					System.out.println(" " + xp.getLocalName() + " " + attrCount);
+					for (int i = 0; i < attrCount; i++) {
+						System.out.println("  ATTR " + i + " : " + xp.getAttributeName(i) +
+								"=" + xp.getAttributeValue(i));
+					}
+					*/
 				}
-				*/
 				break;
 			case CHARACTERS:
 				//System.out.println(" " + xp.getText());
@@ -83,16 +87,22 @@ public class MessageFactory {
 				break;
 
 			case END_ELEMENT:
-				//System.out.println(" " + xp.getLocalName());
-				message.processXmlEvent(e);
+				{
+					String name = xp.getLocalName();
+					//System.out.println(" " + xp.getLocalName());
+					if (name.equals(rootName)) {
+						message.processXmlRootEndTag();
+						is_complete = true;
+					} else {
+						message.processXmlEvent(e);
+					}
+				}
 				break;
 			case COMMENT:
 				//Ignore
 				break;
 			default:
-				errMsg = "disallowed token type " + e.toString();
-				is_bogus = true;
-				break;
+				throw new MalformedMessageException("disallowed token type " + e.toString());
 			}
 		}
 

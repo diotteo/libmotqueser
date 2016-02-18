@@ -28,7 +28,7 @@ public class Test {
 
 		xsw = new XmlStringWriter("control_message", new int[]{1, 0});
 		xsw.writeTag("item", new String[][] {{"id", "1"}});
-		xsw.writeTag("movie", null, "/path/to/file.mp4");
+		xsw.writeTag("media", null, "/path/to/file.mp4");
 		xsw.writeEndTag();
 		xsw.writeEndTag();
 

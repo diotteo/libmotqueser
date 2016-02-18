@@ -60,6 +60,9 @@ public class Utils {
 
 
 	public static String getPrettyStackTrace(Throwable t) {
+		if (t == null) {
+			return "";
+		}
 		StringBuffer sb = new StringBuffer(t.toString());
 
 		for (StackTraceElement e: t.getStackTrace()) {

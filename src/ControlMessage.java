@@ -5,10 +5,18 @@ import java.util.Iterator;
 
 public class ControlMessage extends Message implements Iterable<ControlMessage.Item> {
 	public static final int VERSION[] = {1, 0};
+	private static final String XML_ROOT = "control_message";
+
 	private ArrayList<Item> itemList = new ArrayList<Item>();
 	private StateMachine sm;
 	private Item curItem;
 	private Media curMedia;
+
+
+	public static String getXmlRootName() {
+		return XML_ROOT;
+	}
+
 
 	public static class Media {
 		private String path;
@@ -94,9 +102,9 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	private enum StateMachine {
 		INIT,
 		ITEM,
-		MOVIE,
-		MOVIE_PATH,
-		MOVIE_END,
+		MEDIA,
+		MEDIA_PATH,
+		MEDIA_END,
 		ITEM_END
 	}
 
@@ -111,7 +119,10 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	}
 
 
-	ControlMessage(XmlParser xp) {
+	/**
+	 * Recommend using MessageFactory.parse()
+	 */
+	public ControlMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
@@ -159,18 +170,18 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 			sm = StateMachine.ITEM;
 			break;
 		case ITEM:
-			processMovie(e);
-			sm = StateMachine.MOVIE;
+			processMedia(e);
+			sm = StateMachine.MEDIA;
 			break;
-		case MOVIE:
-			processMoviePath(e);
-			sm = StateMachine.MOVIE_PATH;
+		case MEDIA:
+			processMediaPath(e);
+			sm = StateMachine.MEDIA_PATH;
 			break;
-		case MOVIE_PATH:
-			processMovieEnd(e);
-			sm = StateMachine.MOVIE_END;
+		case MEDIA_PATH:
+			processMediaEnd(e);
+			sm = StateMachine.MEDIA_END;
 			break;
-		case MOVIE_END:
+		case MEDIA_END:
 			processItemEnd(e);
 			sm = StateMachine.ITEM_END;
 			break;
@@ -179,6 +190,11 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 			sm = StateMachine.ITEM;
 			break;
 		}
+	}
+
+
+	public void processXmlRootEndTag() {
+		//pass
 	}
 
 
@@ -209,12 +225,12 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	}
 
 
-	private void processMovie(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "movie");
+	private void processMedia(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "media");
 	}
 
 
-	private void processMoviePath(XmlParser.XmlEvent e) throws MalformedMessageException {
+	private void processMediaPath(XmlParser.XmlEvent e) throws MalformedMessageException {
 		if (e != XmlParser.XmlEvent.CHARACTERS) {
 			throw new MalformedMessageException("unexpected XML event");
 		}
@@ -223,8 +239,8 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	}
 
 
-	private void processMovieEnd(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.END_ELEMENT, "movie");
+	private void processMediaEnd(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.END_ELEMENT, "media");
 
 		curItem.add(curMedia);
 		curMedia = null;
@@ -236,6 +252,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 		if (curItem.isEmpty()) {
 			throw new MalformedMessageException("empty item");
 		}
+		itemList.add(curItem);
 		curItem = null;
 	}
 

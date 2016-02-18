@@ -4,8 +4,14 @@ import java.util.ArrayList;
 
 public class ServerMessage extends Message {
 	public static final int VERSION[] = {1, 0};
+	private static final String XML_ROOT = "server_message";
 	private ArrayList<Item> itemList = new ArrayList<Item>();
 	private StateMachine sm;
+
+
+	public static String getXmlRootName() {
+		return XML_ROOT;
+	}
 
 
 	private enum StateMachine {
@@ -65,7 +71,10 @@ public class ServerMessage extends Message {
 	}
 
 
-	ServerMessage(XmlParser xp) {
+	/**
+	 * Recommend using MessageFactory.parse()
+	 */
+	public ServerMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
@@ -135,6 +144,11 @@ public class ServerMessage extends Message {
 			break;
 		default:
 		}
+	}
+
+
+	public void processXmlRootEndTag() {
+		//pass
 	}
 
 

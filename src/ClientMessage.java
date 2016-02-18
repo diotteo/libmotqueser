@@ -1,11 +1,18 @@
 package ca.dioo.java.MonitorLib;
 
+import java.util.Iterator;
 import java.util.ArrayList;
 
-public class ClientMessage extends Message {
+public class ClientMessage extends Message implements Iterable<ClientMessage.Action> {
 	public static final int VERSION[] = {1, 0};
+	private static final String XML_ROOT = "client_message";
 	private ArrayList<Action> actionList = new ArrayList<Action>();
 	private StateMachine sm;
+
+
+	public static String getXmlRootName() {
+		return XML_ROOT;
+	}
 
 
 	private enum StateMachine {
@@ -51,6 +58,11 @@ public class ClientMessage extends Message {
 
 		public Action(ActionType at) {
 			this.at = at;
+		}
+
+
+		public ActionType getActionType() {
+			return at;
 		}
 
 
@@ -121,7 +133,10 @@ public class ClientMessage extends Message {
 	}
 
 
-	ClientMessage(XmlParser xp) {
+	/**
+	 * Recommend using MessageFactory.parse()
+	 */
+	public ClientMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
@@ -180,6 +195,11 @@ public class ClientMessage extends Message {
 	}
 
 
+	public void processXmlRootEndTag() {
+		//pass
+	}
+
+
 	private void processAction(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "action");
 
@@ -206,10 +226,10 @@ public class ClientMessage extends Message {
 				}
 			} else if (attrName.equals("prev_id")) {
 				int nb = new Integer(attrVal);
-				if (nb < 0) {
-					throw new Error(attrName + " lower than 0 not allowed");
+				if (nb >= 0) {
+					prevId = nb;
+					//throw new Error(attrName + " lower than 0 not allowed");
 				}
-				prevId = nb;
 			} else if (attrName.equals("id")) {
 				int nb = new Integer(attrVal);
 				if (nb < 0) {
@@ -245,5 +265,11 @@ public class ClientMessage extends Message {
 		}
 
 		actionList.add(a);
+	}
+
+
+	/* Iterable interface */
+	public Iterator<Action> iterator() {
+		return actionList.iterator();
 	}
 }

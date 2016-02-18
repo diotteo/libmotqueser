@@ -4,7 +4,6 @@ public abstract class Message {
 	protected XmlParser xp;
 	protected int[] version;
 
-
 	public Message(int[] version) {
 		assert version.length == 2;
 		this.version = version;
@@ -40,7 +39,7 @@ public abstract class Message {
 
 	public abstract void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException;
 	public abstract String getXmlString();
-
+	public abstract void processXmlRootEndTag();
 
 	protected boolean compareElement(XmlParser.XmlEvent e, XmlParser.XmlEvent type, String name) {
 		String n;
@@ -59,9 +58,9 @@ public abstract class Message {
 		String n;
 
 		if (e != type) {
-			throw new MalformedMessageException("unexpected XML event");
+			throw new MalformedMessageException("unexpected XML event: " + e + " (expected " + type + ")");
 		} else if (!(n = xp.getLocalName()).equals(name)) {
-			throw new MalformedMessageException("bad tag name (" + n + ")");
+			throw new MalformedMessageException("bad tag name: " + n + " (expected " + name + ")");
 		}
 	}
 }
