@@ -22,13 +22,6 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 	}
 
 
-	public static class BadActionTypeException extends MalformedMessageException {
-		public BadActionTypeException(String msg) {
-			super(msg);
-		}
-	}
-
-
 	public static class Action {
 		private ActionType at;
 		private int id = -1;
@@ -99,12 +92,12 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 		}
 
 
-		int getPrevId() {
+		public int getPrevId() {
 			return prevId;
 		}
 
 
-		int getId() {
+		public int getId() {
 			return id;
 		}
 
@@ -119,7 +112,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 		}
 
 
-		void setPrevId(int prevId) throws BadActionTypeException {
+		public void setPrevId(int prevId) throws BadActionTypeException {
 			if (at != ActionType.GET_MSG_LIST) {
 				throw new BadActionTypeException("only get_message_list has prev_id");
 			}
@@ -128,8 +121,9 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 		}
 
 
-		void setId(int id) throws BadActionTypeException {
-			if (at != ActionType.GET_MSG && at != ActionType.DEL_MSG) {
+		public void setId(int id) throws BadActionTypeException {
+			if (at != ActionType.GET_MSG
+					&& at != ActionType.DEL_MSG) {
 				throw new BadActionTypeException("only get_message and delete_message have id");
 			}
 

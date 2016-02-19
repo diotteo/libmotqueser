@@ -210,6 +210,8 @@ public class ServerMessage extends Message {
 		if (version[0] != 1 || version[1] != 0) {
 			throw new Error("unsupported version " + version[0] + "." + version[1]);
 		}
+
+		sm = StateMachine.INIT;
 	}
 
 
@@ -358,7 +360,22 @@ if (true) {
 			throw new Error("Bogus item_list in server_message");
 		}
 
-		sub = new ItemList();
+		int prevId = -1;
+		int attrCount = xp.getAttributeCount();
+		for (int i = 0; i < attrCount; i++) {
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
+
+			if (attrName.equals("prev_id")) {
+				int nb = new Integer(attrVal);
+				if (nb < -1) {
+					nb = -1;
+				}
+				prevId = nb;
+			}
+		}
+
+		sub = new ItemList(prevId);
 	}
 
 

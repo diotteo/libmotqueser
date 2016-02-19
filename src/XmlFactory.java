@@ -100,9 +100,8 @@ public class XmlFactory {
 			switch (curRt) {
 			case ANDROID:
 				parser = newParser.invoke(parserFactory);
-				Method setInput = parserClass.getDeclaredMethod("setInput",
-						Reader.class, String.class);
-				setInput.invoke(parser, r, null);
+				Method setInput = parserClass.getDeclaredMethod("setInput", Reader.class);
+				setInput.invoke(parser, r);
 				break;
 			case JDK_1_6:
 				parser = newParser.invoke(parserFactory, r);
