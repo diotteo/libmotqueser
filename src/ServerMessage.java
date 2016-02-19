@@ -283,8 +283,12 @@ if (true) {
 			}
 			break;
 		case ITEM_LIST:
-			processItemListItem(e);
-			sm = StateMachine.ITEM_LIST_ITEM;
+			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, "item_list")) {
+				sm = StateMachine.END;
+			} else {
+				processItemListItem(e);
+				sm = StateMachine.ITEM_LIST_ITEM;
+			}
 			break;
 		case ITEM_LIST_ITEM:
 			if (e == XmlParser.XmlEvent.END_ELEMENT) {
