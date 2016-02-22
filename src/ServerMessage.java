@@ -137,7 +137,7 @@ public class ServerMessage extends Message {
 
 
 		void writeXmlString(XmlStringWriter xsw) {
-			xsw.writeTag("item_list", null, null);
+			xsw.writeTag("item_list", getAttributeList());
 
 			for (Item it: itemList) {
 				it.writeXmlString(xsw);

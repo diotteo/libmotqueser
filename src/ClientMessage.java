@@ -117,7 +117,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 				throw new BadActionTypeException("only get_message_list has prev_id");
 			}
 
-			this.prevId = prevId;
+			if (prevId >= 0) {
+				this.prevId = prevId;
+			} else {
+				this.prevId = -1;
+			}
 		}
 
 
