@@ -6,6 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.io.Reader;
 import java.io.Writer;
 
+import ca.dioo.java.commons.Utils;
+
 public class XmlFactory {
 	private static Class parserFactoryClass;
 	private static Class serFactoryClass;

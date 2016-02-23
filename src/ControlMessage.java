@@ -3,6 +3,8 @@ package ca.dioo.java.MonitorLib;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import ca.dioo.java.commons.Utils;
+
 public class ControlMessage extends Message implements Iterable<ControlMessage.Item> {
 	public static final int VERSION[] = {1, 0};
 	private static final String XML_ROOT = "control_message";

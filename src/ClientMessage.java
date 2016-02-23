@@ -3,6 +3,8 @@ package ca.dioo.java.MonitorLib;
 import java.util.Iterator;
 import java.util.ArrayList;
 
+import ca.dioo.java.commons.Utils;
+
 public class ClientMessage extends Message implements Iterable<ClientMessage.Action> {
 	public static final int VERSION[] = {1, 0};
 	private static final String XML_ROOT = "client_message";

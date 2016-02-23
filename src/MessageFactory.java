@@ -4,6 +4,8 @@ import java.util.Hashtable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import ca.dioo.java.commons.Utils;
+
 public class MessageFactory {
 	private MessageFactory() {}
 

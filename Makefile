@@ -20,7 +20,7 @@ objects := $(patsubst src/%.java,$(BPATH)/%.class,$(src))
 test_src := $(wildcard tests/*.java)
 test_objects := $(patsubst tests/%.java,$(BUILD_DIR)/%.class,$(test_src))
 
-#libs = libs/java-getopt.jar
+libs = libs/dioo-commons.jar
 
 .PHONY: all
 all: $(objects)
@@ -69,7 +69,12 @@ run: $(objects)
 .PHONY: libs
 libs: $(libs)
 
-$(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer) : $(patsubst %,$(BPATH)/%.class,Utils ProgrammerBrainNotFoundError XmlParserException)
+
+libs/dioo-commons.jar:
+	$(MAKE) -C ../java-commons jar
+
+
+$(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer) : $(patsubst %,$(BPATH)/%.class,ProgrammerBrainNotFoundError XmlParserException)
 $(BPATH)/XmlStringWriter.class : $(patsubst %,$(BPATH)/%.class,XmlSerializer)
 $(BPATH)/XmlStringReader.class : $(patsubst %,$(BPATH)/%.class,XmlParser)
 $(BPATH)/BadActionTypeException.class : $(patsubst %,$(BPATH)/%.class,MalformedMessageException)

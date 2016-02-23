@@ -3,6 +3,8 @@ package ca.dioo.java.MonitorLib;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import ca.dioo.java.commons.Utils;
+
 //FIXME: Make sure toString() works correctly for all SubMessages
 public class ServerMessage extends Message {
 	public static final int VERSION[] = {1, 0};
