@@ -5,12 +5,12 @@ import java.util.Iterator;
 
 import ca.dioo.java.commons.Utils;
 
-//FIXME: Make sure toString() works correctly for all SubMessages
+//FIXME: Make sure toString() works correctly for all Responses
 public class ServerMessage extends Message {
 	public static final int VERSION[] = {1, 0};
 	protected static final String XML_ROOT = "server_message";
 
-	private SubMessage sub;
+	private Response resp;
 	private StateMachine sm;
 
 
@@ -19,21 +19,23 @@ public class ServerMessage extends Message {
 	}
 
 
-	abstract public static class SubMessage {
+	abstract public static class Response {
 		abstract public String[][] getAttributeList();
 
+		abstract public String getType();
+
+		void writeXmlString(XmlStringWriter xsw) {
+			xsw.writeTag(getType(), getAttributeList());
+			xsw.writeEndTag();
+		}
 
 		public String toString() {
 			return Utils.join(" ", ":", getAttributeList());
 		}
 
-
 		public String toString(int indent) {
 			return Utils.repeat("  ", indent) + toString();
 		}
-
-
-		abstract void writeXmlString(XmlStringWriter xsw);
 	}
 
 
@@ -43,23 +45,35 @@ public class ServerMessage extends Message {
 		ITEM_LIST_ITEM,
 		ITEM_LIST_END,
 		ITEM,
+		ITEM_DEL,
 		SNOOZE_ACK,
 		END
 	}
 
 
-	public class SnoozeAck extends SubMessage {
+	public static class SnoozeResponse extends Response {
+		private static final String XML_TYPE_NAME = "snooze_response";
+
 		private long interval;
 
-		public SnoozeAck() {
+		public SnoozeResponse() {
 		}
 
 
-		public SnoozeAck(long interval) {
+		public SnoozeResponse(long interval) {
 			//FIXME
 			//received = <current timestamp>
 
 			setSnoozeInterval(interval);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
 		}
 
 
@@ -76,29 +90,32 @@ public class ServerMessage extends Message {
 		public String[][] getAttributeList() {
 			return new String[][]{{"interval", Long.toString(interval)}};
 		}
-
-
-		void writeXmlString(XmlStringWriter xsw) {
-			xsw.writeTag("snooze_ack", getAttributeList());
-			xsw.writeEndTag();
-		}
-
-
 	}
 
 
-	public class ItemList extends SubMessage implements Iterable<Item> {
-		private ArrayList<Item> itemList = new ArrayList<Item>();
+	public static class ItemListResponse extends Response implements Iterable<ItemResponse> {
+		private static final String XML_TYPE_NAME = "item_list";
+
+		private ArrayList<ItemResponse> itemList = new ArrayList<ItemResponse>();
 		private int prevId;
 
 
-		public ItemList() {
+		public ItemListResponse() {
 			this(-1);
 		}
 
 
-		public ItemList(int prevId) {
+		public ItemListResponse(int prevId) {
 			setPrevId(prevId);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
 		}
 
 
@@ -116,7 +133,7 @@ public class ServerMessage extends Message {
 		}
 
 
-		public boolean add(Item it) {
+		public boolean add(ItemResponse it) {
 			return itemList.add(it);
 		}
 
@@ -128,20 +145,22 @@ public class ServerMessage extends Message {
 
 		public String toString(int indent) {
 			StringBuffer sb = new StringBuffer();
-			sb.append("\n" + Utils.repeat("  ", indent) + "item_list" + toString());
+			sb.append("\n" + Utils.repeat("  ", indent) + getType() + toString());
 
-			for (Item it: itemList) {
-				sb.append("\n" + Utils.repeat("  ", indent + 1) + "item " + it.toString());
+			for (ItemResponse it: itemList) {
+				sb.append("\n" + Utils.repeat("  ", indent + 1)
+						+ ItemResponse.getTypeName() + " " + it.toString());
 			}
 
 			return sb.toString();
 		}
 
 
+		@Override
 		void writeXmlString(XmlStringWriter xsw) {
-			xsw.writeTag("item_list", getAttributeList());
+			xsw.writeTag(getType(), getAttributeList());
 
-			for (Item it: itemList) {
+			for (ItemResponse it: itemList) {
 				it.writeXmlString(xsw);
 			}
 			xsw.writeEndTag();
@@ -149,23 +168,34 @@ public class ServerMessage extends Message {
 
 
 		/* Iterable interface */
-		public Iterator<Item> iterator() {
+		public Iterator<ItemResponse> iterator() {
 			return itemList.iterator();
 		}
 	}
 
 
-	public static class Item extends SubMessage {
+	public static class ItemResponse extends Response {
+		private static final String XML_TYPE_NAME = "item";
+
 		private int id;
 
 
-		public Item() {
+		public ItemResponse() {
 			id = -1;
 		}
 
 
-		public Item(int id) {
+		public ItemResponse(int id) {
 			setId(id);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
 		}
 
 
@@ -184,11 +214,48 @@ public class ServerMessage extends Message {
 		public String[][] getAttributeList() {
 			return new String[][]{{"id", Integer.toString(id)}};
 		}
+	}
 
 
-		void writeXmlString(XmlStringWriter xsw) {
-			xsw.writeTag("item", getAttributeList());
-			xsw.writeEndTag();
+	public static class ItemDeletionResponse extends Response {
+		private static final String XML_TYPE_NAME = "item_deleted";
+
+		private int id;
+
+
+		public ItemDeletionResponse() {
+			id = -1;
+		}
+
+
+		public ItemDeletionResponse(int id) {
+			setId(id);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public int getId() {
+			return id;
+		}
+
+
+		public void setId(int id) {
+			if (id >= -1) {
+				this.id = id;
+			}
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{"id", Integer.toString(id)}};
 		}
 	}
 
@@ -225,47 +292,49 @@ public class ServerMessage extends Message {
 	public String toString(int indent) {
 		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
 
-		sb.append(sub.toString(indent + 1));
+		sb.append(resp.toString(indent + 1));
 
 		return sb.toString();
 	}
 
 
 	public String getXmlString() {
-		XmlStringWriter xsw = new XmlStringWriter("server_message", getVersion());
+		XmlStringWriter xsw = new XmlStringWriter(XML_ROOT, getVersion());
 
-		sub.writeXmlString(xsw);
+		resp.writeXmlString(xsw);
 
 		return xsw.getXmlString();
 	}
 
 
-	public SubMessage getSubMessage() {
-		return sub;
+	public Response getResponse() {
+		return resp;
 	}
 
 
-	//FIXME: rename ClientMessage 'Msg' to 'Item'
 	public void buildAsResponse(ClientMessage cm) {
-		ClientMessage.Action a = cm.iterator().next();
-		switch (a.getActionType()) {
-		case GET_MSG_LIST:
-			sub = new ItemList(a.getPrevId());
-			break;
-		case GET_MSG:
-			sub = new Item(a.getId());
-			break;
-		case SNOOZE:
+		ClientMessage.Request req = cm.iterator().next();
+
+		if (req instanceof ClientMessage.ItemListRequest) {
+			ClientMessage.ItemListRequest r = (ClientMessage.ItemListRequest)req;
+			resp = new ItemListResponse(r.getPrevId());
+
+		} else if (req instanceof ClientMessage.ItemRequest) {
+			ClientMessage.ItemRequest r = (ClientMessage.ItemRequest)req;
+			resp = new ItemResponse(r.getId());
+
+		} else if (req instanceof ClientMessage.ItemDeletionRequest) {
+			ClientMessage.ItemDeletionRequest r = (ClientMessage.ItemDeletionRequest)req;
+			resp = new ItemDeletionResponse(r.getId());
+
+		} else if (req instanceof ClientMessage.SnoozeRequest) {
+			ClientMessage.SnoozeRequest r = (ClientMessage.SnoozeRequest)req;
 			//FIXME: figure out the semantics here
-			//sub = new SnoozeAck(a.getMinutes());
-if (true) {
-	throw new UnsupportedOperationException("server_message response not implemented");
-} else {
-			break;
-}
-		case DEL_MSG:
-		default:
-			throw new UnsupportedOperationException("server_message response not implemented");
+			//resp = new SnoozeResponse(r.getInterval());
+throw new UnsupportedOperationException("server_message response not implemented");
+
+		} else {
+			throw new Error("unimplemented server_message to Request");
 		}
 	}
 
@@ -273,19 +342,24 @@ if (true) {
 	public void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
-			if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, "item")) {
+			if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName())) {
 				processItem(e);
 				sm = StateMachine.ITEM;
-			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, "item_list")) {
-				processItemList(e);
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemListResponse.getTypeName())) {
+				processItemListResponse(e);
 				sm = StateMachine.ITEM_LIST;
-			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, "snooze_ack")) {
-				processSnoozeAck(e);
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, SnoozeResponse.getTypeName())) {
+				processSnoozeResponse(e);
 				sm = StateMachine.SNOOZE_ACK;
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName())) {
+				processItemDeletionResponse(e);
+				sm = StateMachine.ITEM_DEL;
+			} else {
+				throw new Error("unimplemented");
 			}
 			break;
 		case ITEM_LIST:
-			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, "item_list")) {
+			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, ItemListResponse.getTypeName())) {
 				sm = StateMachine.END;
 			} else {
 				processItemListItem(e);
@@ -295,10 +369,10 @@ if (true) {
 		case ITEM_LIST_ITEM:
 			if (e == XmlParser.XmlEvent.END_ELEMENT) {
 				String name = xp.getLocalName();
-				if (name.equals("item")) {
+				if (name.equals(ItemResponse.getTypeName())) {
 					//Pass
-				} else if (name.equals("item_list")) {
-					sm = StateMachine.END;
+				} else if (name.equals(ItemListResponse.getTypeName())) {
+					sm = StateMachine.ITEM_LIST_END;
 				} else {
 					throw new MalformedMessageException("bogus end tag in server_message: " + name);
 				}
@@ -307,11 +381,14 @@ if (true) {
 			}
 			break;
 		case ITEM:
-			break;
+		case ITEM_DEL:
 		case SNOOZE_ACK:
+			//pass
 			break;
-		case END:
+		case ITEM_LIST_END:
 			throw new MalformedMessageException("tag found after ITEM_LIST_END in server_message");
+		case END:
+			throw new Error("Should never happen");
 		default:
 			throw new Error("unknown state machine state");
 		}
@@ -324,16 +401,16 @@ if (true) {
 
 
 	private void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "item");
-		if (sub != null) {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName());
+		if (resp != null) {
 			throw new Error("Bogus item in server_message");
 		}
 
-		sub = _subprocessItem(e);
+		resp = _subprocessItem(e);
 	}
 
 
-	private Item _subprocessItem(XmlParser.XmlEvent e) throws MalformedMessageException {
+	private ItemResponse _subprocessItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		int id = -1;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
@@ -349,20 +426,20 @@ if (true) {
 			}
 		}
 
-		return new Item(id);
+		return new ItemResponse(id);
 	}
 
 
 	private void processItemListItem(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "item");
-		Item it = _subprocessItem(e);
-		((ItemList)sub).add(it);
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName());
+		ItemResponse it = _subprocessItem(e);
+		((ItemListResponse)resp).add(it);
 	}
 
 
-	private void processItemList(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "item_list");
-		if (sub != null) {
+	private void processItemListResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemListResponse.getTypeName());
+		if (resp != null) {
 			throw new Error("Bogus item_list in server_message");
 		}
 
@@ -381,12 +458,12 @@ if (true) {
 			}
 		}
 
-		sub = new ItemList(prevId);
+		resp = new ItemListResponse(prevId);
 	}
 
 
-	private void processSnoozeAck(XmlParser.XmlEvent e) throws MalformedMessageException {
-		if (sub != null) {
+	private void processSnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+		if (resp != null) {
 			throw new Error("Bogus snooze_ack in server_message");
 		}
 
@@ -408,6 +485,31 @@ if (true) {
 			}
 		}
 
-		sub = new SnoozeAck(interval);
+		resp = new SnoozeResponse(interval);
+	}
+
+
+	private void processItemDeletionResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName());
+		if (resp != null) {
+			throw new Error("Bogus " + ItemDeletionResponse.getTypeName() + " in " + XML_ROOT);
+		}
+
+		int id = -1;
+		int attrCount = xp.getAttributeCount();
+		for (int i = 0; i < attrCount; i++) {
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
+
+			if (attrName.equals("id")) {
+				int nb = new Integer(attrVal);
+				if (nb < 0) {
+					throw new Error(attrName + " lower than 0 not allowed");
+				}
+				id = nb;
+			}
+		}
+
+		resp = new ItemDeletionResponse(id);
 	}
 }

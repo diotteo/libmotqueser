@@ -5,10 +5,10 @@ import java.util.ArrayList;
 
 import ca.dioo.java.commons.Utils;
 
-public class ClientMessage extends Message implements Iterable<ClientMessage.Action> {
+public class ClientMessage extends Message implements Iterable<ClientMessage.Request> {
 	public static final int VERSION[] = {1, 0};
 	private static final String XML_ROOT = "client_message";
-	private ArrayList<Action> actionList = new ArrayList<Action>();
+	private ArrayList<Request> reqList = new ArrayList<Request>();
 	private StateMachine sm;
 
 
@@ -24,101 +24,58 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 	}
 
 
-	public static class Action {
-		private ActionType at;
-		private int id = -1;
-		private int prevId = -1;
-		private int minutes = -1;
+	abstract public static class Request {
+		abstract public String[][] getAttributeList();
+
+		abstract public String getType();
+
+		public String toString() {
+			return Utils.join(" ", ":", getAttributeList());
+		}
+
+		public String toString(int indent) {
+			return Utils.repeat("  ", indent) + toString();
+		}
+
+		void writeXmlString(XmlStringWriter xsw) {
+			xsw.writeTag("action", getAttributeList());
+			xsw.writeEndTag();
+		}
+	}
 
 
-		public enum ActionType {
-			GET_MSG_LIST("get_message_list"),
-			GET_MSG("get_message"),
-			DEL_MSG("delete_message"),
-			SNOOZE("snooze");
+	public static class ItemListRequest extends Request {
+		private static final String XML_TYPE_NAME = "get_item_list";
 
-			private String name;
+		private int prevId;
 
 
-			ActionType(String name) {
-				this.name = name;
-			}
-
-
-			public String toString() {
-				return name;
-			}
+		public ItemListRequest() {
+			this(-1);
 		}
 
 
-		public Action(ActionType at) {
-			this.at = at;
+		public ItemListRequest(int prevId) {
+			setPrevId(prevId);
 		}
 
 
-		public ActionType getActionType() {
-			return at;
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
 		}
 
 
 		public String[][] getAttributeList() {
-			switch (at) {
-			case GET_MSG_LIST:
-				return new String[][]{{"type", at.toString()}, {"prev_id", Integer.toString(prevId)}};
-			case GET_MSG:
-			case DEL_MSG:
-				return new String[][]{{"type", at.toString()}, {"id", Integer.toString(id)}};
-			case SNOOZE:
-				return new String[][]{{"type", at.toString()}, {"minutes", Integer.toString(minutes)}};
-			default:
-				throw new Error("bogus ActionType");
-			}
+			return new String[][]{{"type", getType()},
+					{"prev_id", Integer.toString(prevId)}};
 		}
 
 
-		public String toString() {
-			switch (at) {
-			case GET_MSG_LIST:
-			case GET_MSG:
-			case DEL_MSG:
-			case SNOOZE:
-				return Utils.join(" ", ":", getAttributeList());
-			default:
-				throw new Error("bogus ActionType");
-			}
-		}
-
-
-		int getMinutes() {
-			return minutes;
-		}
-
-
-		public int getPrevId() {
-			return prevId;
-		}
-
-
-		public int getId() {
-			return id;
-		}
-
-
-		void setMinutes(int min) throws BadActionTypeException {
-			if (at != ActionType.SNOOZE) {
-				throw new BadActionTypeException("only snooze has minutes");
-			} else if (min < 1) {
-				throw new Error("can't snooze for less than 1 minute");
-			}
-			minutes = min;
-		}
-
-
-		public void setPrevId(int prevId) throws BadActionTypeException {
-			if (at != ActionType.GET_MSG_LIST) {
-				throw new BadActionTypeException("only get_message_list has prev_id");
-			}
-
+		public void setPrevId(int prevId) {
 			if (prevId >= 0) {
 				this.prevId = prevId;
 			} else {
@@ -127,13 +84,146 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 		}
 
 
-		public void setId(int id) throws BadActionTypeException {
-			if (at != ActionType.GET_MSG
-					&& at != ActionType.DEL_MSG) {
-				throw new BadActionTypeException("only get_message and delete_message have id");
-			}
+		public int getPrevId() {
+			return prevId;
+		}
+	}
 
-			this.id = id;
+
+	public static class ItemRequest extends Request {
+		private static final String XML_TYPE_NAME = "get_item";
+
+		private int id;
+
+
+		public ItemRequest() {
+			this(-1);
+		}
+
+
+		public ItemRequest(int id) {
+			setId(id);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{"type", getType()},
+					{"id", Integer.toString(id)}};
+		}
+
+
+		public void setId(int id) {
+			if (id >= 0) {
+				this.id = id;
+			} else {
+				this.id = -1;
+			}
+		}
+
+
+		public int getId() {
+			return id;
+		}
+	}
+
+
+	public static class ItemDeletionRequest extends Request {
+		private static final String XML_TYPE_NAME = "delete_item";
+
+		private int id;
+
+
+		public ItemDeletionRequest() {
+			this(-1);
+		}
+
+
+		public ItemDeletionRequest(int id) {
+			setId(id);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{"type", getType()},
+					{"id", Integer.toString(id)}};
+		}
+
+
+		public void setId(int id) {
+			if (id >= 0) {
+				this.id = id;
+			} else {
+				this.id = -1;
+			}
+		}
+
+
+		public int getId() {
+			return id;
+		}
+	}
+
+
+	public static class SnoozeRequest extends Request {
+		private static final String XML_TYPE_NAME = "snooze";
+
+		private long interval;
+
+
+		public SnoozeRequest() {
+			this(0);
+		}
+
+
+		public SnoozeRequest(long interval) {
+			setInterval(interval);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{"type", getType()},
+					{"interval", Long.toString(interval)}};
+		}
+
+
+		public void setInterval(long interval) {
+			if (interval > 0) {
+				this.interval = interval;
+			} else {
+				this.interval = 0;
+			}
+		}
+
+
+		public long getInterval() {
+			return interval;
 		}
 	}
 
@@ -162,8 +252,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 	}
 
 
-	public boolean add(Action e) {
-		return actionList.add(e);
+	public boolean add(Request e) {
+		return reqList.add(e);
 	}
 
 
@@ -174,7 +264,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 
 	public String toString(int indent) {
 		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
-		for (Action a: actionList) {
+		for (Request a: reqList) {
 			sb.append("\n" + Utils.repeat("  ", indent + 1) + "action " + a.toString());
 		}
 
@@ -185,8 +275,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 	public String getXmlString() {
 		XmlStringWriter xsw = new XmlStringWriter("client_message", getVersion());
 
-		for (Action a: actionList) {
-			xsw.writeTag("action", a.getAttributeList());
+		for (Request req: reqList) {
+			xsw.writeTag("action", req.getAttributeList());
 		}
 
 		return xsw.getXmlString();
@@ -196,13 +286,13 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 	public void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException {
 		switch (sm) {
 		case INIT:
-			processAction(e);
+			processRequest(e);
 			sm = StateMachine.ACTION;
 			break;
 		case ACTION:
 			//Allow an empty pair of elements as well (ignore the end element)
 			if (e != XmlParser.XmlEvent.END_ELEMENT) {
-				processAction(e);
+				processRequest(e);
 			}
 			break;
 		default:
@@ -215,12 +305,12 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 	}
 
 
-	private void processAction(XmlParser.XmlEvent e) throws MalformedMessageException {
+	private void processRequest(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "action");
 
-		Action.ActionType at = null;
+		Request req = null;
 		int id = -1;
-		int minutes = -1;
+		long interval = -1;
 		int prevId = -1;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
@@ -228,14 +318,14 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("type")) {
-				if (attrVal.equals("get_message_list")) {
-					at = Action.ActionType.GET_MSG_LIST;
-				} else if (attrVal.equals("get_message")) {
-					at = Action.ActionType.GET_MSG;
-				} else if (attrVal.equals("delete_message")) {
-					at = Action.ActionType.DEL_MSG;
-				} else if (attrVal.equals("snooze")) {
-					at = Action.ActionType.SNOOZE;
+				if (attrVal.equals(ItemListRequest.getTypeName())) {
+					req = new ItemListRequest();
+				} else if (attrVal.equals(ItemRequest.getTypeName())) {
+					req = new ItemRequest();
+				} else if (attrVal.equals(ItemDeletionRequest.getTypeName())) {
+					req = new ItemDeletionRequest();
+				} else if (attrVal.equals(SnoozeRequest.getTypeName())) {
+					req = new SnoozeRequest();
 				} else {
 					throw new MalformedMessageException("bad action type");
 				}
@@ -243,7 +333,6 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 				int nb = new Integer(attrVal);
 				if (nb >= 0) {
 					prevId = nb;
-					//throw new Error(attrName + " lower than 0 not allowed");
 				}
 			} else if (attrName.equals("id")) {
 				int nb = new Integer(attrVal);
@@ -251,40 +340,36 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Act
 					throw new Error(attrName + " lower than 0 not allowed");
 				}
 				id = nb;
-			} else if (attrName.equals("minutes")) {
+			} else if (attrName.equals("interval")) {
 				int nb = new Integer(attrVal);
 				if (nb >= 0) {
-					minutes = nb;
-					//throw new Error(attrName + " lower than 0 not allowed");
+					interval = nb;
 				}
 			}
 		}
 
-		Action a;
-		switch (at) {
-		case GET_MSG_LIST:
-			a = new Action(at);
-			a.setPrevId(prevId);
-			break;
-		case GET_MSG:
-		case DEL_MSG:
-			a = new Action(at);
-			a.setId(id);
-			break;
-		case SNOOZE:
-			a = new Action(at);
-			a.setMinutes(minutes);
-			break;
-		default:
-			throw new Error("Invalid action");
+		if (req == null) {
+			throw new Error("no request type found");
 		}
 
-		actionList.add(a);
+		if (req instanceof ItemListRequest) {
+			((ItemListRequest)req).setPrevId(prevId);
+		} else if (req instanceof ItemRequest) {
+			((ItemRequest)req).setId(id);
+		} else if (req instanceof ItemDeletionRequest) {
+			((ItemDeletionRequest)req).setId(id);
+		} else if (req instanceof SnoozeRequest) {
+			((SnoozeRequest)req).setInterval(interval);
+		} else {
+			throw new Error("unimplemented Request");
+		}
+
+		reqList.add(req);
 	}
 
 
 	/* Iterable interface */
-	public Iterator<Action> iterator() {
-		return actionList.iterator();
+	public Iterator<Request> iterator() {
+		return reqList.iterator();
 	}
 }
