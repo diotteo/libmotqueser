@@ -178,15 +178,20 @@ public class ServerMessage extends Message {
 		private static final String XML_TYPE_NAME = "item";
 
 		private int id;
+		private ClientMessage.ItemRequest.MediaType type;
 
 
 		public ItemResponse() {
 			id = -1;
 		}
 
-
 		public ItemResponse(int id) {
+			this(id, ClientMessage.ItemRequest.MediaType.VID);
+		}
+
+		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type) {
 			setId(id);
+			this.type = type;
 		}
 
 
@@ -211,8 +216,16 @@ public class ServerMessage extends Message {
 		}
 
 
+		public ClientMessage.ItemRequest.MediaType getMediaType() {
+			return type;
+		}
+
+
 		public String[][] getAttributeList() {
-			return new String[][]{{"id", Integer.toString(id)}};
+			return new String[][]{
+					{"id", Integer.toString(id)},
+					{"media", type.toString()},
+					};
 		}
 	}
 
@@ -321,7 +334,7 @@ public class ServerMessage extends Message {
 
 		} else if (req instanceof ClientMessage.ItemRequest) {
 			ClientMessage.ItemRequest r = (ClientMessage.ItemRequest)req;
-			resp = new ItemResponse(r.getId());
+			resp = new ItemResponse(r.getId(), r.getMediaType());
 
 		} else if (req instanceof ClientMessage.ItemDeletionRequest) {
 			ClientMessage.ItemDeletionRequest r = (ClientMessage.ItemDeletionRequest)req;
@@ -412,6 +425,7 @@ throw new UnsupportedOperationException("server_message response not implemented
 
 	private ItemResponse _subprocessItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		int id = -1;
+		ClientMessage.ItemRequest.MediaType type = ClientMessage.ItemRequest.MediaType.VID;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
 			String attrName = xp.getAttributeName(i).toString();
@@ -423,10 +437,16 @@ throw new UnsupportedOperationException("server_message response not implemented
 					throw new Error(attrName + " lower than 0 not allowed");
 				}
 				id = nb;
+			} else if (attrName.equals("media")) {
+				if (attrVal.equals("VID")) {
+					type = ClientMessage.ItemRequest.MediaType.VID;
+				} else if (attrVal.equals("IMG")) {
+					type = ClientMessage.ItemRequest.MediaType.IMG;
+				}
 			}
 		}
 
-		return new ItemResponse(id);
+		return new ItemResponse(id, type);
 	}
 
 

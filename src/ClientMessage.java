@@ -94,6 +94,13 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		private static final String XML_TYPE_NAME = "get_item";
 
 		private int id;
+		private MediaType mType;
+
+
+		public static enum MediaType {
+			IMG,
+			VID
+		}
 
 
 		public ItemRequest() {
@@ -102,7 +109,13 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 
 		public ItemRequest(int id) {
+			this(id, MediaType.VID);
+		}
+
+
+		public ItemRequest(int id, MediaType type) {
 			setId(id);
+			setMediaType(type);
 		}
 
 
@@ -116,8 +129,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 
 		public String[][] getAttributeList() {
-			return new String[][]{{"type", getType()},
-					{"id", Integer.toString(id)}};
+			return new String[][]{
+					{"type", getType()},
+					{"id", Integer.toString(id)},
+					{"media", mType.toString()}
+					};
 		}
 
 
@@ -132,6 +148,16 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 		public int getId() {
 			return id;
+		}
+
+
+		public void setMediaType(MediaType type) {
+			mType = type;
+		}
+
+
+		public MediaType getMediaType() {
+			return mType;
 		}
 	}
 
@@ -309,6 +335,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "action");
 
 		Request req = null;
+		ItemRequest.MediaType type = null;
 		int id = -1;
 		long interval = -1;
 		int prevId = -1;
@@ -345,6 +372,12 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 				if (nb >= 0) {
 					interval = nb;
 				}
+			} else if (attrName.equals("media")) {
+				if (attrVal.equals("VID")) {
+					type = ItemRequest.MediaType.VID;
+				} else if (attrVal.equals("IMG")) {
+					type = ItemRequest.MediaType.IMG;
+				}
 			}
 		}
 
@@ -355,7 +388,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		if (req instanceof ItemListRequest) {
 			((ItemListRequest)req).setPrevId(prevId);
 		} else if (req instanceof ItemRequest) {
-			((ItemRequest)req).setId(id);
+			ItemRequest ir = (ItemRequest)req;
+			ir.setId(id);
+			if (type != null) {
+				ir.setMediaType(type);
+			}
 		} else if (req instanceof ItemDeletionRequest) {
 			((ItemDeletionRequest)req).setId(id);
 		} else if (req instanceof SnoozeRequest) {
