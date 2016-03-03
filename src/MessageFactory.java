@@ -14,6 +14,7 @@ public class MessageFactory {
 		Hashtable<String,Class<? extends Message>> ht = new Hashtable<String,Class<? extends Message>>();
 		ht.put(ClientMessage.getXmlRootName(), ClientMessage.class);
 		ht.put(ControlMessage.getXmlRootName(), ControlMessage.class);
+		ht.put(ErrorMessage.getXmlRootName(), ErrorMessage.class);
 		ht.put(ServerMessage.getXmlRootName(), ServerMessage.class);
 
 		try {

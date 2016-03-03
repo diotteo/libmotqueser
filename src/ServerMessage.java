@@ -54,13 +54,14 @@ public class ServerMessage extends Message {
 	public static class SnoozeResponse extends Response {
 		private static final String XML_TYPE_NAME = "snooze_response";
 
-		private long interval;
+		private int interval;
 
 		public SnoozeResponse() {
+			this(-1);
 		}
 
 
-		public SnoozeResponse(long interval) {
+		public SnoozeResponse(int interval) {
 			//FIXME
 			//received = <current timestamp>
 
@@ -77,18 +78,18 @@ public class ServerMessage extends Message {
 		}
 
 
-		public void setSnoozeInterval(long interval) {
+		public void setSnoozeInterval(int interval) {
 			this.interval = interval;
 		}
 
 
-		public long getSnoozeInterval() {
+		public int getSnoozeInterval() {
 			return interval;
 		}
 
 
 		public String[][] getAttributeList() {
-			return new String[][]{{"interval", Long.toString(interval)}};
+			return new String[][]{{"interval", Integer.toString(interval)}};
 		}
 	}
 
@@ -342,9 +343,7 @@ public class ServerMessage extends Message {
 
 		} else if (req instanceof ClientMessage.SnoozeRequest) {
 			ClientMessage.SnoozeRequest r = (ClientMessage.SnoozeRequest)req;
-			//FIXME: figure out the semantics here
-			//resp = new SnoozeResponse(r.getInterval());
-throw new UnsupportedOperationException("server_message response not implemented");
+			resp = new SnoozeResponse(r.getInterval());
 
 		} else {
 			throw new Error("unimplemented server_message to Request");
@@ -487,7 +486,7 @@ throw new UnsupportedOperationException("server_message response not implemented
 			throw new Error("Bogus snooze_ack in server_message");
 		}
 
-		long interval = -1;
+		int interval = -1;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
 			String attrName = xp.getAttributeName(i).toString();
@@ -497,7 +496,7 @@ throw new UnsupportedOperationException("server_message response not implemented
 			//Maybe we shouldn't use exact timestamps in server responses for security reasons
 			//Better idea: let client figure out lag by timing sending request to recv'ing response
 			if (attrName.equals("interval")) {
-				long nb = new Long(attrVal);
+				int nb = new Integer(attrVal);
 				if (nb < 0) {
 					throw new Error(attrName + " lower than 0 not allowed");
 				}

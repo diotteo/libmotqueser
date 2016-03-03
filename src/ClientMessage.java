@@ -211,7 +211,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	public static class SnoozeRequest extends Request {
 		private static final String XML_TYPE_NAME = "snooze";
 
-		private long interval;
+		private int interval;
 
 
 		public SnoozeRequest() {
@@ -219,7 +219,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public SnoozeRequest(long interval) {
+		public SnoozeRequest(int interval) {
 			setInterval(interval);
 		}
 
@@ -235,11 +235,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 		public String[][] getAttributeList() {
 			return new String[][]{{"type", getType()},
-					{"interval", Long.toString(interval)}};
+					{"interval", Integer.toString(interval)}};
 		}
 
 
-		public void setInterval(long interval) {
+		public void setInterval(int interval) {
 			if (interval > 0) {
 				this.interval = interval;
 			} else {
@@ -248,7 +248,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public long getInterval() {
+		public int getInterval() {
 			return interval;
 		}
 	}
@@ -337,7 +337,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		Request req = null;
 		ItemRequest.MediaType type = null;
 		int id = -1;
-		long interval = -1;
+		int interval = -1;
 		int prevId = -1;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {

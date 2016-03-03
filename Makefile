@@ -84,5 +84,5 @@ $(BPATH)/ServerMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringRe
 $(BPATH)/ErrorMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter)
 $(BPATH)/ClientMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter)
 $(BPATH)/ControlMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter)
-$(BPATH)/MessageFactory.class : $(patsubst %,$(BPATH)/%.class,ClientMessage ControlMessage ServerMessage)
+$(BPATH)/MessageFactory.class : $(patsubst %,$(BPATH)/%.class,ClientMessage ControlMessage ErrorMessage ServerMessage)
 $(BUILD_DIR)/Test.class : $(patsubst %,$(BPATH)/%.class,XmlStringReader XmlStringWriter)
