@@ -41,12 +41,17 @@ public class XmlStringWriter {
 		}
 
 		if (value != null) {
-			ser.writeText(value);
+			writeText(value);
 		}
 	}
 
 
 	public void writeEndTag() {
 		ser.writeEndTag();
+	}
+
+
+	public void writeText(String value) {
+		ser.writeText(value);
 	}
 }

@@ -59,7 +59,7 @@ public abstract class Message {
 
 		if (e != type) {
 			throw new MalformedMessageException("unexpected XML event: " + e + " (expected " + type + ")");
-		} else if (!(n = xp.getLocalName()).equals(name)) {
+		} else if (name != null && !(n = xp.getLocalName()).equals(name)) {
 			throw new MalformedMessageException("bad tag name: " + n + " (expected " + name + ")");
 		}
 	}

@@ -299,7 +299,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 
 	public String getXmlString() {
-		XmlStringWriter xsw = new XmlStringWriter("client_message", getVersion());
+		XmlStringWriter xsw = new XmlStringWriter(getXmlRootName(), getVersion());
 
 		for (Request req: reqList) {
 			xsw.writeTag("action", req.getAttributeList());

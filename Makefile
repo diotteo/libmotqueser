@@ -54,9 +54,6 @@ $(BUILD_DIR):
 $(objects): $(BPATH)/%.class: src/%.java $(libs) $(BUILD_DIR)
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
 
-$(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer): $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
-
 $(test_objects): $(BUILD_DIR)/%.class: tests/%.java $(objects)
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
 
@@ -74,12 +71,17 @@ libs/dioo-commons.jar:
 	$(MAKE) -C ../java-commons jar
 
 
+#Circular dependencies
+$(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer): $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
+
 $(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer) : $(patsubst %,$(BPATH)/%.class,ProgrammerBrainNotFoundError XmlParserException)
 $(BPATH)/XmlStringWriter.class : $(patsubst %,$(BPATH)/%.class,XmlSerializer)
 $(BPATH)/XmlStringReader.class : $(patsubst %,$(BPATH)/%.class,XmlParser)
 $(BPATH)/BadActionTypeException.class : $(patsubst %,$(BPATH)/%.class,MalformedMessageException)
 $(BPATH)/Message.class : $(patsubst %,$(BPATH)/%.class,XmlParser XmlSerializer)
 $(BPATH)/ServerMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter ClientMessage BadActionTypeException)
+$(BPATH)/ErrorMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter)
 $(BPATH)/ClientMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter)
 $(BPATH)/ControlMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter)
 $(BPATH)/MessageFactory.class : $(patsubst %,$(BPATH)/%.class,ClientMessage ControlMessage ServerMessage)

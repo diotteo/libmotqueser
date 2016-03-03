@@ -151,7 +151,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 
 	public String getXmlString() {
-		XmlStringWriter xsw = new XmlStringWriter("control_message", getVersion());
+		XmlStringWriter xsw = new XmlStringWriter(getXmlRootName(), getVersion());
 
 		for (Item it: itemList) {
 			xsw.writeTag("item", it.getAttributeList());
