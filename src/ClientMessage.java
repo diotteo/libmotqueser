@@ -254,6 +254,28 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	}
 
 
+	public static class UnsnoozeRequest extends Request {
+		private static final String XML_TYPE_NAME = "unsnooze";
+
+		public UnsnoozeRequest() {
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{"type", getType()}};
+		}
+	}
+
+
 	public ClientMessage() {
 		this(VERSION);
 	}
@@ -353,6 +375,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 					req = new ItemDeletionRequest();
 				} else if (attrVal.equals(SnoozeRequest.getTypeName())) {
 					req = new SnoozeRequest();
+				} else if (attrVal.equals(UnsnoozeRequest.getTypeName())) {
+					req = new UnsnoozeRequest();
 				} else {
 					throw new MalformedMessageException("bad action type");
 				}
@@ -397,6 +421,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 			((ItemDeletionRequest)req).setId(id);
 		} else if (req instanceof SnoozeRequest) {
 			((SnoozeRequest)req).setInterval(interval);
+		} else if (req instanceof UnsnoozeRequest) {
+			//Pass
 		} else {
 			throw new Error("unimplemented Request");
 		}

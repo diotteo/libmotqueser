@@ -94,6 +94,28 @@ public class ServerMessage extends Message {
 	}
 
 
+	public static class UnsnoozeResponse extends Response {
+		private static final String XML_TYPE_NAME = "unsnooze_response";
+
+		public UnsnoozeResponse() {
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{}};
+		}
+	}
+
+
 	public static class ItemListResponse extends Response implements Iterable<ItemResponse> {
 		private static final String XML_TYPE_NAME = "item_list";
 
@@ -345,6 +367,9 @@ public class ServerMessage extends Message {
 			ClientMessage.SnoozeRequest r = (ClientMessage.SnoozeRequest)req;
 			resp = new SnoozeResponse(r.getInterval());
 
+		} else if (req instanceof ClientMessage.UnsnoozeRequest) {
+			ClientMessage.UnsnoozeRequest r = (ClientMessage.UnsnoozeRequest)req;
+			resp = new UnsnoozeResponse();
 		} else {
 			throw new Error("unimplemented server_message to Request");
 		}
