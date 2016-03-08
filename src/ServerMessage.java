@@ -46,6 +46,7 @@ public class ServerMessage extends Message {
 		ITEM_LIST_END,
 		ITEM,
 		ITEM_DEL,
+		ITEM_KEEP,
 		SNOOZE_ACK,
 		END
 	}
@@ -296,6 +297,49 @@ public class ServerMessage extends Message {
 	}
 
 
+	public static class ItemPreservationResponse extends Response {
+		private static final String XML_TYPE_NAME = "item_kept";
+
+		private int id;
+
+
+		public ItemPreservationResponse() {
+			id = -1;
+		}
+
+
+		public ItemPreservationResponse(int id) {
+			setId(id);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public int getId() {
+			return id;
+		}
+
+
+		public void setId(int id) {
+			if (id >= -1) {
+				this.id = id;
+			}
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{"id", Integer.toString(id)}};
+		}
+	}
+
+
 	public ServerMessage() {
 		this(VERSION);
 	}
@@ -363,6 +407,10 @@ public class ServerMessage extends Message {
 			ClientMessage.ItemDeletionRequest r = (ClientMessage.ItemDeletionRequest)req;
 			resp = new ItemDeletionResponse(r.getId());
 
+		} else if (req instanceof ClientMessage.ItemPreservationRequest) {
+			ClientMessage.ItemPreservationRequest r = (ClientMessage.ItemPreservationRequest)req;
+			resp = new ItemPreservationResponse(r.getId());
+
 		} else if (req instanceof ClientMessage.SnoozeRequest) {
 			ClientMessage.SnoozeRequest r = (ClientMessage.SnoozeRequest)req;
 			resp = new SnoozeResponse(r.getInterval());
@@ -391,6 +439,9 @@ public class ServerMessage extends Message {
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName())) {
 				processItemDeletionResponse(e);
 				sm = StateMachine.ITEM_DEL;
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName())) {
+				processItemPreservationResponse(e);
+				sm = StateMachine.ITEM_KEEP;
 			} else {
 				throw new Error("unimplemented");
 			}
@@ -419,6 +470,7 @@ public class ServerMessage extends Message {
 			break;
 		case ITEM:
 		case ITEM_DEL:
+		case ITEM_KEEP:
 		case SNOOZE_ACK:
 			//pass
 			break;
@@ -555,5 +607,30 @@ public class ServerMessage extends Message {
 		}
 
 		resp = new ItemDeletionResponse(id);
+	}
+
+
+	private void processItemPreservationResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName());
+		if (resp != null) {
+			throw new Error("Bogus " + ItemPreservationResponse.getTypeName() + " in " + XML_ROOT);
+		}
+
+		int id = -1;
+		int attrCount = xp.getAttributeCount();
+		for (int i = 0; i < attrCount; i++) {
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
+
+			if (attrName.equals("id")) {
+				int nb = new Integer(attrVal);
+				if (nb < 0) {
+					throw new Error(attrName + " lower than 0 not allowed");
+				}
+				id = nb;
+			}
+		}
+
+		resp = new ItemPreservationResponse(id);
 	}
 }

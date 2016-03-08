@@ -208,6 +208,52 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	}
 
 
+	public static class ItemPreservationRequest extends Request {
+		private static final String XML_TYPE_NAME = "keep_item";
+
+		private int id;
+
+
+		public ItemPreservationRequest() {
+			this(-1);
+		}
+
+
+		public ItemPreservationRequest(int id) {
+			setId(id);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public String[][] getAttributeList() {
+			return new String[][]{{"type", getType()},
+					{"id", Integer.toString(id)}};
+		}
+
+
+		public void setId(int id) {
+			if (id >= 0) {
+				this.id = id;
+			} else {
+				this.id = -1;
+			}
+		}
+
+
+		public int getId() {
+			return id;
+		}
+	}
+
+
 	public static class SnoozeRequest extends Request {
 		private static final String XML_TYPE_NAME = "snooze";
 
@@ -377,6 +423,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 					req = new SnoozeRequest();
 				} else if (attrVal.equals(UnsnoozeRequest.getTypeName())) {
 					req = new UnsnoozeRequest();
+				} else if (attrVal.equals(ItemPreservationRequest.getTypeName())) {
+					req = new ItemPreservationRequest();
 				} else {
 					throw new MalformedMessageException("bad action type");
 				}
@@ -419,6 +467,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 			}
 		} else if (req instanceof ItemDeletionRequest) {
 			((ItemDeletionRequest)req).setId(id);
+		} else if (req instanceof ItemPreservationRequest) {
+			((ItemPreservationRequest)req).setId(id);
 		} else if (req instanceof SnoozeRequest) {
 			((SnoozeRequest)req).setInterval(interval);
 		} else if (req instanceof UnsnoozeRequest) {
