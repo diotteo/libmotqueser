@@ -117,10 +117,10 @@ public class ServerMessage extends Message {
 	}
 
 
-	public static class ItemListResponse extends Response implements Iterable<ItemResponse> {
-		private static final String XML_TYPE_NAME = "item_list";
+	public static class ItemListResponse extends Response implements Iterable<Item> {
+		private static final String XML_TYPE_NAME = "item_list_response";
 
-		private ArrayList<ItemResponse> itemList = new ArrayList<ItemResponse>();
+		private ArrayList<Item> itemList = new ArrayList<Item>();
 		private int prevId;
 
 
@@ -157,7 +157,7 @@ public class ServerMessage extends Message {
 		}
 
 
-		public boolean add(ItemResponse it) {
+		public boolean add(Item it) {
 			return itemList.add(it);
 		}
 
@@ -171,9 +171,9 @@ public class ServerMessage extends Message {
 			StringBuffer sb = new StringBuffer();
 			sb.append("\n" + Utils.repeat("  ", indent) + getType() + toString());
 
-			for (ItemResponse it: itemList) {
+			for (Item it: itemList) {
 				sb.append("\n" + Utils.repeat("  ", indent + 1)
-						+ ItemResponse.getTypeName() + " " + it.toString());
+						+ Item.getTypeName() + " " + it.toString());
 			}
 
 			return sb.toString();
@@ -184,7 +184,7 @@ public class ServerMessage extends Message {
 		void writeXmlString(XmlStringWriter xsw) {
 			xsw.writeTag(getType(), getAttributeList());
 
-			for (ItemResponse it: itemList) {
+			for (Item it: itemList) {
 				it.writeXmlString(xsw);
 			}
 			xsw.writeEndTag();
@@ -192,30 +192,23 @@ public class ServerMessage extends Message {
 
 
 		/* Iterable interface */
-		public Iterator<ItemResponse> iterator() {
+		public Iterator<Item> iterator() {
 			return itemList.iterator();
 		}
 	}
 
 
-	public static class ItemResponse extends Response {
+	public static class Item {
 		private static final String XML_TYPE_NAME = "item";
-
 		private int id;
-		private ClientMessage.ItemRequest.MediaType type;
 
 
-		public ItemResponse() {
+		public Item() {
 			id = -1;
 		}
 
-		public ItemResponse(int id) {
-			this(id, ClientMessage.ItemRequest.MediaType.VID);
-		}
-
-		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type) {
+		public Item(int id) {
 			setId(id);
-			this.type = type;
 		}
 
 
@@ -240,15 +233,100 @@ public class ServerMessage extends Message {
 		}
 
 
+		public String[][] getAttributeList() {
+			return new String[][]{
+					{"id", Integer.toString(id)},
+					};
+		}
+
+
+		void writeXmlString(XmlStringWriter xsw) {
+			xsw.writeTag(getType(), getAttributeList());
+			xsw.writeEndTag();
+		}
+
+		public String toString() {
+			return Utils.join(" ", ":", getAttributeList());
+		}
+
+		public String toString(int indent) {
+			return Utils.repeat("  ", indent) + toString();
+		}
+	}
+
+
+	public static class ItemResponse extends Response {
+		private static final String XML_TYPE_NAME = "item_response";
+
+		private int id;
+		private long mediaSize;
+		private ClientMessage.ItemRequest.MediaType type;
+
+
+		public ItemResponse() {
+			this(-1, null);
+		}
+
+		public ItemResponse(int id) {
+			this(id, null);
+		}
+
+		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type) {
+			setId(id);
+			setMediaType(type);
+			setMediaSize(0);
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		public int getId() {
+			return id;
+		}
+
+
+		public void setId(int id) {
+			if (id >= -1) {
+				this.id = id;
+			}
+		}
+
+
+		public long getMediaSize() {
+			return mediaSize;
+		}
+
+
+		public void setMediaSize(long size) {
+			mediaSize = size;
+		}
+
+
+		public void setMediaType(ClientMessage.ItemRequest.MediaType type) {
+			this.type = type;
+		}
+
+
 		public ClientMessage.ItemRequest.MediaType getMediaType() {
 			return type;
 		}
 
 
+		/**
+		 * This method will fail unless the media type was set previously
+		 */
 		public String[][] getAttributeList() {
 			return new String[][]{
 					{"id", Integer.toString(id)},
 					{"media", type.toString()},
+					{"media_size", Long.toString(mediaSize)},
 					};
 		}
 	}
@@ -457,7 +535,7 @@ public class ServerMessage extends Message {
 		case ITEM_LIST_ITEM:
 			if (e == XmlParser.XmlEvent.END_ELEMENT) {
 				String name = xp.getLocalName();
-				if (name.equals(ItemResponse.getTypeName())) {
+				if (name.equals(Item.getTypeName())) {
 					//Pass
 				} else if (name.equals(ItemListResponse.getTypeName())) {
 					sm = StateMachine.ITEM_LIST_END;
@@ -495,13 +573,8 @@ public class ServerMessage extends Message {
 			throw new Error("Bogus item in server_message");
 		}
 
-		resp = _subprocessItem(e);
-	}
-
-
-	private ItemResponse _subprocessItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		int id = -1;
-		ClientMessage.ItemRequest.MediaType type = ClientMessage.ItemRequest.MediaType.VID;
+		ClientMessage.ItemRequest.MediaType type = null;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
 			String attrName = xp.getAttributeName(i).toString();
@@ -510,7 +583,7 @@ public class ServerMessage extends Message {
 			if (attrName.equals("id")) {
 				int nb = new Integer(attrVal);
 				if (nb < 0) {
-					throw new Error(attrName + " lower than 0 not allowed");
+					throw new MalformedMessageException(attrName + " lower than 0 not allowed");
 				}
 				id = nb;
 			} else if (attrName.equals("media")) {
@@ -522,14 +595,29 @@ public class ServerMessage extends Message {
 			}
 		}
 
-		return new ItemResponse(id, type);
+		resp = new ItemResponse(id, type);
 	}
 
 
 	private void processItemListItem(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName());
-		ItemResponse it = _subprocessItem(e);
-		((ItemListResponse)resp).add(it);
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, Item.getTypeName());
+
+		int id = -1;
+		int attrCount = xp.getAttributeCount();
+		for (int i = 0; i < attrCount; i++) {
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
+
+			if (attrName.equals("id")) {
+				int nb = new Integer(attrVal);
+				if (nb < 0) {
+					throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+				}
+				id = nb;
+			}
+		}
+
+		((ItemListResponse)resp).add(new Item(id));
 	}
 
 
