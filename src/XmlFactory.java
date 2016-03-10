@@ -1,4 +1,4 @@
-package ca.dioo.java.MonitorLib;
+package ca.dioo.java.libmotqueser;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;

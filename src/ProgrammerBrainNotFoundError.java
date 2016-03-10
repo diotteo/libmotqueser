@@ -1,4 +1,4 @@
-package ca.dioo.java.MonitorLib;
+package ca.dioo.java.libmotqueser;
 
 public class ProgrammerBrainNotFoundError extends Error {
 	public ProgrammerBrainNotFoundError() {

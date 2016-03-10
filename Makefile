@@ -6,8 +6,8 @@ JAVAC ?= javac
 # and older Android APIs don't like that
 JAVAC_ARGS ?= -Xlint:unchecked -source 1.6 -bootclasspath ${HOME}/java/jdk1.6.0_45/jre/lib/rt.jar
 
-PRGM := monitor-lib
-PKG := ca/dioo/java/MonitorLib
+PRGM := libmotqueser
+PKG := ca/dioo/java/libmotqueser
 ROOT_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 BUILD_DIR := $(ROOT_DIR)/build
 BPATH := $(BUILD_DIR)/$(PKG)
@@ -27,13 +27,13 @@ all: $(objects)
 
 
 .PHONY: jar
-jar: del_test monitor-lib.jar
+jar: del_test $(PRGM).jar
 
 .PHONY: del_test
 del_test:
 	@for i in $(test_objects); do [ ! -e "$$i" ] || rm "$$i"; done
 
-monitor-lib.jar: $(objects)
+$(PRGM).jar: $(objects)
 	jar -cf $@ -C $(BUILD_DIR) .
 
 

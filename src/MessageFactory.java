@@ -1,4 +1,4 @@
-package ca.dioo.java.MonitorLib;
+package ca.dioo.java.libmotqueser;
 
 import java.util.Hashtable;
 import java.lang.reflect.Constructor;

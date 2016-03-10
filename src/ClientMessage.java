@@ -1,4 +1,4 @@
-package ca.dioo.java.MonitorLib;
+package ca.dioo.java.libmotqueser;
 
 import java.util.Iterator;
 import java.util.ArrayList;

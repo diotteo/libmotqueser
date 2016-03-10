@@ -1,4 +1,4 @@
-package ca.dioo.java.MonitorLib;
+package ca.dioo.java.libmotqueser;
 
 public abstract class Message {
 	protected XmlParser xp;

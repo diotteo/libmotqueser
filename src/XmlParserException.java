@@ -1,4 +1,4 @@
-package ca.dioo.java.MonitorLib;
+package ca.dioo.java.libmotqueser;
 
 public class XmlParserException extends Exception {
 	public XmlParserException(String message) {
