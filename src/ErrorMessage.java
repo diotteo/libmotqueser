@@ -23,12 +23,23 @@ public class ErrorMessage extends Message {
 
 
 	public ErrorMessage() {
-		this(VERSION);
+		this(VERSION, null);
+	}
+
+
+	public ErrorMessage(String errMsg) {
+		this(VERSION, errMsg);
 	}
 
 
 	public ErrorMessage(int[] version) {
+		this(version, null);
+	}
+
+
+	public ErrorMessage(int[] version, String errMsg) {
 		super(version);
+		errorMsg = errMsg;
 	}
 
 
