@@ -12,7 +12,6 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	private ArrayList<Item> itemList = new ArrayList<Item>();
 	private StateMachine sm;
 	private Item curItem;
-	private Media curMedia;
 
 
 	public static String getXmlRootName() {
@@ -20,28 +19,8 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	}
 
 
-	public static class Media {
-		private String path;
-
-		public Media(String path) {
-			this.path = path;
-		}
-
-
-		public String getPath() {
-			return path;
-		}
-
-
-		public String toString() {
-			return path;
-		}
-	}
-
-
-	public static class Item implements Iterable<Media> {
+	public static class Item {
 		private int id;
-		private ArrayList<Media> mediaList;
 
 		public Item(int id) {
 			if (id < 1) {
@@ -49,27 +28,11 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 			}
 
 			this.id = id;
-			mediaList = new ArrayList<Media>();
 		}
 
 
 		public int getId() {
 			return id;
-		}
-
-
-		public boolean add(Media m) {
-			return mediaList.add(m);
-		}
-
-
-		public int size() {
-			return mediaList.size();
-		}
-
-
-		public boolean isEmpty() {
-			return mediaList.isEmpty();
 		}
 
 
@@ -81,22 +44,12 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 		public String toString(int indent) {
 			StringBuffer sb = new StringBuffer(Utils.join(" ", ":", getAttributeList()));
 
-			for (Media m: mediaList) {
-				sb.append("\n" + Utils.repeat("  ", indent + 1) + "media:" + m);
-			}
-
 			return sb.toString();
 		}
 
 
 		public String[][] getAttributeList() {
 			return new String[][]{{"id", Integer.toString(id)}};
-		}
-
-
-		/* Iterable interface methods */
-		public Iterator<Media> iterator() {
-			return mediaList.iterator();
 		}
 	}
 
@@ -155,9 +108,6 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 		for (Item it: itemList) {
 			xsw.writeTag("item", it.getAttributeList());
-			for (Media m: it) {
-				xsw.writeTag("media", null, m.getPath());
-			}
 			xsw.writeEndTag();
 		}
 
@@ -172,18 +122,6 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 			sm = StateMachine.ITEM;
 			break;
 		case ITEM:
-			processMedia(e);
-			sm = StateMachine.MEDIA;
-			break;
-		case MEDIA:
-			processMediaPath(e);
-			sm = StateMachine.MEDIA_PATH;
-			break;
-		case MEDIA_PATH:
-			processMediaEnd(e);
-			sm = StateMachine.MEDIA_END;
-			break;
-		case MEDIA_END:
 			processItemEnd(e);
 			sm = StateMachine.ITEM_END;
 			break;
@@ -227,33 +165,8 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	}
 
 
-	private void processMedia(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "media");
-	}
-
-
-	private void processMediaPath(XmlParser.XmlEvent e) throws MalformedMessageException {
-		if (e != XmlParser.XmlEvent.CHARACTERS) {
-			throw new MalformedMessageException("unexpected XML event");
-		}
-
-		curMedia = new Media(xp.getText());
-	}
-
-
-	private void processMediaEnd(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.END_ELEMENT, "media");
-
-		curItem.add(curMedia);
-		curMedia = null;
-	}
-
-
 	private void processItemEnd(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.END_ELEMENT, "item");
-		if (curItem.isEmpty()) {
-			throw new MalformedMessageException("empty item");
-		}
 		itemList.add(curItem);
 		curItem = null;
 	}
