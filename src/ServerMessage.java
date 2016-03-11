@@ -264,17 +264,17 @@ public class ServerMessage extends Message {
 
 
 		public ItemResponse() {
-			this(-1, null);
+			this(-1, null, 0);
 		}
 
 		public ItemResponse(int id) {
-			this(id, null);
+			this(id, null, 0);
 		}
 
-		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type) {
+		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type, long mediaSize) {
 			setId(id);
 			setMediaType(type);
-			setMediaSize(0);
+			setMediaSize(mediaSize);
 		}
 
 
@@ -479,7 +479,7 @@ public class ServerMessage extends Message {
 
 		} else if (req instanceof ClientMessage.ItemRequest) {
 			ClientMessage.ItemRequest r = (ClientMessage.ItemRequest)req;
-			resp = new ItemResponse(r.getId(), r.getMediaType());
+			resp = new ItemResponse(r.getId(), r.getMediaType(), 0);
 
 		} else if (req instanceof ClientMessage.ItemDeletionRequest) {
 			ClientMessage.ItemDeletionRequest r = (ClientMessage.ItemDeletionRequest)req;
@@ -574,7 +574,7 @@ public class ServerMessage extends Message {
 		}
 
 		int id = -1;
-		long size = -1;
+		long mediaSize = -1;
 		ClientMessage.ItemRequest.MediaType type = null;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
@@ -603,7 +603,7 @@ public class ServerMessage extends Message {
 					if (nb < 0) {
 						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
 					}
-					size = nb;
+					mediaSize = nb;
 				} catch (NumberFormatException e2) {
 					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
@@ -612,7 +612,7 @@ public class ServerMessage extends Message {
 			}
 		}
 
-		resp = new ItemResponse(id, type);
+		resp = new ItemResponse(id, type, mediaSize);
 	}
 
 
