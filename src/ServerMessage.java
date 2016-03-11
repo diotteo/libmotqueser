@@ -574,6 +574,7 @@ public class ServerMessage extends Message {
 		}
 
 		int id = -1;
+		long size = -1;
 		ClientMessage.ItemRequest.MediaType type = null;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
@@ -592,6 +593,18 @@ public class ServerMessage extends Message {
 				} else if (attrVal.equals("IMG")) {
 					type = ClientMessage.ItemRequest.MediaType.IMG;
 				}
+			} else if (attrName.equals("media_size")) {
+				try {
+					long nb = Long.parseLong(attrVal);
+					if (nb < 0) {
+						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+					}
+					size = nb;
+				} catch (NumberFormatException e2) {
+					//Pass
+				}
+			} else {
+				//Utils.debugLog(1, "ignoring unknown item attribute " + attrName + " in " + XML_ROOT);
 			}
 		}
 
