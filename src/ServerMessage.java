@@ -570,7 +570,7 @@ public class ServerMessage extends Message {
 	private void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName());
 		if (resp != null) {
-			throw new Error("Bogus item in server_message");
+			throw new MalformedMessageException("Bogus item in server_message");
 		}
 
 		int id = -1;
@@ -582,11 +582,15 @@ public class ServerMessage extends Message {
 			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("id")) {
-				int nb = new Integer(attrVal);
-				if (nb < 0) {
-					throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+				try {
+					int nb = Integer.parseInt(attrVal);
+					if (nb < 0) {
+						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+					}
+					id = nb;
+				} catch (NumberFormatException e2) {
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
-				id = nb;
 			} else if (attrName.equals("media")) {
 				if (attrVal.equals("VID")) {
 					type = ClientMessage.ItemRequest.MediaType.VID;
@@ -601,7 +605,7 @@ public class ServerMessage extends Message {
 					}
 					size = nb;
 				} catch (NumberFormatException e2) {
-					//Pass
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
 			} else {
 				//Utils.debugLog(1, "ignoring unknown item attribute " + attrName + " in " + XML_ROOT);
@@ -622,11 +626,15 @@ public class ServerMessage extends Message {
 			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("id")) {
-				int nb = new Integer(attrVal);
-				if (nb < 0) {
-					throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+				try {
+					int nb = Integer.parseInt(attrVal);
+					if (nb < 0) {
+						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+					}
+					id = nb;
+				} catch (NumberFormatException e2) {
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
-				id = nb;
 			}
 		}
 
@@ -637,7 +645,7 @@ public class ServerMessage extends Message {
 	private void processItemListResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemListResponse.getTypeName());
 		if (resp != null) {
-			throw new Error("Bogus item_list in server_message");
+			throw new MalformedMessageException("Bogus item_list in server_message");
 		}
 
 		int prevId = -1;
@@ -647,11 +655,15 @@ public class ServerMessage extends Message {
 			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("prev_id")) {
-				int nb = new Integer(attrVal);
-				if (nb < -1) {
-					nb = -1;
+				try {
+					int nb = Integer.parseInt(attrVal);
+					if (nb < -1) {
+						nb = -1;
+					}
+					prevId = nb;
+				} catch (NumberFormatException e2) {
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
-				prevId = nb;
 			}
 		}
 
@@ -661,7 +673,7 @@ public class ServerMessage extends Message {
 
 	private void processSnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		if (resp != null) {
-			throw new Error("Bogus snooze_ack in server_message");
+			throw new MalformedMessageException("Bogus snooze_ack in server_message");
 		}
 
 		int interval = -1;
@@ -674,11 +686,15 @@ public class ServerMessage extends Message {
 			//Maybe we shouldn't use exact timestamps in server responses for security reasons
 			//Better idea: let client figure out lag by timing sending request to recv'ing response
 			if (attrName.equals("interval")) {
-				int nb = new Integer(attrVal);
-				if (nb < 0) {
-					throw new Error(attrName + " lower than 0 not allowed");
+				try {
+					int nb = Integer.parseInt(attrVal);
+					if (nb < 0) {
+						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+					}
+					interval = nb;
+				} catch (NumberFormatException e2) {
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
-				interval = nb;
 			}
 		}
 
@@ -689,7 +705,7 @@ public class ServerMessage extends Message {
 	private void processItemDeletionResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName());
 		if (resp != null) {
-			throw new Error("Bogus " + ItemDeletionResponse.getTypeName() + " in " + XML_ROOT);
+			throw new MalformedMessageException("Bogus " + ItemDeletionResponse.getTypeName() + " in " + XML_ROOT);
 		}
 
 		int id = -1;
@@ -699,11 +715,15 @@ public class ServerMessage extends Message {
 			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("id")) {
-				int nb = new Integer(attrVal);
-				if (nb < 0) {
-					throw new Error(attrName + " lower than 0 not allowed");
+				try {
+					int nb = Integer.parseInt(attrVal);
+					if (nb < 0) {
+						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+					}
+					id = nb;
+				} catch (NumberFormatException e2) {
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
-				id = nb;
 			}
 		}
 
@@ -714,7 +734,7 @@ public class ServerMessage extends Message {
 	private void processItemPreservationResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName());
 		if (resp != null) {
-			throw new Error("Bogus " + ItemPreservationResponse.getTypeName() + " in " + XML_ROOT);
+			throw new MalformedMessageException("Bogus " + ItemPreservationResponse.getTypeName() + " in " + XML_ROOT);
 		}
 
 		int id = -1;
@@ -724,11 +744,15 @@ public class ServerMessage extends Message {
 			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("id")) {
-				int nb = new Integer(attrVal);
-				if (nb < 0) {
-					throw new Error(attrName + " lower than 0 not allowed");
+				try {
+					int nb = Integer.parseInt(attrVal);
+					if (nb < 0) {
+						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+					}
+					id = nb;
+				} catch (NumberFormatException e2) {
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
-				id = nb;
 			}
 		}
 
