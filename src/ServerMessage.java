@@ -201,14 +201,20 @@ public class ServerMessage extends Message {
 	public static class Item {
 		private static final String XML_TYPE_NAME = "item";
 		private int id;
+		private String vidLen;
 
 
 		public Item() {
-			id = -1;
+			this(-1, null);
 		}
 
 		public Item(int id) {
+			this(id, null);
+		}
+
+		public Item(int id, String vidLen) {
 			setId(id);
+			setVidLen(vidLen);
 		}
 
 
@@ -225,18 +231,28 @@ public class ServerMessage extends Message {
 			return id;
 		}
 
-
 		public void setId(int id) {
 			if (id >= -1) {
 				this.id = id;
 			}
 		}
 
+		public String getVidLen() {
+			return vidLen;
+		}
+
+		public void setVidLen(String vidLen) {
+			this.vidLen = vidLen;
+		}
+
 
 		public String[][] getAttributeList() {
-			return new String[][]{
-					{"id", Integer.toString(id)},
-					};
+			ArrayList<String[]> al = new ArrayList<String[]>();
+			al.add(new String[]{"id", Integer.toString(id)});
+			if (vidLen != null) {
+				al.add(new String[]{"vid_len", vidLen});
+			}
+			return al.toArray(new String[0][0]);
 		}
 
 
@@ -271,6 +287,10 @@ public class ServerMessage extends Message {
 			this(id, null, 0);
 		}
 
+		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type) {
+			this(id, type, 0);
+		}
+
 		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type, long mediaSize) {
 			setId(id);
 			setMediaType(type);
@@ -291,43 +311,38 @@ public class ServerMessage extends Message {
 			return id;
 		}
 
-
 		public void setId(int id) {
 			if (id >= -1) {
 				this.id = id;
 			}
 		}
 
-
 		public long getMediaSize() {
 			return mediaSize;
 		}
-
 
 		public void setMediaSize(long size) {
 			mediaSize = size;
 		}
 
-
 		public void setMediaType(ClientMessage.ItemRequest.MediaType type) {
 			this.type = type;
 		}
-
 
 		public ClientMessage.ItemRequest.MediaType getMediaType() {
 			return type;
 		}
 
 
-		/**
-		 * This method will fail unless the media type was set previously
-		 */
 		public String[][] getAttributeList() {
-			return new String[][]{
-					{"id", Integer.toString(id)},
-					{"media", type.toString()},
-					{"media_size", Long.toString(mediaSize)},
-					};
+			ArrayList<String[]> al = new ArrayList<String[]>();
+
+			al.add(new String[]{"id", Integer.toString(id)});
+			if (type != null) {
+				al.add(new String[]{"media", type.toString()});
+			}
+			al.add(new String[]{"media_size", Long.toString(mediaSize)});
+			return al.toArray(new String[0][0]);
 		}
 	}
 
@@ -479,7 +494,7 @@ public class ServerMessage extends Message {
 
 		} else if (req instanceof ClientMessage.ItemRequest) {
 			ClientMessage.ItemRequest r = (ClientMessage.ItemRequest)req;
-			resp = new ItemResponse(r.getId(), r.getMediaType(), 0);
+			resp = new ItemResponse(r.getId(), r.getMediaType());
 
 		} else if (req instanceof ClientMessage.ItemDeletionRequest) {
 			ClientMessage.ItemDeletionRequest r = (ClientMessage.ItemDeletionRequest)req;
@@ -619,6 +634,7 @@ public class ServerMessage extends Message {
 	private void processItemListItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, Item.getTypeName());
 
+		String vidLen = null;
 		int id = -1;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
@@ -635,10 +651,12 @@ public class ServerMessage extends Message {
 				} catch (NumberFormatException e2) {
 					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
+			} else if (attrName.equals("vid_len")) {
+				vidLen = attrVal;
 			}
 		}
 
-		((ItemListResponse)resp).add(new Item(id));
+		((ItemListResponse)resp).add(new Item(id, vidLen));
 	}
 
 
