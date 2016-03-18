@@ -276,7 +276,7 @@ public class ServerMessage extends Message {
 
 		private int id;
 		private long mediaSize;
-		private ClientMessage.ItemRequest.MediaType type;
+		private MediaType type;
 
 
 		public ItemResponse() {
@@ -287,11 +287,11 @@ public class ServerMessage extends Message {
 			this(id, null, 0);
 		}
 
-		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type) {
+		public ItemResponse(int id, MediaType type) {
 			this(id, type, 0);
 		}
 
-		public ItemResponse(int id, ClientMessage.ItemRequest.MediaType type, long mediaSize) {
+		public ItemResponse(int id, MediaType type, long mediaSize) {
 			setId(id);
 			setMediaType(type);
 			setMediaSize(mediaSize);
@@ -325,11 +325,11 @@ public class ServerMessage extends Message {
 			mediaSize = size;
 		}
 
-		public void setMediaType(ClientMessage.ItemRequest.MediaType type) {
+		public void setMediaType(MediaType type) {
 			this.type = type;
 		}
 
-		public ClientMessage.ItemRequest.MediaType getMediaType() {
+		public MediaType getMediaType() {
 			return type;
 		}
 
@@ -590,7 +590,7 @@ public class ServerMessage extends Message {
 
 		int id = -1;
 		long mediaSize = -1;
-		ClientMessage.ItemRequest.MediaType type = null;
+		MediaType type = null;
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
 			String attrName = xp.getAttributeName(i).toString();
@@ -608,9 +608,9 @@ public class ServerMessage extends Message {
 				}
 			} else if (attrName.equals("media")) {
 				if (attrVal.equals("VID")) {
-					type = ClientMessage.ItemRequest.MediaType.VID;
+					type = MediaType.VID;
 				} else if (attrVal.equals("IMG")) {
-					type = ClientMessage.ItemRequest.MediaType.IMG;
+					type = MediaType.IMG;
 				}
 			} else if (attrName.equals("media_size")) {
 				try {

@@ -97,16 +97,9 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		private MediaType mType;
 
 
-		public static enum MediaType {
-			IMG,
-			VID
-		}
-
-
 		public ItemRequest() {
 			this(-1);
 		}
-
 
 		public ItemRequest(int id) {
 			this(id, MediaType.VID);
@@ -403,7 +396,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "action");
 
 		Request req = null;
-		ItemRequest.MediaType type = null;
+		MediaType type = null;
 		int id = -1;
 		int interval = -1;
 		int prevId = -1;
@@ -446,9 +439,9 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 				}
 			} else if (attrName.equals("media")) {
 				if (attrVal.equals("VID")) {
-					type = ItemRequest.MediaType.VID;
+					type = MediaType.VID;
 				} else if (attrVal.equals("IMG")) {
-					type = ItemRequest.MediaType.IMG;
+					type = MediaType.IMG;
 				}
 			}
 		}
