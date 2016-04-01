@@ -112,7 +112,7 @@ public class ServerMessage extends Message {
 
 
 		public String[][] getAttributeList() {
-			return new String[][]{{}};
+			return null;
 		}
 	}
 
