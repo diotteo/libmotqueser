@@ -48,6 +48,7 @@ public class ServerMessage extends Message {
 		ITEM_DEL,
 		ITEM_KEEP,
 		SNOOZE_ACK,
+		UNSNOOZE_ACK,
 		END
 	}
 
@@ -529,6 +530,9 @@ public class ServerMessage extends Message {
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, SnoozeResponse.getTypeName())) {
 				processSnoozeResponse(e);
 				sm = StateMachine.SNOOZE_ACK;
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, UnsnoozeResponse.getTypeName())) {
+				processUnsnoozeResponse(e);
+				sm = StateMachine.UNSNOOZE_ACK;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName())) {
 				processItemDeletionResponse(e);
 				sm = StateMachine.ITEM_DEL;
@@ -565,6 +569,7 @@ public class ServerMessage extends Message {
 		case ITEM_DEL:
 		case ITEM_KEEP:
 		case SNOOZE_ACK:
+		case UNSNOOZE_ACK:
 			//pass
 			break;
 		case ITEM_LIST_END:
@@ -717,6 +722,11 @@ public class ServerMessage extends Message {
 		}
 
 		resp = new SnoozeResponse(interval);
+	}
+
+
+	private void processUnsnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+		resp = new UnsnoozeResponse();
 	}
 
 
