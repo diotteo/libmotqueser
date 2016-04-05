@@ -20,10 +20,10 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 
 	public static class Item {
-		private int id;
+		private String id;
 
-		public Item(int id) {
-			if (id < 1) {
+		public Item(String id) {
+			if (id == null) {
 				throw new Error("bogus Item ID");
 			}
 
@@ -31,7 +31,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 		}
 
 
-		public int getId() {
+		public String getId() {
 			return id;
 		}
 
@@ -49,7 +49,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 
 		public String[][] getAttributeList() {
-			return new String[][]{{"id", Integer.toString(id)}};
+			return new String[][]{{"id", id}};
 		}
 	}
 
@@ -141,7 +141,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	private void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "item");
 
-		int id = -1;
+		String id = null;
 
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
@@ -149,15 +149,11 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("id")) {
-				int nb = new Integer(attrVal);
-				if (nb < 0) {
-					throw new Error(attrName + " lower than 0 not allowed");
-				}
-				id = nb;
+				id = attrVal;
 			}
 		}
 
-		if (id < 0) {
+		if (id == null) {
 			throw new MalformedMessageException("item without id");
 		}
 
