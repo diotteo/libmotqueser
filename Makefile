@@ -50,14 +50,6 @@ clean:
 $(BUILD_DIR):
 	@[ -d $(BUILD_DIR) ] || mkdir -p $(BUILD_DIR)
 
-
-$(objects): $(BPATH)/%.class: src/%.java $(libs) $(BUILD_DIR)
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
-
-$(test_objects): $(BUILD_DIR)/%.class: tests/%.java $(objects)
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
-
-
 .PHONY: run
 run: $(objects)
 	$(JAVA) $(JAVA_ARGS) -cp $(subst $(space),:,$(libs)):. $(PRGM) $(ARGS)
@@ -71,11 +63,22 @@ libs/dioo-commons.jar:
 	$(MAKE) -C ../java-commons jar
 
 
+xml_base := XmlFactory XmlParser XmlSerializer
+xml_objects := $(patsubst %,$(BPATH)/%.class,$(xml_base))
+objects := $(filter-out $(xml_objects), $(objects))
 #Circular dependencies
-$(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer): $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
+$(xml_objects): $(patsubst %,src/%.java,$(xml_base))
 	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
 
-$(patsubst %,$(BPATH)/%.class,XmlFactory XmlParser XmlSerializer) : $(patsubst %,$(BPATH)/%.class,ProgrammerBrainNotFoundError XmlParserException)
+$(objects): $(BPATH)/%.class: src/%.java $(libs) $(BUILD_DIR)
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
+
+$(test_objects): $(BUILD_DIR)/%.class: tests/%.java $(objects)
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
+
+
+$(xml_objects) : $(patsubst %,$(BPATH)/%.class,ProgrammerBrainNotFoundError XmlParserException)
+
 $(BPATH)/XmlStringWriter.class : $(patsubst %,$(BPATH)/%.class,XmlSerializer)
 $(BPATH)/XmlStringReader.class : $(patsubst %,$(BPATH)/%.class,XmlParser)
 $(BPATH)/Message.class : $(patsubst %,$(BPATH)/%.class,XmlParser XmlSerializer)
