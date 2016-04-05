@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import ca.dioo.java.commons.Utils;
 
-//FIXME: Make sure toString() works correctly for all Responses
 public class ServerMessage extends Message {
 	public static final int VERSION[] = {1, 0};
 	protected static final String XML_ROOT = "server_message";
@@ -202,19 +201,23 @@ public class ServerMessage extends Message {
 	public static class Item {
 		private static final String XML_TYPE_NAME = "item";
 		private int id;
+		private int imgSize;
+		private int vidSize;
 		private String vidLen;
 
 
 		public Item() {
-			this(-1, null);
+			this(-1, -1, -1, null);
 		}
 
 		public Item(int id) {
-			this(id, null);
+			this(id, -1, -1, null);
 		}
 
-		public Item(int id, String vidLen) {
+		public Item(int id, int imgSize, int vidSize, String vidLen) {
 			setId(id);
+			setImgSize(imgSize);
+			setVidSize(vidSize);
 			setVidLen(vidLen);
 		}
 
@@ -233,8 +236,34 @@ public class ServerMessage extends Message {
 		}
 
 		public void setId(int id) {
-			if (id >= -1) {
+			if (id < 0) {
+				this.id = -1;
+			} else {
 				this.id = id;
+			}
+		}
+
+		public int getImgSize() {
+			return imgSize;
+		}
+
+		public void setImgSize(int imgSize) {
+			if (imgSize < 0) {
+				this.imgSize = -1;
+			} else {
+				this.imgSize = imgSize;
+			}
+		}
+
+		public int getVidSize() {
+			return vidSize;
+		}
+
+		public void setVidSize(int vidSize) {
+			if (vidSize < 0) {
+				this.vidSize = -1;
+			} else {
+				this.vidSize = vidSize;
 			}
 		}
 
@@ -250,6 +279,8 @@ public class ServerMessage extends Message {
 		public String[][] getAttributeList() {
 			ArrayList<String[]> al = new ArrayList<String[]>();
 			al.add(new String[]{"id", Integer.toString(id)});
+			al.add(new String[]{"img_size", Integer.toString(id)});
+			al.add(new String[]{"vid_size", Integer.toString(id)});
 			if (vidLen != null) {
 				al.add(new String[]{"vid_len", vidLen});
 			}
@@ -355,7 +386,7 @@ public class ServerMessage extends Message {
 
 
 		public ItemDeletionResponse() {
-			id = -1;
+			this(-1);
 		}
 
 
@@ -398,7 +429,7 @@ public class ServerMessage extends Message {
 
 
 		public ItemPreservationResponse() {
-			id = -1;
+			this(-1);
 		}
 
 
@@ -420,16 +451,19 @@ public class ServerMessage extends Message {
 			return id;
 		}
 
-
 		public void setId(int id) {
-			if (id >= -1) {
+			if (id < 0) {
+				this.id = -1;
+			} else {
 				this.id = id;
 			}
 		}
 
 
 		public String[][] getAttributeList() {
-			return new String[][]{{"id", Integer.toString(id)}};
+			return new String[][]{
+					{"id", Integer.toString(id)}
+					};
 		}
 	}
 
@@ -639,20 +673,42 @@ public class ServerMessage extends Message {
 	private void processItemListItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, Item.getTypeName());
 
-		String vidLen = null;
 		int id = -1;
+		int imgSize = -1;
+		int vidSize = -1;
+		String vidLen = null;
+
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
 			String attrName = xp.getAttributeName(i).toString();
 			String attrVal = xp.getAttributeValue(i);
 
+			boolean isId = false;
+			boolean isImgSize = false;
+			boolean isVidSize = false;
+
 			if (attrName.equals("id")) {
+				isId = true;
+			} else if (attrName.equals("img_size")) {
+				isImgSize = true;
+			} else if (attrName.equals("vid_size")) {
+				isVidSize = true;
+			}
+
+			if (isId || isImgSize || isVidSize) {
 				try {
 					int nb = Integer.parseInt(attrVal);
 					if (nb < 0) {
 						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
 					}
-					id = nb;
+
+					if (isId) {
+						id = nb;
+					} else if (isImgSize) {
+						imgSize = nb;
+					} else if (isVidSize) {
+						vidSize = nb;
+					}
 				} catch (NumberFormatException e2) {
 					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
@@ -661,7 +717,7 @@ public class ServerMessage extends Message {
 			}
 		}
 
-		((ItemListResponse)resp).add(new Item(id, vidLen));
+		((ItemListResponse)resp).add(new Item(id, imgSize, vidSize, vidLen));
 	}
 
 
