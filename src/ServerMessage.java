@@ -279,8 +279,8 @@ public class ServerMessage extends Message {
 		public String[][] getAttributeList() {
 			ArrayList<String[]> al = new ArrayList<String[]>();
 			al.add(new String[]{"id", Integer.toString(id)});
-			al.add(new String[]{"img_size", Integer.toString(id)});
-			al.add(new String[]{"vid_size", Integer.toString(id)});
+			al.add(new String[]{"img_size", Integer.toString(imgSize)});
+			al.add(new String[]{"vid_size", Integer.toString(vidSize)});
 			if (vidLen != null) {
 				al.add(new String[]{"vid_len", vidLen});
 			}
