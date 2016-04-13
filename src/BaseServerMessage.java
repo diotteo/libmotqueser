@@ -125,7 +125,7 @@ public abstract class BaseServerMessage extends Message {
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	BaseServerMessage(XmlParser xp) {
+	public BaseServerMessage(XmlParser xp) {
 		super(xp);
 	}
 

@@ -10,7 +10,7 @@ public abstract class Message {
 	}
 
 
-	Message(XmlParser xp) {
+	public Message(XmlParser xp) {
 		this.xp = xp;
 		version = null;
 

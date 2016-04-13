@@ -381,7 +381,7 @@ public class ServerMessage extends BaseServerMessage {
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	ServerMessage(XmlParser xp) {
+	public ServerMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {

@@ -42,7 +42,7 @@ public class NotificationMessage extends BaseServerMessage {
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	NotificationMessage(XmlParser xp) {
+	public NotificationMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
