@@ -4,13 +4,13 @@ public abstract class Message {
 	protected XmlParser xp;
 	protected int[] version;
 
-	public Message(int[] version) {
+	protected Message(int[] version) {
 		assert version.length == 2;
 		this.version = version;
 	}
 
 
-	public Message(XmlParser xp) {
+	Message(XmlParser xp) {
 		this.xp = xp;
 		version = null;
 
@@ -37,6 +37,7 @@ public abstract class Message {
 	}
 
 
+	public abstract String getXmlRoot();
 	public abstract void processXmlEvent(XmlParser.XmlEvent e) throws MalformedMessageException;
 	public abstract String getXmlString();
 	public abstract void processXmlRootEndTag();
