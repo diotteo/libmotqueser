@@ -5,12 +5,12 @@ import java.util.Iterator;
 
 import ca.dioo.java.commons.Utils;
 
-public class ServerMessage extends Message {
+public class ServerMessage extends BaseServerMessage {
 	public static final int VERSION[] = {1, 0};
 	protected static final String XML_ROOT = "server_message";
 
-	protected Response resp;
-	protected StateMachine sm;
+	private Response resp;
+	private StateMachine sm;
 
 
 	public static String getXmlRootName() {
@@ -203,111 +203,6 @@ public class ServerMessage extends Message {
 	}
 
 
-	public static class Item {
-		private static final String XML_TYPE_NAME = "item";
-		private int id;
-		private int imgSize;
-		private int vidSize;
-		private String vidLen;
-
-
-		public Item() {
-			this(-1, -1, -1, null);
-		}
-
-		public Item(int id) {
-			this(id, -1, -1, null);
-		}
-
-		public Item(int id, int imgSize, int vidSize, String vidLen) {
-			setId(id);
-			setImgSize(imgSize);
-			setVidSize(vidSize);
-			setVidLen(vidLen);
-		}
-
-
-		public static String getTypeName() {
-			return XML_TYPE_NAME;
-		}
-
-		public String getType() {
-			return getTypeName();
-		}
-
-
-		public int getId() {
-			return id;
-		}
-
-		public void setId(int id) {
-			if (id < 0) {
-				this.id = -1;
-			} else {
-				this.id = id;
-			}
-		}
-
-		public int getImgSize() {
-			return imgSize;
-		}
-
-		public void setImgSize(int imgSize) {
-			if (imgSize < 0) {
-				this.imgSize = -1;
-			} else {
-				this.imgSize = imgSize;
-			}
-		}
-
-		public int getVidSize() {
-			return vidSize;
-		}
-
-		public void setVidSize(int vidSize) {
-			if (vidSize < 0) {
-				this.vidSize = -1;
-			} else {
-				this.vidSize = vidSize;
-			}
-		}
-
-		public String getVidLen() {
-			return vidLen;
-		}
-
-		public void setVidLen(String vidLen) {
-			this.vidLen = vidLen;
-		}
-
-
-		public String[][] getAttributeList() {
-			ArrayList<String[]> al = new ArrayList<String[]>();
-			al.add(new String[]{"id", Integer.toString(id)});
-			al.add(new String[]{"img_size", Integer.toString(imgSize)});
-			al.add(new String[]{"vid_size", Integer.toString(vidSize)});
-			if (vidLen != null) {
-				al.add(new String[]{"vid_len", vidLen});
-			}
-			return al.toArray(new String[0][0]);
-		}
-
-
-		void writeXmlString(XmlStringWriter xsw) {
-			xsw.writeTag(getType(), getAttributeList());
-			xsw.writeEndTag();
-		}
-
-		public String toString() {
-			return Utils.join(" ", ":", getAttributeList());
-		}
-
-		public String toString(int indent) {
-			return Utils.repeat("  ", indent) + toString();
-		}
-	}
-
-
 	public static class ItemResponse extends Response {
 		private static final String XML_TYPE_NAME = "item_response";
 
@@ -486,7 +381,7 @@ public class ServerMessage extends Message {
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	public ServerMessage(XmlParser xp) {
+	ServerMessage(XmlParser xp) {
 		super(xp);
 
 		if (version[0] != 1 || version[1] != 0) {
@@ -561,22 +456,22 @@ public class ServerMessage extends Message {
 		switch (sm) {
 		case INIT:
 			if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName())) {
-				processItem(e);
+				resp = processItemResponse(e);
 				sm = StateMachine.ITEM;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemListResponse.getTypeName())) {
-				processItemListResponse(e);
+				resp = processItemListResponse(e);
 				sm = StateMachine.ITEM_LIST;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, SnoozeResponse.getTypeName())) {
-				processSnoozeResponse(e);
+				resp = processSnoozeResponse(e);
 				sm = StateMachine.SNOOZE_ACK;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, UnsnoozeResponse.getTypeName())) {
-				processUnsnoozeResponse(e);
+				resp = processUnsnoozeResponse(e);
 				sm = StateMachine.UNSNOOZE_ACK;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName())) {
-				processItemDeletionResponse(e);
+				resp = processItemDeletionResponse(e);
 				sm = StateMachine.ITEM_DEL;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName())) {
-				processItemPreservationResponse(e);
+				resp = processItemPreservationResponse(e);
 				sm = StateMachine.ITEM_KEEP;
 			} else {
 				throw new Error("unimplemented");
@@ -586,7 +481,7 @@ public class ServerMessage extends Message {
 			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, ItemListResponse.getTypeName())) {
 				sm = StateMachine.END;
 			} else {
-				processItemListItem(e);
+				((ItemListResponse)resp).add(processItem(e));
 				sm = StateMachine.ITEM_LIST_ITEM;
 			}
 			break;
@@ -601,7 +496,7 @@ public class ServerMessage extends Message {
 					throw new MalformedMessageException("bogus end tag in " + getXmlName() + ": " + name);
 				}
 			} else {
-				processItemListItem(e);
+				((ItemListResponse)resp).add(processItem(e));
 			}
 			break;
 		case ITEM:
@@ -626,7 +521,7 @@ public class ServerMessage extends Message {
 	}
 
 
-	protected void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected ItemResponse processItemResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName());
 		if (resp != null) {
 			throw new MalformedMessageException("Bogus " + ItemResponse.getTypeName() + " in " + getRootXml());
@@ -671,62 +566,11 @@ public class ServerMessage extends Message {
 			}
 		}
 
-		resp = new ItemResponse(id, type, mediaSize);
+		return new ItemResponse(id, type, mediaSize);
 	}
 
 
-	protected void processItemListItem(XmlParser.XmlEvent e) throws MalformedMessageException {
-		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, Item.getTypeName());
-
-		int id = -1;
-		int imgSize = -1;
-		int vidSize = -1;
-		String vidLen = null;
-
-		int attrCount = xp.getAttributeCount();
-		for (int i = 0; i < attrCount; i++) {
-			String attrName = xp.getAttributeName(i).toString();
-			String attrVal = xp.getAttributeValue(i);
-
-			boolean isId = false;
-			boolean isImgSize = false;
-			boolean isVidSize = false;
-
-			if (attrName.equals("id")) {
-				isId = true;
-			} else if (attrName.equals("img_size")) {
-				isImgSize = true;
-			} else if (attrName.equals("vid_size")) {
-				isVidSize = true;
-			}
-
-			if (isId || isImgSize || isVidSize) {
-				try {
-					int nb = Integer.parseInt(attrVal);
-					if (nb < 0) {
-						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
-					}
-
-					if (isId) {
-						id = nb;
-					} else if (isImgSize) {
-						imgSize = nb;
-					} else if (isVidSize) {
-						vidSize = nb;
-					}
-				} catch (NumberFormatException e2) {
-					throw new MalformedMessageException("bogus value for attribute " + attrName);
-				}
-			} else if (attrName.equals("vid_len")) {
-				vidLen = attrVal;
-			}
-		}
-
-		((ItemListResponse)resp).add(new Item(id, imgSize, vidSize, vidLen));
-	}
-
-
-	protected void processItemListResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected ItemListResponse processItemListResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemListResponse.getTypeName());
 		if (resp != null) {
 			throw new MalformedMessageException("Bogus " + ItemListResponse.getTypeName() + " in " + getXmlRoot());
@@ -751,11 +595,11 @@ public class ServerMessage extends Message {
 			}
 		}
 
-		resp = new ItemListResponse(prevId);
+		return new ItemListResponse(prevId);
 	}
 
 
-	protected void processSnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected SnoozeResponse processSnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		if (resp != null) {
 			throw new MalformedMessageException("Bogus " + SnoozeResponse.getTypeName() + " in " + getXmlRoot());
 		}
@@ -782,16 +626,16 @@ public class ServerMessage extends Message {
 			}
 		}
 
-		resp = new SnoozeResponse(interval);
+		return new SnoozeResponse(interval);
 	}
 
 
-	protected void processUnsnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
-		resp = new UnsnoozeResponse();
+	protected UnsnoozeResponse processUnsnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+		return new UnsnoozeResponse();
 	}
 
 
-	protected void processItemDeletionResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected ItemDeletionResponse processItemDeletionResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName());
 		if (resp != null) {
 			throw new MalformedMessageException("Bogus " + ItemDeletionResponse.getTypeName() + " in " + getXmlRoot());
@@ -816,11 +660,11 @@ public class ServerMessage extends Message {
 			}
 		}
 
-		resp = new ItemDeletionResponse(id);
+		return new ItemDeletionResponse(id);
 	}
 
 
-	protected void processItemPreservationResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected ItemPreservationResponse processItemPreservationResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName());
 		if (resp != null) {
 			throw new MalformedMessageException("Bogus " + ItemPreservationResponse.getTypeName() + " in " + getXmlRoot());
@@ -845,6 +689,6 @@ public class ServerMessage extends Message {
 			}
 		}
 
-		resp = new ItemPreservationResponse(id);
+		return new ItemPreservationResponse(id);
 	}
 }
