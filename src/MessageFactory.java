@@ -16,6 +16,7 @@ public class MessageFactory {
 		ht.put(ControlMessage.getXmlRootName(), ControlMessage.class);
 		ht.put(ErrorMessage.getXmlRootName(), ErrorMessage.class);
 		ht.put(ServerMessage.getXmlRootName(), ServerMessage.class);
+		ht.put(NotificationMessage.getXmlRootName(), NotificationMessage.class);
 
 		try {
 			return parse(ht, xp);
