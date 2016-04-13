@@ -27,6 +27,11 @@ public class XmlFactory {
 	}
 
 	static {
+		curRt = init();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Runtime init() {
 		Method newParserFactory;
 		Method newSerFactory;
 		Runtime rt;
@@ -91,10 +96,11 @@ public class XmlFactory {
 			throw new Error(e.getMessage());
 		}
 
-		curRt = rt;
+		return rt;
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public static XmlParser newXmlParser(Reader r) {
 		Object parser = null;
 
@@ -124,6 +130,7 @@ public class XmlFactory {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public static XmlSerializer newXmlSerializer(Writer w) {
 		Object ser = null;
 
@@ -163,6 +170,7 @@ public class XmlFactory {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private static Object invokeMethod(Class clazz, Object obj, String methodName, Class<?>[] parameterTypes, Object[] args) {
 
 		Method m;
