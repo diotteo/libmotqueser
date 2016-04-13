@@ -63,30 +63,18 @@ libs/dioo-commons.jar:
 	$(MAKE) -C ../java-commons jar
 
 
-xml_base := XmlFactory XmlParser XmlSerializer
-xml_objects := $(patsubst %,$(BPATH)/%.class,$(xml_base))
-objects := $(filter-out $(xml_objects), $(objects))
-#Circular dependencies
-$(xml_objects): $(patsubst %,src/%.java,$(xml_base))
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(patsubst %,src/%.java,XmlFactory XmlParser XmlSerializer)
+first_obj := $(firstword $(objects))
+rest_obj := $(wordlist 2,$(words $(objects)),$(objects))
 
-$(objects): $(BPATH)/%.class: src/%.java $(libs) $(BUILD_DIR)
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
+$(first_obj): $(src) $(libs) $(BUILD_DIR)
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(src)
 
-$(test_objects): $(BUILD_DIR)/%.class: tests/%.java $(objects)
-	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $<
+$(rest_obj): $(first_obj)
 
 
-$(xml_objects) : $(patsubst %,$(BPATH)/%.class,ProgrammerBrainNotFoundError XmlParserException)
+first_test_obj := $(firstword $(test_objects))
+rest_test_obj := $(wordlist 2,$(words $(test_objects)),$(test_objects))
+$(first_test_obj): $(test_src) $(objects)
+	$(JAVAC) $(JAVAC_ARGS) -cp $(subst $(space),:,$(libs)):$(BUILD_DIR) -d $(BUILD_DIR) $(test_src)
 
-$(BPATH)/XmlStringWriter.class : $(patsubst %,$(BPATH)/%.class,XmlSerializer)
-$(BPATH)/XmlStringReader.class : $(patsubst %,$(BPATH)/%.class,XmlParser)
-$(BPATH)/Message.class : $(patsubst %,$(BPATH)/%.class,XmlParser XmlSerializer)
-$(BPATH)/BaseServerMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringWriter)
-$(BPATH)/ServerMessage.class : $(patsubst %,$(BPATH)/%.class,BaseServerMessage Message XmlStringWriter ClientMessage MediaType)
-$(BPATH)/NotificationMessage.class : $(patsubst %,$(BPATH)/%.class,BaseServerMessage Message XmlStringWriter)
-$(BPATH)/ErrorMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter)
-$(BPATH)/ClientMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter MediaType)
-$(BPATH)/ControlMessage.class : $(patsubst %,$(BPATH)/%.class,Message XmlStringReader XmlStringWriter)
-$(BPATH)/MessageFactory.class : $(patsubst %,$(BPATH)/%.class,ClientMessage ControlMessage ErrorMessage ServerMessage)
-$(BUILD_DIR)/Test.class : $(patsubst %,$(BPATH)/%.class,XmlStringReader XmlStringWriter)
+$(rest_test_obj): $(first_test_obj)
