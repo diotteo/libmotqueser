@@ -53,6 +53,16 @@ public class NotificationMessage extends BaseServerMessage {
 	}
 
 
+	public void setItem(Item it) {
+		this.it = it;
+	}
+
+
+	public Item getItem() {
+		return it;
+	}
+
+
 	public String toString(int indent) {
 		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
 
