@@ -15,6 +15,11 @@ public class ErrorMessage extends Message {
 	}
 
 
+	public String getXmlRoot() {
+		return XML_ROOT;
+	}
+
+
 	private enum StateMachine {
 		INIT,
 		ERR_MSG,

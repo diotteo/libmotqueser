@@ -19,6 +19,11 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	}
 
 
+	public String getXmlRoot() {
+		return XML_ROOT;
+	}
+
+
 	public static class Item {
 		private String id;
 

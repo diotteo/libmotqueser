@@ -17,6 +17,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	}
 
 
+	public String getXmlRoot() {
+		return XML_ROOT;
+	}
+
+
 	private enum StateMachine {
 		INIT,
 		ACTION,

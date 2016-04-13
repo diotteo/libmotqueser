@@ -63,7 +63,7 @@ public class NotificationMessage extends BaseServerMessage {
 
 
 	public String getXmlString() {
-		XmlStringWriter xsw = new XmlStringWriter(getXmlName(), getVersion());
+		XmlStringWriter xsw = new XmlStringWriter(getXmlRoot(), getVersion());
 
 		it.writeXmlString(xsw);
 
@@ -87,7 +87,7 @@ public class NotificationMessage extends BaseServerMessage {
 				if (name.equals(Item.getTypeName())) {
 					//Pass
 				} else {
-					throw new MalformedMessageException("bogus end tag in " + getXmlName() + ": " + name);
+					throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
 				}
 			} else {
 				processItem(e);
@@ -98,5 +98,10 @@ public class NotificationMessage extends BaseServerMessage {
 		default:
 			throw new Error("unknown state machine state");
 		}
+	}
+
+
+	public void processXmlRootEndTag() {
+		//Pass
 	}
 }

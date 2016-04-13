@@ -447,7 +447,7 @@ public class ServerMessage extends BaseServerMessage {
 			ClientMessage.UnsnoozeRequest r = (ClientMessage.UnsnoozeRequest)req;
 			resp = new UnsnoozeResponse();
 		} else {
-			throw new Error("unimplemented " + getXmlRoot() + " to " + req.getTypeName());
+			throw new Error("unimplemented " + getXmlRoot() + " to " + req.getType());
 		}
 	}
 
@@ -493,7 +493,7 @@ public class ServerMessage extends BaseServerMessage {
 				} else if (name.equals(ItemListResponse.getTypeName())) {
 					sm = StateMachine.ITEM_LIST_END;
 				} else {
-					throw new MalformedMessageException("bogus end tag in " + getXmlName() + ": " + name);
+					throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
 				}
 			} else {
 				((ItemListResponse)resp).add(processItem(e));
@@ -524,7 +524,7 @@ public class ServerMessage extends BaseServerMessage {
 	protected ItemResponse processItemResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName());
 		if (resp != null) {
-			throw new MalformedMessageException("Bogus " + ItemResponse.getTypeName() + " in " + getRootXml());
+			throw new MalformedMessageException("Bogus " + ItemResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
 		int id = -1;

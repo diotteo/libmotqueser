@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import ca.dioo.java.commons.Utils;
 
 public abstract class BaseServerMessage extends Message {
+	public static final int VERSION[] = {1, 0};
+
 	public static class Item {
 		private static final String XML_TYPE_NAME = "item";
 		private int id;
