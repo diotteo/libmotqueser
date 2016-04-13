@@ -9,11 +9,16 @@ public class ServerMessage extends Message {
 	public static final int VERSION[] = {1, 0};
 	protected static final String XML_ROOT = "server_message";
 
-	private Response resp;
-	private StateMachine sm;
+	protected Response resp;
+	protected StateMachine sm;
 
 
 	public static String getXmlRootName() {
+		return XML_ROOT;
+	}
+
+
+	public String getXmlRoot() {
 		return XML_ROOT;
 	}
 
@@ -38,7 +43,7 @@ public class ServerMessage extends Message {
 	}
 
 
-	private enum StateMachine {
+	protected enum StateMachine {
 		INIT,
 		ITEM_LIST,
 		ITEM_LIST_ITEM,
@@ -507,7 +512,7 @@ public class ServerMessage extends Message {
 
 
 	public String getXmlString() {
-		XmlStringWriter xsw = new XmlStringWriter(XML_ROOT, getVersion());
+		XmlStringWriter xsw = new XmlStringWriter(getXmlRoot(), getVersion());
 
 		resp.writeXmlString(xsw);
 
@@ -547,7 +552,7 @@ public class ServerMessage extends Message {
 			ClientMessage.UnsnoozeRequest r = (ClientMessage.UnsnoozeRequest)req;
 			resp = new UnsnoozeResponse();
 		} else {
-			throw new Error("unimplemented server_message to Request");
+			throw new Error("unimplemented " + getXmlRoot() + " to " + req.getTypeName());
 		}
 	}
 
@@ -593,7 +598,7 @@ public class ServerMessage extends Message {
 				} else if (name.equals(ItemListResponse.getTypeName())) {
 					sm = StateMachine.ITEM_LIST_END;
 				} else {
-					throw new MalformedMessageException("bogus end tag in server_message: " + name);
+					throw new MalformedMessageException("bogus end tag in " + getXmlName() + ": " + name);
 				}
 			} else {
 				processItemListItem(e);
@@ -607,7 +612,7 @@ public class ServerMessage extends Message {
 			//pass
 			break;
 		case ITEM_LIST_END:
-			throw new MalformedMessageException("tag found after ITEM_LIST_END in server_message");
+			throw new MalformedMessageException("tag found after " + sm + " in " + getXmlRoot());
 		case END:
 			throw new Error("Should never happen");
 		default:
@@ -621,10 +626,10 @@ public class ServerMessage extends Message {
 	}
 
 
-	private void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected void processItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName());
 		if (resp != null) {
-			throw new MalformedMessageException("Bogus item in server_message");
+			throw new MalformedMessageException("Bogus " + ItemResponse.getTypeName() + " in " + getRootXml());
 		}
 
 		int id = -1;
@@ -662,7 +667,7 @@ public class ServerMessage extends Message {
 					throw new MalformedMessageException("bogus value for attribute " + attrName);
 				}
 			} else {
-				//Utils.debugLog(1, "ignoring unknown item attribute " + attrName + " in " + XML_ROOT);
+				//Utils.debugLog(1, "ignoring unknown item attribute " + attrName + " in " + getXmlRoot());
 			}
 		}
 
@@ -670,7 +675,7 @@ public class ServerMessage extends Message {
 	}
 
 
-	private void processItemListItem(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected void processItemListItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, Item.getTypeName());
 
 		int id = -1;
@@ -721,10 +726,10 @@ public class ServerMessage extends Message {
 	}
 
 
-	private void processItemListResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected void processItemListResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemListResponse.getTypeName());
 		if (resp != null) {
-			throw new MalformedMessageException("Bogus item_list in server_message");
+			throw new MalformedMessageException("Bogus " + ItemListResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
 		int prevId = -1;
@@ -750,9 +755,9 @@ public class ServerMessage extends Message {
 	}
 
 
-	private void processSnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected void processSnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		if (resp != null) {
-			throw new MalformedMessageException("Bogus snooze_ack in server_message");
+			throw new MalformedMessageException("Bogus " + SnoozeResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
 		int interval = -1;
@@ -781,15 +786,15 @@ public class ServerMessage extends Message {
 	}
 
 
-	private void processUnsnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected void processUnsnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		resp = new UnsnoozeResponse();
 	}
 
 
-	private void processItemDeletionResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected void processItemDeletionResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName());
 		if (resp != null) {
-			throw new MalformedMessageException("Bogus " + ItemDeletionResponse.getTypeName() + " in " + XML_ROOT);
+			throw new MalformedMessageException("Bogus " + ItemDeletionResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
 		int id = -1;
@@ -815,10 +820,10 @@ public class ServerMessage extends Message {
 	}
 
 
-	private void processItemPreservationResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+	protected void processItemPreservationResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName());
 		if (resp != null) {
-			throw new MalformedMessageException("Bogus " + ItemPreservationResponse.getTypeName() + " in " + XML_ROOT);
+			throw new MalformedMessageException("Bogus " + ItemPreservationResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
 		int id = -1;
