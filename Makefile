@@ -9,31 +9,35 @@ JAVAC_ARGS ?= -Xlint:unchecked -source 1.6 -bootclasspath ${HOME}/java/jdk1.6.0_
 PRGM := libmotqueser
 PKG := ca/dioo/java/libmotqueser
 ROOT_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+SRC_DIR := $(ROOT_DIR)/src
+LIB_DIR := $(ROOT_DIR)/libs
+TEST_DIR := $(ROOT_DIR)/tests
 BUILD_DIR := $(ROOT_DIR)/build
 BPATH := $(BUILD_DIR)/$(PKG)
 empty :=
 space := $(empty) $(empty)
 
-src := $(wildcard src/*.java)
-objects := $(patsubst src/%.java,$(BPATH)/%.class,$(src))
+src := $(wildcard $(SRC_DIR)/*.java)
+objects := $(patsubst $(SRC_DIR)/%.java,$(BPATH)/%.class,$(src))
+libs := $(LIB_DIR)/dioo-commons.jar
+res := $(BPATH)/version.properties
 
-test_src := $(wildcard tests/*.java)
-test_objects := $(patsubst tests/%.java,$(BUILD_DIR)/%.class,$(test_src))
+test_src := $(wildcard $(TEST_DIR)/*.java)
+test_objects := $(patsubst $(TEST_DIR)/%.java,$(BUILD_DIR)/%.class,$(test_src))
 
-libs = libs/dioo-commons.jar
 
 .PHONY: all
 all: $(objects)
 
 
 .PHONY: jar
-jar: del_test $(PRGM).jar
+jar: del_test $(ROOT_DIR)/$(PRGM)-$(VERSION).jar
 
 .PHONY: del_test
 del_test:
 	@for i in $(test_objects); do [ ! -e "$$i" ] || rm "$$i"; done
 
-$(PRGM).jar: $(objects)
+$(ROOT_DIR)/$(PRGM)-$(VERSION).jar: $(objects)
 	jar -cf $@ -C $(BUILD_DIR) .
 
 
@@ -59,8 +63,8 @@ run: $(objects)
 libs: $(libs)
 
 
-libs/dioo-commons.jar:
-	$(MAKE) -C ../java-commons jar
+$(LIB_DIR)/dioo-commons.jar:
+	$(MAKE) -C $(ROOT_DIR)/../java-commons jar
 
 
 first_obj := $(firstword $(objects))
