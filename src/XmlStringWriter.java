@@ -1,5 +1,6 @@
 package ca.dioo.java.libmotqueser;
 
+import java.util.List;
 import java.io.StringWriter;
 
 public class XmlStringWriter {
@@ -25,12 +26,12 @@ public class XmlStringWriter {
 	}
 
 
-	public void writeTag(String localName, Attribute<String, String>[] attributes) {
+	public void writeTag(String localName, List<Attribute<String, String>> attributes) {
 		writeTag(localName, attributes, null);
 	}
 
 
-	public void writeTag(String localName, Attribute<String, String>[] attributes, String value) {
+	public void writeTag(String localName, List<Attribute<String, String>> attributes, String value) {
 		ser.writeStartTag(localName);
 
 		if (attributes != null) {

@@ -1,7 +1,9 @@
 package ca.dioo.java.libmotqueser;
 
 import java.util.Iterator;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 
 import ca.dioo.java.commons.Utils;
 
@@ -30,12 +32,12 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 
 	abstract public static class Request {
-		abstract public Attribute<String, String>[] getAttributeList();
+		abstract public List<Attribute<String, String>> getAttributeList();
 
 		abstract public String getType();
 
 		public String toString() {
-			return Utils.join(" ", ":", getAttributeList());
+			return Message.joinAttributeList(" ", ":", getAttributeList());
 		}
 
 		public String toString(int indent) {
@@ -74,11 +76,10 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
-					new Attribute<String, String>("prev_id", Integer.toString(prevId)),
-					};
+					new Attribute<String, String>("prev_id", Integer.toString(prevId)));
 		}
 
 
@@ -128,12 +129,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
 					new Attribute<String, String>("id", Integer.toString(id)),
-					new Attribute<String, String>("media", mType.toString()),
-					};
+					new Attribute<String, String>("media", mType.toString()));
 		}
 
 
@@ -187,11 +187,10 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
-					new Attribute<String, String>("id", Integer.toString(id)),
-					};
+					new Attribute<String, String>("id", Integer.toString(id)));
 		}
 
 
@@ -235,11 +234,10 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
-					new Attribute<String, String>("id", Integer.toString(id)),
-					};
+					new Attribute<String, String>("id", Integer.toString(id)));
 		}
 
 
@@ -283,11 +281,10 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
-					new Attribute<String, String>("interval", Integer.toString(interval)),
-					};
+					new Attribute<String, String>("interval", Integer.toString(interval)));
 		}
 
 
@@ -322,10 +319,9 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
-					new Attribute<String, String>("type", getType()),
-					};
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("type", getType()));
 		}
 	}
 

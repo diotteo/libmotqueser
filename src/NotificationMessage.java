@@ -1,7 +1,9 @@
 package ca.dioo.java.libmotqueser;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import ca.dioo.java.commons.Utils;
 
@@ -26,7 +28,7 @@ public class NotificationMessage extends BaseServerMessage {
 
 
 	public static abstract class NotificationItem {
-		abstract public Attribute<String, String>[] getAttributeList();
+		abstract public List<Attribute<String, String>> getAttributeList();
 		abstract public String getType();
 
 		void writeXmlString(XmlStringWriter xsw) {
@@ -35,7 +37,7 @@ public class NotificationMessage extends BaseServerMessage {
 		}
 
 		public String toString() {
-			return Utils.join(" ", ":", getAttributeList());
+			return Message.joinAttributeList(" ", ":", getAttributeList());
 		}
 
 		public String toString(int indent) {
@@ -65,7 +67,7 @@ public class NotificationMessage extends BaseServerMessage {
 			return it;
 		}
 
-		public Attribute<String, String>[] getAttributeList() {
+		public List<Attribute<String, String>> getAttributeList() {
 			return null;
 		}
 
@@ -107,10 +109,9 @@ public class NotificationMessage extends BaseServerMessage {
 			return itemId;
 		}
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
-					new Attribute<String, String>("id", Integer.toString(itemId)),
-					};
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("id", Integer.toString(itemId)));
 		}
 
 		public static String getTypeName() {

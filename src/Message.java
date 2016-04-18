@@ -1,8 +1,23 @@
 package ca.dioo.java.libmotqueser;
 
+import java.util.List;
+
 public abstract class Message {
 	protected XmlParser xp;
 	protected int[] version;
+
+
+	public static String joinAttributeList(String eleDelim, String attrDelim, List<Attribute<String, String>> l) {
+		StringBuffer sb = new StringBuffer();
+
+		String d = "";
+		for (Attribute<String,String> at: l) {
+			sb.append(d + at.getName() + attrDelim + at.getValue());
+			d = eleDelim;
+		}
+		return sb.toString();
+	}
+
 
 	protected Message(int[] version) {
 		assert version.length == 2;

@@ -1,7 +1,9 @@
 package ca.dioo.java.libmotqueser;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import ca.dioo.java.commons.Utils;
 
@@ -24,7 +26,7 @@ public class ServerMessage extends BaseServerMessage {
 
 
 	abstract public static class Response {
-		abstract public Attribute<String, String>[] getAttributeList();
+		abstract public List<Attribute<String, String>> getAttributeList();
 
 		abstract public String getType();
 
@@ -34,7 +36,7 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 		public String toString() {
-			return Utils.join(" ", ":", getAttributeList());
+			return Message.joinAttributeList(" ", ":", getAttributeList());
 		}
 
 		public String toString(int indent) {
@@ -94,10 +96,9 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
-					new Attribute<String, String>("interval", Integer.toString(interval)),
-					};
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("interval", Integer.toString(interval)));
 		}
 	}
 
@@ -118,7 +119,7 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
+		public List<Attribute<String, String>> getAttributeList() {
 			return null;
 		}
 	}
@@ -169,10 +170,9 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
-					new Attribute("prev_id", Integer.toString(prevId)),
-					};
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("prev_id", Integer.toString(prevId)));
 		}
 
 
@@ -270,15 +270,15 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			ArrayList<String[]> al = new ArrayList<String[]>();
+		public List<Attribute<String, String>> getAttributeList() {
+			ArrayList<Attribute<String, String>> al = new ArrayList<Attribute<String, String>>();
 
-			al.add(new String[]{"id", Integer.toString(id)});
+			al.add(new Attribute<String, String>("id", Integer.toString(id)));
 			if (type != null) {
-				al.add(new String[]{"media", type.toString()});
+				al.add(new Attribute<String, String>("media", type.toString()));
 			}
-			al.add(new String[]{"media_size", Long.toString(mediaSize)});
-			return al.toArray(new String[0][0]);
+			al.add(new Attribute<String, String>("media_size", Long.toString(mediaSize)));
+			return al;
 		}
 	}
 
@@ -320,10 +320,9 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
-					new Attribute("id", Integer.toString(id)),
-					};
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("id", Integer.toString(id)));
 		}
 	}
 
@@ -366,10 +365,9 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
-					new Attribute("id", Integer.toString(id))
-					};
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("id", Integer.toString(id)));
 		}
 	}
 

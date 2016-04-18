@@ -1,7 +1,9 @@
 package ca.dioo.java.libmotqueser;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import ca.dioo.java.commons.Utils;
 
@@ -42,21 +44,18 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 
 		public String toString() {
-			return toString(0);
+			return Message.joinAttributeList(" ", ":", getAttributeList());
 		}
 
 
 		public String toString(int indent) {
-			StringBuffer sb = new StringBuffer(Utils.join(" ", ":", getAttributeList()));
-
-			return sb.toString();
+			return Utils.repeat("  ", indent) + toString();
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
-			return new Attribute<String, String>[]{
-					new Attribute<String, String>("id", id),
-					};
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("id", id));
 		}
 	}
 

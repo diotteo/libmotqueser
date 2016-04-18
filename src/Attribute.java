@@ -1,5 +1,7 @@
 package ca.dioo.java.libmotqueser;
 
+import java.util.List;
+
 public class Attribute<N,V> {
 	private N name;
 	private V value;

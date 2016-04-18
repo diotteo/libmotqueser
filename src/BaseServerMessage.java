@@ -1,6 +1,7 @@
 package ca.dioo.java.libmotqueser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ca.dioo.java.commons.Utils;
 
@@ -85,15 +86,15 @@ public abstract class BaseServerMessage extends Message {
 		}
 
 
-		public Attribute<String, String>[] getAttributeList() {
+		public List<Attribute<String, String>> getAttributeList() {
 			ArrayList<Attribute<String, String>> al = new ArrayList<Attribute<String, String>>();
-			al.add(new Attribute("id", Integer.toString(id)));
-			al.add(new Attribute("img_size", Integer.toString(imgSize)));
-			al.add(new Attribute("vid_size", Integer.toString(vidSize)));
+			al.add(new Attribute<String, String>("id", Integer.toString(id)));
+			al.add(new Attribute<String, String>("img_size", Integer.toString(imgSize)));
+			al.add(new Attribute<String, String>("vid_size", Integer.toString(vidSize)));
 			if (vidLen != null) {
-				al.add(new Attribute("vid_len", vidLen));
+				al.add(new Attribute<String, String>("vid_len", vidLen));
 			}
-			return al.toArray(new Attribute<String, String>[0]);
+			return al;
 		}
 
 
@@ -103,7 +104,7 @@ public abstract class BaseServerMessage extends Message {
 		}
 
 		public String toString() {
-			return Utils.join(" ", ":", getAttributeList());
+			return Message.joinAttributeList(" ", ":", getAttributeList());
 		}
 
 		public String toString(int indent) {
