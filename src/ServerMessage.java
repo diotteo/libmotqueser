@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collection;
 
 import ca.dioo.java.commons.Utils;
 
@@ -55,7 +56,66 @@ public class ServerMessage extends BaseServerMessage {
 		ITEM_KEEP,
 		SNOOZE_ACK,
 		UNSNOOZE_ACK,
+		CONFIG,
 		END
+	}
+
+
+	public static class ConfigResponse extends Response implements Iterable<Attribute<String, String>> {
+		private static final String XML_TYPE_NAME = "config_response";
+
+		private List<Attribute<String, String>> attrList;
+
+		public ConfigResponse() {
+			this(null);
+		}
+
+		public ConfigResponse(List<Attribute<String, String>> l) {
+			attrList = new ArrayList<Attribute<String, String>>();
+			if (l != null) {
+				attrList.addAll(l);
+			}
+		}
+
+		public List<Attribute<String, String>> getAttributeList() {
+			return attrList;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public boolean add(Attribute<String, String> at) {
+			return attrList.add(at);
+		}
+
+		public boolean add(String name, String value) {
+			return attrList.add(new Attribute<String, String>(name, value));
+		}
+
+		public boolean addAll(Collection<Attribute<String, String>> c) {
+			return attrList.addAll(c);
+		}
+
+		/**
+		 * @return value if found, null otherwise
+		 */
+		public String getValue(String name) {
+			for (Attribute<String, String> at: attrList) {
+				if (at.getName().equals(name)) {
+					return at.getValue();
+				}
+			}
+			return null;
+		}
+
+		public Iterator<Attribute<String, String>> iterator() {
+			return attrList.iterator();
+		}
 	}
 
 
@@ -454,6 +514,11 @@ public class ServerMessage extends BaseServerMessage {
 		} else if (req instanceof ClientMessage.UnsnoozeRequest) {
 			ClientMessage.UnsnoozeRequest r = (ClientMessage.UnsnoozeRequest)req;
 			resp = new UnsnoozeResponse();
+
+		} else if (req instanceof ClientMessage.ConfigRequest) {
+			ClientMessage.ConfigRequest r = (ClientMessage.ConfigRequest)req;
+			resp = new ConfigResponse();
+
 		} else {
 			throw new Error("unimplemented " + getXmlRoot() + " to " + req.getType());
 		}
@@ -481,6 +546,9 @@ public class ServerMessage extends BaseServerMessage {
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName())) {
 				resp = processItemPreservationResponse(e);
 				sm = StateMachine.ITEM_KEEP;
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ConfigResponse.getTypeName())) {
+				resp = processConfigResponse(e);
+				sm = StateMachine.CONFIG;
 			} else {
 				throw new Error("unimplemented");
 			}
@@ -507,6 +575,9 @@ public class ServerMessage extends BaseServerMessage {
 				((ItemListResponse)resp).add(processItem(e));
 			}
 			break;
+
+		//FIXME: verify that current tag is the proper end tag
+		case CONFIG:
 		case ITEM:
 		case ITEM_DEL:
 		case ITEM_KEEP:
@@ -698,5 +769,34 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 		return new ItemPreservationResponse(id);
+	}
+
+
+	protected ConfigResponse processConfigResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ConfigResponse.getTypeName());
+		if (resp != null) {
+			throw new MalformedMessageException("Bogus " + ConfigResponse.getTypeName() + " in " + getXmlRoot());
+		}
+
+		List<Attribute<String, String>> attrList = new ArrayList<Attribute<String, String>>();
+		int attrCount = xp.getAttributeCount();
+		for (int i = 0; i < attrCount; i++) {
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
+
+			if (attrName.equals("notification_port")) {
+				try {
+					int nb = Integer.parseInt(attrVal);
+					if (nb <= 0 || nb > 65535) {
+						throw new MalformedMessageException(attrName + " must be in range [1,65535]");
+					}
+					attrList.add(new Attribute<String, String>("notification_port", Integer.toString(nb)));
+				} catch (NumberFormatException e2) {
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
+				}
+			}
+		}
+
+		return new ConfigResponse(attrList);
 	}
 }

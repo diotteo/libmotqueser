@@ -332,6 +332,30 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	}
 
 
+	public static class ConfigRequest extends Request {
+		private static final String XML_TYPE_NAME = "config";
+
+		public ConfigRequest() {
+		}
+
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
+		}
+
+
+		@SuppressWarnings("unchecked")
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("type", getType()));
+		}
+	}
+
+
 	public ClientMessage() {
 		this(VERSION);
 	}
@@ -435,6 +459,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 					req = new UnsnoozeRequest();
 				} else if (attrVal.equals(ItemPreservationRequest.getTypeName())) {
 					req = new ItemPreservationRequest();
+				} else if (attrVal.equals(ConfigRequest.getTypeName())) {
+					req = new ConfigRequest();
 				} else {
 					throw new MalformedMessageException("bad action type");
 				}
@@ -482,6 +508,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		} else if (req instanceof SnoozeRequest) {
 			((SnoozeRequest)req).setInterval(interval);
 		} else if (req instanceof UnsnoozeRequest) {
+			//Pass
+		} else if (req instanceof ConfigRequest) {
 			//Pass
 		} else {
 			throw new Error("unimplemented Request");
