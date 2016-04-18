@@ -26,7 +26,7 @@ public class NotificationMessage extends BaseServerMessage {
 
 
 	public static abstract class NotificationItem {
-		abstract public String[][] getAttributeList();
+		abstract public Attribute<String, String>[] getAttributeList();
 		abstract public String getType();
 
 		void writeXmlString(XmlStringWriter xsw) {
@@ -65,7 +65,7 @@ public class NotificationMessage extends BaseServerMessage {
 			return it;
 		}
 
-		public String[][] getAttributeList() {
+		public Attribute<String, String>[] getAttributeList() {
 			return null;
 		}
 
@@ -107,8 +107,10 @@ public class NotificationMessage extends BaseServerMessage {
 			return itemId;
 		}
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"id", Integer.toString(itemId)}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("id", Integer.toString(itemId)),
+					};
 		}
 
 		public static String getTypeName() {

@@ -53,8 +53,10 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"id", id}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("id", id),
+					};
 		}
 	}
 

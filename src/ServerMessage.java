@@ -24,7 +24,7 @@ public class ServerMessage extends BaseServerMessage {
 
 
 	abstract public static class Response {
-		abstract public String[][] getAttributeList();
+		abstract public Attribute<String, String>[] getAttributeList();
 
 		abstract public String getType();
 
@@ -94,8 +94,10 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"interval", Integer.toString(interval)}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("interval", Integer.toString(interval)),
+					};
 		}
 	}
 
@@ -116,7 +118,7 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public String[][] getAttributeList() {
+		public Attribute<String, String>[] getAttributeList() {
 			return null;
 		}
 	}
@@ -167,8 +169,10 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"prev_id", Integer.toString(prevId)}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute("prev_id", Integer.toString(prevId)),
+					};
 		}
 
 
@@ -266,7 +270,7 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public String[][] getAttributeList() {
+		public Attribute<String, String>[] getAttributeList() {
 			ArrayList<String[]> al = new ArrayList<String[]>();
 
 			al.add(new String[]{"id", Integer.toString(id)});
@@ -316,8 +320,10 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"id", Integer.toString(id)}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute("id", Integer.toString(id)),
+					};
 		}
 	}
 
@@ -360,9 +366,9 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{
-					{"id", Integer.toString(id)}
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute("id", Integer.toString(id))
 					};
 		}
 	}

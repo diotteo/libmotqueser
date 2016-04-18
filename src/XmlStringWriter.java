@@ -25,18 +25,17 @@ public class XmlStringWriter {
 	}
 
 
-	public void writeTag(String localName, String[][] attributes) {
+	public void writeTag(String localName, Attribute<String, String>[] attributes) {
 		writeTag(localName, attributes, null);
 	}
 
 
-	public void writeTag(String localName, String[][] attributes, String value) {
+	public void writeTag(String localName, Attribute<String, String>[] attributes, String value) {
 		ser.writeStartTag(localName);
 
 		if (attributes != null) {
-			for (String[] at: attributes) {
-				assert at.length == 2;
-				ser.writeAttribute(at[0], at[1]);
+			for (Attribute<String, String> at: attributes) {
+				ser.writeAttribute(at.getName(), at.getValue());
 			}
 		}
 

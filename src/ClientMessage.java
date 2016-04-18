@@ -30,7 +30,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 
 	abstract public static class Request {
-		abstract public String[][] getAttributeList();
+		abstract public Attribute<String, String>[] getAttributeList();
 
 		abstract public String getType();
 
@@ -74,9 +74,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"type", getType()},
-					{"prev_id", Integer.toString(prevId)}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("type", getType()),
+					new Attribute<String, String>("prev_id", Integer.toString(prevId)),
+					};
 		}
 
 
@@ -126,11 +128,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{
-					{"type", getType()},
-					{"id", Integer.toString(id)},
-					{"media", mType.toString()}
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("type", getType()),
+					new Attribute<String, String>("id", Integer.toString(id)),
+					new Attribute<String, String>("media", mType.toString()),
 					};
 		}
 
@@ -185,9 +187,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"type", getType()},
-					{"id", Integer.toString(id)}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("type", getType()),
+					new Attribute<String, String>("id", Integer.toString(id)),
+					};
 		}
 
 
@@ -231,9 +235,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"type", getType()},
-					{"id", Integer.toString(id)}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("type", getType()),
+					new Attribute<String, String>("id", Integer.toString(id)),
+					};
 		}
 
 
@@ -277,9 +283,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"type", getType()},
-					{"interval", Integer.toString(interval)}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("type", getType()),
+					new Attribute<String, String>("interval", Integer.toString(interval)),
+					};
 		}
 
 
@@ -314,8 +322,10 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
-		public String[][] getAttributeList() {
-			return new String[][]{{"type", getType()}};
+		public Attribute<String, String>[] getAttributeList() {
+			return new Attribute<String, String>[]{
+					new Attribute<String, String>("type", getType()),
+					};
 		}
 	}
 

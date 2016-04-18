@@ -85,15 +85,15 @@ public abstract class BaseServerMessage extends Message {
 		}
 
 
-		public String[][] getAttributeList() {
-			ArrayList<String[]> al = new ArrayList<String[]>();
-			al.add(new String[]{"id", Integer.toString(id)});
-			al.add(new String[]{"img_size", Integer.toString(imgSize)});
-			al.add(new String[]{"vid_size", Integer.toString(vidSize)});
+		public Attribute<String, String>[] getAttributeList() {
+			ArrayList<Attribute<String, String>> al = new ArrayList<Attribute<String, String>>();
+			al.add(new Attribute("id", Integer.toString(id)));
+			al.add(new Attribute("img_size", Integer.toString(imgSize)));
+			al.add(new Attribute("vid_size", Integer.toString(vidSize)));
 			if (vidLen != null) {
-				al.add(new String[]{"vid_len", vidLen});
+				al.add(new Attribute("vid_len", vidLen));
 			}
-			return al.toArray(new String[0][0]);
+			return al.toArray(new Attribute<String, String>[0]);
 		}
 
 
