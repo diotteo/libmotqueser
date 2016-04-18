@@ -11,21 +11,27 @@ public abstract class BaseServerMessage extends Message {
 	public static class Item {
 		private static final String XML_TYPE_NAME = "item";
 		private int id;
+		private String name;
 		private int imgSize;
 		private int vidSize;
 		private String vidLen;
 
 
 		public Item() {
-			this(-1, -1, -1, null);
+			this(-1, null, -1, -1, null);
 		}
 
 		public Item(int id) {
-			this(id, -1, -1, null);
+			this(id, null, -1, -1, null);
 		}
 
-		public Item(int id, int imgSize, int vidSize, String vidLen) {
+		public Item(int id, String name) {
+			this(id, name, -1, -1, null);
+		}
+
+		public Item(int id, String name, int imgSize, int vidSize, String vidLen) {
 			setId(id);
+			setName(name);
 			setImgSize(imgSize);
 			setVidSize(vidSize);
 			setVidLen(vidLen);
@@ -51,6 +57,14 @@ public abstract class BaseServerMessage extends Message {
 			} else {
 				this.id = id;
 			}
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		public int getImgSize() {
@@ -89,6 +103,7 @@ public abstract class BaseServerMessage extends Message {
 		public List<Attribute<String, String>> getAttributeList() {
 			ArrayList<Attribute<String, String>> al = new ArrayList<Attribute<String, String>>();
 			al.add(new Attribute<String, String>("id", Integer.toString(id)));
+			al.add(new Attribute<String, String>("name", name));
 			al.add(new Attribute<String, String>("img_size", Integer.toString(imgSize)));
 			al.add(new Attribute<String, String>("vid_size", Integer.toString(vidSize)));
 			if (vidLen != null) {
@@ -135,6 +150,7 @@ public abstract class BaseServerMessage extends Message {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, Item.getTypeName());
 
 		int id = -1;
+		String name = null;
 		int imgSize = -1;
 		int vidSize = -1;
 		String vidLen = null;
@@ -175,9 +191,11 @@ public abstract class BaseServerMessage extends Message {
 				}
 			} else if (attrName.equals("vid_len")) {
 				vidLen = attrVal;
+			} else if (attrName.equals("name")) {
+				name = attrVal;
 			}
 		}
 
-		return new Item(id, imgSize, vidSize, vidLen);
+		return new Item(id, name, imgSize, vidSize, vidLen);
 	}
 }
