@@ -29,7 +29,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return ((Integer)XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
+		return ((Integer) XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
 				args)).intValue();
 	}
 
@@ -51,7 +51,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
+		return (String) XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -69,7 +69,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
+		return (String) XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -90,7 +90,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
+		return (String) XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -108,7 +108,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return (String)XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
+		return (String) XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
 	}
 
 
@@ -126,7 +126,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		int i = ((Integer)XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
+		int i = ((Integer) XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
 				args)).intValue();
 		XmlEvent e = XmlEvent.getEventFromValue(i);
 		if (XmlFactory.curRt == XmlFactory.Runtime.ANDROID &&
@@ -153,7 +153,7 @@ public class XmlParser {
 			throw new ProgrammerBrainNotFoundError();
 		}
 
-		return ((Boolean)XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
+		return ((Boolean) XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
 				args)).booleanValue();
 	}
 

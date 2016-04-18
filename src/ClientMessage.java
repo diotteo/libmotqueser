@@ -494,19 +494,19 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 		if (req instanceof ItemListRequest) {
-			((ItemListRequest)req).setPrevId(prevId);
+			((ItemListRequest) req).setPrevId(prevId);
 		} else if (req instanceof ItemRequest) {
-			ItemRequest ir = (ItemRequest)req;
+			ItemRequest ir = (ItemRequest) req;
 			ir.setId(id);
 			if (type != null) {
 				ir.setMediaType(type);
 			}
 		} else if (req instanceof ItemDeletionRequest) {
-			((ItemDeletionRequest)req).setId(id);
+			((ItemDeletionRequest) req).setId(id);
 		} else if (req instanceof ItemPreservationRequest) {
-			((ItemPreservationRequest)req).setId(id);
+			((ItemPreservationRequest) req).setId(id);
 		} else if (req instanceof SnoozeRequest) {
-			((SnoozeRequest)req).setInterval(interval);
+			((SnoozeRequest) req).setInterval(interval);
 		} else if (req instanceof UnsnoozeRequest) {
 			//Pass
 		} else if (req instanceof ConfigRequest) {

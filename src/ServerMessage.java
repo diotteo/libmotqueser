@@ -492,31 +492,31 @@ public class ServerMessage extends BaseServerMessage {
 		ClientMessage.Request req = cm.iterator().next();
 
 		if (req instanceof ClientMessage.ItemListRequest) {
-			ClientMessage.ItemListRequest r = (ClientMessage.ItemListRequest)req;
+			ClientMessage.ItemListRequest r = (ClientMessage.ItemListRequest) req;
 			resp = new ItemListResponse(r.getPrevId());
 
 		} else if (req instanceof ClientMessage.ItemRequest) {
-			ClientMessage.ItemRequest r = (ClientMessage.ItemRequest)req;
+			ClientMessage.ItemRequest r = (ClientMessage.ItemRequest) req;
 			resp = new ItemResponse(r.getId(), r.getMediaType());
 
 		} else if (req instanceof ClientMessage.ItemDeletionRequest) {
-			ClientMessage.ItemDeletionRequest r = (ClientMessage.ItemDeletionRequest)req;
+			ClientMessage.ItemDeletionRequest r = (ClientMessage.ItemDeletionRequest) req;
 			resp = new ItemDeletionResponse(r.getId());
 
 		} else if (req instanceof ClientMessage.ItemPreservationRequest) {
-			ClientMessage.ItemPreservationRequest r = (ClientMessage.ItemPreservationRequest)req;
+			ClientMessage.ItemPreservationRequest r = (ClientMessage.ItemPreservationRequest) req;
 			resp = new ItemPreservationResponse(r.getId());
 
 		} else if (req instanceof ClientMessage.SnoozeRequest) {
-			ClientMessage.SnoozeRequest r = (ClientMessage.SnoozeRequest)req;
+			ClientMessage.SnoozeRequest r = (ClientMessage.SnoozeRequest) req;
 			resp = new SnoozeResponse(r.getInterval());
 
 		} else if (req instanceof ClientMessage.UnsnoozeRequest) {
-			ClientMessage.UnsnoozeRequest r = (ClientMessage.UnsnoozeRequest)req;
+			ClientMessage.UnsnoozeRequest r = (ClientMessage.UnsnoozeRequest) req;
 			resp = new UnsnoozeResponse();
 
 		} else if (req instanceof ClientMessage.ConfigRequest) {
-			ClientMessage.ConfigRequest r = (ClientMessage.ConfigRequest)req;
+			ClientMessage.ConfigRequest r = (ClientMessage.ConfigRequest) req;
 			resp = new ConfigResponse();
 
 		} else {
@@ -557,7 +557,7 @@ public class ServerMessage extends BaseServerMessage {
 			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, ItemListResponse.getTypeName())) {
 				sm = StateMachine.END;
 			} else {
-				((ItemListResponse)resp).add(processItem(e));
+				((ItemListResponse) resp).add(processItem(e));
 				sm = StateMachine.ITEM_LIST_ITEM;
 			}
 			break;
@@ -572,7 +572,7 @@ public class ServerMessage extends BaseServerMessage {
 					throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
 				}
 			} else {
-				((ItemListResponse)resp).add(processItem(e));
+				((ItemListResponse) resp).add(processItem(e));
 			}
 			break;
 
