@@ -109,6 +109,7 @@ public class NotificationMessage extends BaseServerMessage {
 			return itemId;
 		}
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("id", Integer.toString(itemId)));

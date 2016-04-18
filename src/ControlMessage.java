@@ -53,6 +53,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("id", id));

@@ -76,6 +76,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
@@ -129,6 +130,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
@@ -187,6 +189,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
@@ -234,6 +237,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
@@ -281,6 +285,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("type", getType()),
@@ -319,6 +324,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("type", getType()));

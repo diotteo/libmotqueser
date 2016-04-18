@@ -96,6 +96,7 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("interval", Integer.toString(interval)));
@@ -170,6 +171,7 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("prev_id", Integer.toString(prevId)));
@@ -320,6 +322,7 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("id", Integer.toString(id)));
@@ -365,6 +368,7 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
+		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
 			return Arrays.asList(
 					new Attribute<String, String>("id", Integer.toString(id)));
