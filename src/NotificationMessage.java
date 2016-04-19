@@ -169,11 +169,14 @@ public class NotificationMessage extends BaseServerMessage {
 
 
 	public String toString(int indent) {
-		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
+		return NotificationMessage.class.getSimpleName()
+				+ " version " + version[0] + "." + version[1]
+				+ "\n" + it.toString(indent + 1);
+	}
 
-		sb.append(it.toString(indent + 1));
 
-		return sb.toString();
+	public String toString() {
+		return toString(0);
 	}
 
 

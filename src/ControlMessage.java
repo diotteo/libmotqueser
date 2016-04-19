@@ -101,7 +101,8 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
+		StringBuffer sb = new StringBuffer(ControlMessage.class.getSimpleName()
+				+ " version " + version[0] + "." + version[1]);
 		for (Item it: itemList) {
 			sb.append("\n" + "  " + "item:" + it.toString(1));
 		}

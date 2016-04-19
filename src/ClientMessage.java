@@ -391,7 +391,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 
 	public String toString(int indent) {
-		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
+		StringBuffer sb = new StringBuffer(ClientMessage.class.getSimpleName()
+				+ " version " + version[0] + "." + version[1]);
 		for (Request a: reqList) {
 			sb.append("\n" + Utils.repeat("  ", indent + 1) + "action " + a.toString());
 		}

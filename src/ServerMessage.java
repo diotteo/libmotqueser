@@ -466,11 +466,9 @@ public class ServerMessage extends BaseServerMessage {
 
 
 	public String toString(int indent) {
-		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1]);
-
-		sb.append(resp.toString(indent + 1));
-
-		return sb.toString();
+		return ServerMessage.class.getSimpleName()
+				+ " version " + version[0] + "." + version[1]
+				+ "\n" + resp.getClass().getSimpleName() + " " + resp.toString(indent + 1);
 	}
 
 

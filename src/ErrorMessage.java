@@ -73,9 +73,8 @@ public class ErrorMessage extends Message {
 
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("version " + version[0] + "." + version[1] + " text:" + errorMsg);
-
-		return sb.toString();
+		return ErrorMessage.class.getSimpleName()
+				+ "version " + version[0] + "." + version[1] + " text:" + errorMsg;
 	}
 
 
