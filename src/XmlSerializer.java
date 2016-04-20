@@ -19,7 +19,7 @@ public class XmlSerializer {
 			tagStack = null;
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 	}
 
@@ -37,7 +37,7 @@ public class XmlSerializer {
 					new Object[]{encoding, "1.0"});
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 	}
 
@@ -56,7 +56,7 @@ public class XmlSerializer {
 					new Object[]{localName});
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 	}
 
@@ -74,7 +74,7 @@ public class XmlSerializer {
 					new Object[]{localName, value});
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 	}
 
@@ -91,7 +91,7 @@ public class XmlSerializer {
 			XmlFactory.invokeSerMethod(ser, "flush", null, null);
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 	}
 
@@ -108,7 +108,7 @@ public class XmlSerializer {
 			XmlFactory.invokeSerMethod(ser, "close", null, null);
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 		is_closed = true;
 	}
@@ -126,7 +126,7 @@ public class XmlSerializer {
 			XmlFactory.invokeSerMethod(ser, "writeEndElement", null, null);
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 	}
 
@@ -144,7 +144,7 @@ public class XmlSerializer {
 					new Object[]{text});
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 	}
 }

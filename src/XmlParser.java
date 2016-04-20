@@ -26,7 +26,7 @@ public class XmlParser {
 			methodName = "getAttributeCount";
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 
 		return ((Integer) XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
@@ -48,7 +48,7 @@ public class XmlParser {
 			methodName = "getAttributeLocalName";
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 
 		return (String) XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
@@ -66,7 +66,7 @@ public class XmlParser {
 			methodName = "getAttributeValue";
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 
 		return (String) XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
@@ -87,7 +87,7 @@ public class XmlParser {
 			methodName = "getLocalName";
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 
 		return (String) XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
@@ -105,7 +105,7 @@ public class XmlParser {
 			methodName = "getText";
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 
 		return (String) XmlFactory.invokeParserMethod(parser, methodName, paramTypes, args);
@@ -123,7 +123,7 @@ public class XmlParser {
 			methodName = "next";
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 
 		int i = ((Integer) XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
@@ -150,7 +150,7 @@ public class XmlParser {
 			methodName = "hasNext";
 			break;
 		default:
-			throw new ProgrammerBrainNotFoundError();
+			throw new ProgrammerBrainNotFoundError("How did this ever happen?!");
 		}
 
 		return ((Boolean) XmlFactory.invokeParserMethod(parser, methodName, paramTypes,
@@ -167,9 +167,9 @@ public class XmlParser {
 			i = f.getInt(XmlFactory.parserClass);
 		} catch (NoSuchFieldException e) {
 			throw new Error("Programmer error: field " + s + " exception " +
-					e.toString() + ": " + e.getMessage());
+					e.toString() + ": " + e.getMessage(), e);
 		} catch (IllegalAccessException e) {
-			throw new Error(e.getMessage());
+			throw new Error(e.getMessage(), e);
 		}
 
 		return i;

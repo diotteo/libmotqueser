@@ -31,7 +31,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 		public Item(String id) {
 			if (id == null) {
-				throw new Error("bogus Item ID");
+				throw new NullPointerException("bogus Item ID");
 			}
 
 			this.id = id;
@@ -84,11 +84,11 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	public ControlMessage(XmlParser xp) {
+	public ControlMessage(XmlParser xp) throws UnsupportedVersionException {
 		super(xp);
 
 		if (!mVersion.equals(new Version(1, 0))) {
-			throw new Error("unsupported version " + mVersion);
+			throw new UnsupportedVersionException("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;

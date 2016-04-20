@@ -29,6 +29,9 @@ public abstract class Message {
 		}
 
 		public Version(int major, int minor) {
+			if (major < 0 || minor < 0) {
+				throw new IllegalArgumentException("version elements can't be negative: " + major + "." + minor);
+			}
 			mMajor = major;
 			mMinor = minor;
 		}

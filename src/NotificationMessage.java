@@ -147,11 +147,11 @@ public class NotificationMessage extends BaseServerMessage {
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	public NotificationMessage(XmlParser xp) {
+	public NotificationMessage(XmlParser xp) throws UnsupportedVersionException {
 		super(xp);
 
 		if (!mVersion.equals(new Version(1, 0))) {
-			throw new Error("unsupported version " + mVersion);
+			throw new UnsupportedVersionException("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;
@@ -198,7 +198,8 @@ public class NotificationMessage extends BaseServerMessage {
 				it = processRemovedItem(e);
 				sm = StateMachine.REMOVED_ITEM;
 			} else {
-				throw new Error("unimplemented");
+				//FIXME: send informative message string
+				throw new MalformedMessageException("received unexpected XML element");
 			}
 			break;
 		case NEW_ITEM:

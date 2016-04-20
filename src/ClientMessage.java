@@ -369,11 +369,11 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	public ClientMessage(XmlParser xp) {
+	public ClientMessage(XmlParser xp) throws UnsupportedVersionException {
 		super(xp);
 
 		if (!mVersion.equals(new Version(1, 0))) {
-			throw new Error("unsupported version " + mVersion);
+			throw new UnsupportedVersionException("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;
@@ -472,7 +472,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 			} else if (attrName.equals("id")) {
 				int nb = new Integer(attrVal);
 				if (nb < 0) {
-					throw new Error(attrName + " lower than 0 not allowed");
+					throw new MalformedMessageException(attrName + " lower than 0 not allowed");
 				}
 				id = nb;
 			} else if (attrName.equals("interval")) {
@@ -490,7 +490,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		}
 
 		if (req == null) {
-			throw new Error("no request type found");
+			throw new MalformedMessageException("no request type found");
 		}
 
 		if (req instanceof ItemListRequest) {
@@ -512,7 +512,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		} else if (req instanceof ConfigRequest) {
 			//Pass
 		} else {
-			throw new Error("unimplemented Request");
+			throw new UnsupportedOperationException("unimplemented Request:" + req.getClass().getName());
 		}
 
 		reqList.add(req);

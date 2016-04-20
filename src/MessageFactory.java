@@ -28,7 +28,7 @@ public class MessageFactory {
 			Throwable t = e.getCause();
 			System.err.println(Utils.getPrettyStackTrace(t));
 			throw new Error(e.getClass().getName() + ":" + e.getMessage(), e);
-		} catch ( IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			throw new Error(e.getClass().getName() + ":" + e.getMessage(), e);
 		} catch (IllegalArgumentException e) {
 			throw new Error(e.getClass().getName() + ":" + e.getMessage(), e);
@@ -55,7 +55,6 @@ public class MessageFactory {
 
 		while (!is_complete && xp.hasNext()) {
 			XmlParser.XmlEvent e = xp.next();
-			//System.out.println(e.value() + " : " + e.toString());
 
 			switch (e) {
 			case START_ELEMENT:
@@ -74,26 +73,15 @@ public class MessageFactory {
 					} else {
 						message.processXmlEvent(e);
 					}
-
-					/*
-					int attrCount = xp.getAttributeCount();
-					System.out.println(" " + xp.getLocalName() + " " + attrCount);
-					for (int i = 0; i < attrCount; i++) {
-						System.out.println("  ATTR " + i + " : " + xp.getAttributeName(i) +
-								"=" + xp.getAttributeValue(i));
-					}
-					*/
 				}
 				break;
 			case CHARACTERS:
-				//System.out.println(" " + xp.getText());
 				message.processXmlEvent(e);
 				break;
 
 			case END_ELEMENT:
 				{
 					String name = xp.getLocalName();
-					//System.out.println(" " + xp.getLocalName());
 					if (name.equals(rootName)) {
 						message.processXmlRootEndTag();
 						is_complete = true;

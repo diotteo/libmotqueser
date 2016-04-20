@@ -51,11 +51,11 @@ public class ErrorMessage extends Message {
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	public ErrorMessage(XmlParser xp) {
+	public ErrorMessage(XmlParser xp) throws UnsupportedVersionException {
 		super(xp);
 
 		if (!mVersion.equals(new Version(1, 0))) {
-			throw new Error("unsupported version " + mVersion);
+			throw new UnsupportedVersionException("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;

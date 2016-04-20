@@ -452,11 +452,11 @@ public class ServerMessage extends BaseServerMessage {
 	/**
 	 * Recommend using MessageFactory.parse()
 	 */
-	public ServerMessage(XmlParser xp) {
+	public ServerMessage(XmlParser xp) throws UnsupportedVersionException {
 		super(xp);
 
 		if (!mVersion.equals(new Version(1, 0))) {
-			throw new Error("unsupported version " + mVersion);
+			throw new UnsupportedVersionException("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;
@@ -493,7 +493,7 @@ public class ServerMessage extends BaseServerMessage {
 	}
 
 
-	public void buildAsResponse(ClientMessage cm) {
+	public void buildAsResponse(ClientMessage cm) throws UnsupportedOperationException {
 		ClientMessage.Request req = cm.iterator().next();
 
 		if (req instanceof ClientMessage.ItemListRequest) {
@@ -525,7 +525,7 @@ public class ServerMessage extends BaseServerMessage {
 			mResp = new ConfigResponse();
 
 		} else {
-			throw new Error("unimplemented " + getXmlRoot() + " to " + req.getType());
+			throw new UnsupportedOperationException("unimplemented " + getXmlRoot() + " to " + req.getType());
 		}
 	}
 
@@ -555,7 +555,8 @@ public class ServerMessage extends BaseServerMessage {
 				mResp = processConfigResponse(e);
 				sm = StateMachine.CONFIG;
 			} else {
-				throw new Error("unimplemented");
+				//FIXME: give informative message
+				throw new UnsupportedOperationException("unimplemented");
 			}
 			break;
 		case ITEM_LIST:

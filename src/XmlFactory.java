@@ -80,7 +80,7 @@ public class XmlFactory {
 				System.err.println(Utils.getPrettyStackTrace(t));
 				throw new Error(t + " : " + t.getMessage());
 			} catch (NoSuchMethodException e2) {
-				throw new Error("Programmer is stupid, please report: " + e2.toString() +
+				throw new Error("I've done derped, please report: " + e2.toString() +
 						" msg:" + e2.getMessage());
 			} catch (IllegalAccessException e2) {
 				throw new Error(e.getMessage());
@@ -90,7 +90,7 @@ public class XmlFactory {
 			System.err.println(Utils.getPrettyStackTrace(t));
 			throw new Error(t + " : " + t.getMessage());
 		} catch (NoSuchMethodException e) {
-			throw new Error("Programmer is stupid, please report: " + e.toString() +
+			throw new Error("I've done derped, please report: " + e.toString() +
 					" msg:" + e.getMessage());
 		} catch (IllegalAccessException e) {
 			throw new Error(e.getMessage());
@@ -120,7 +120,7 @@ public class XmlFactory {
 			System.err.println(Utils.getPrettyStackTrace(t));
 			throw new Error(t + " : " + t.getMessage());
 		} catch (NoSuchMethodException e) {
-			throw new Error("Programmer is stupid, please report: " + e.toString() +
+			throw new Error("I've done derped, please report: " + e.toString() +
 					" msg:" + e.getMessage());
 		} catch (IllegalAccessException e) {
 			throw new Error(e.getMessage());
@@ -150,7 +150,7 @@ public class XmlFactory {
 			System.err.println(Utils.getPrettyStackTrace(t));
 			throw new Error(t + " : " + t.getMessage());
 		} catch (NoSuchMethodException e) {
-			throw new Error("Programmer is stupid, please report: " + e.toString() +
+			throw new Error("I've done derped, please report: " + e.toString() +
 					" msg:" + e.getMessage());
 		} catch (IllegalAccessException e) {
 			throw new Error(e.getMessage());
@@ -184,7 +184,7 @@ public class XmlFactory {
 			System.err.println(Utils.getPrettyStackTrace(t));
 			throw new Error(t + " : " + t.getMessage());
 		} catch (NoSuchMethodException e) {
-			throw new Error("Programmer is stupid, please report: " + e.toString() +
+			throw new Error("I've done derped, please report: " + e.toString() +
 					" msg:" + e.getMessage());
 		} catch (IllegalAccessException e) {
 			throw new Error(e.getMessage());
