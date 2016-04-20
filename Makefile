@@ -42,16 +42,16 @@ all: $(objects)
 jar: $(BUILD_DIR)/$(PRGM)-$(VERSION).jar
 	ln -sf $< $(ROOT_DIR)/$(PRGM).jar
 
-.PHONY: del_test
-del_test:
+.PHONY: del_tests
+del_tests:
 	@for i in $(test_objects); do [ ! -e "$$i" ] || rm "$$i"; done
 
 $(BUILD_DIR)/$(PRGM)-$(VERSION).jar: $(objects)
 	jar -cf $@ -C $(JAR_DIR) .
 
 
-.PHONY: test
-test: $(test_objects)
+.PHONY: tests
+tests: $(test_objects)
 	$(JAVA) -ea $(JAVA_ARGS) -cp $(subst $(space),:,$(libs)):$(JAR_DIR):$(BUILD_DIR) $(patsubst /,.,Test) $(ARGS)
 
 
