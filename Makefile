@@ -52,7 +52,7 @@ $(BUILD_DIR)/$(PRGM)-$(VERSION).jar: $(objects)
 
 .PHONY: test
 test: $(test_objects)
-	$(JAVA) -ea $(JAVA_ARGS) -cp $(subst $(space),:,$(libs)):$(JAR_DIR) $(patsubst /,.,Test) $(ARGS)
+	$(JAVA) -ea $(JAVA_ARGS) -cp $(subst $(space),:,$(libs)):$(JAR_DIR):$(BUILD_DIR) $(patsubst /,.,Test) $(ARGS)
 
 
 .PHONY: clean
