@@ -12,7 +12,7 @@ public class ServerMessage extends BaseServerMessage {
 	public static final Version VERSION = new Version(1, 0);
 	protected static final String XML_ROOT = "server_message";
 
-	private Response resp;
+	private Response mResp;
 	private StateMachine sm;
 
 
@@ -468,21 +468,26 @@ public class ServerMessage extends BaseServerMessage {
 	public String toString(int indent) {
 		return ServerMessage.class.getSimpleName()
 				+ " version " + mVersion
-				+ "\n" + resp.getClass().getSimpleName() + " " + resp.toString(indent + 1);
+				+ "\n" + mResp.getClass().getSimpleName() + " " + mResp.toString(indent + 1);
 	}
 
 
 	public String getXmlString() {
 		XmlStringWriter xsw = new XmlStringWriter(getXmlRoot(), mVersion);
 
-		resp.writeXmlString(xsw);
+		mResp.writeXmlString(xsw);
 
 		return xsw.getXmlString();
 	}
 
 
+	public void setResponse(Response resp) {
+		mResp = resp;
+	}
+
+
 	public Response getResponse() {
-		return resp;
+		return mResp;
 	}
 
 
@@ -491,31 +496,31 @@ public class ServerMessage extends BaseServerMessage {
 
 		if (req instanceof ClientMessage.ItemListRequest) {
 			ClientMessage.ItemListRequest r = (ClientMessage.ItemListRequest) req;
-			resp = new ItemListResponse(r.getPrevId());
+			mResp = new ItemListResponse(r.getPrevId());
 
 		} else if (req instanceof ClientMessage.ItemRequest) {
 			ClientMessage.ItemRequest r = (ClientMessage.ItemRequest) req;
-			resp = new ItemResponse(r.getId(), r.getMediaType());
+			mResp = new ItemResponse(r.getId(), r.getMediaType());
 
 		} else if (req instanceof ClientMessage.ItemDeletionRequest) {
 			ClientMessage.ItemDeletionRequest r = (ClientMessage.ItemDeletionRequest) req;
-			resp = new ItemDeletionResponse(r.getId());
+			mResp = new ItemDeletionResponse(r.getId());
 
 		} else if (req instanceof ClientMessage.ItemPreservationRequest) {
 			ClientMessage.ItemPreservationRequest r = (ClientMessage.ItemPreservationRequest) req;
-			resp = new ItemPreservationResponse(r.getId());
+			mResp = new ItemPreservationResponse(r.getId());
 
 		} else if (req instanceof ClientMessage.SnoozeRequest) {
 			ClientMessage.SnoozeRequest r = (ClientMessage.SnoozeRequest) req;
-			resp = new SnoozeResponse(r.getInterval());
+			mResp = new SnoozeResponse(r.getInterval());
 
 		} else if (req instanceof ClientMessage.UnsnoozeRequest) {
 			ClientMessage.UnsnoozeRequest r = (ClientMessage.UnsnoozeRequest) req;
-			resp = new UnsnoozeResponse();
+			mResp = new UnsnoozeResponse();
 
 		} else if (req instanceof ClientMessage.ConfigRequest) {
 			ClientMessage.ConfigRequest r = (ClientMessage.ConfigRequest) req;
-			resp = new ConfigResponse();
+			mResp = new ConfigResponse();
 
 		} else {
 			throw new Error("unimplemented " + getXmlRoot() + " to " + req.getType());
@@ -527,25 +532,25 @@ public class ServerMessage extends BaseServerMessage {
 		switch (sm) {
 		case INIT:
 			if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName())) {
-				resp = processItemResponse(e);
+				mResp = processItemResponse(e);
 				sm = StateMachine.ITEM;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemListResponse.getTypeName())) {
-				resp = processItemListResponse(e);
+				mResp = processItemListResponse(e);
 				sm = StateMachine.ITEM_LIST;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, SnoozeResponse.getTypeName())) {
-				resp = processSnoozeResponse(e);
+				mResp = processSnoozeResponse(e);
 				sm = StateMachine.SNOOZE_ACK;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, UnsnoozeResponse.getTypeName())) {
-				resp = processUnsnoozeResponse(e);
+				mResp = processUnsnoozeResponse(e);
 				sm = StateMachine.UNSNOOZE_ACK;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName())) {
-				resp = processItemDeletionResponse(e);
+				mResp = processItemDeletionResponse(e);
 				sm = StateMachine.ITEM_DEL;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName())) {
-				resp = processItemPreservationResponse(e);
+				mResp = processItemPreservationResponse(e);
 				sm = StateMachine.ITEM_KEEP;
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, ConfigResponse.getTypeName())) {
-				resp = processConfigResponse(e);
+				mResp = processConfigResponse(e);
 				sm = StateMachine.CONFIG;
 			} else {
 				throw new Error("unimplemented");
@@ -555,7 +560,7 @@ public class ServerMessage extends BaseServerMessage {
 			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, ItemListResponse.getTypeName())) {
 				sm = StateMachine.END;
 			} else {
-				((ItemListResponse) resp).add(processItem(e));
+				((ItemListResponse) mResp).add(processItem(e));
 				sm = StateMachine.ITEM_LIST_ITEM;
 			}
 			break;
@@ -570,7 +575,7 @@ public class ServerMessage extends BaseServerMessage {
 					throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
 				}
 			} else {
-				((ItemListResponse) resp).add(processItem(e));
+				((ItemListResponse) mResp).add(processItem(e));
 			}
 			break;
 
@@ -600,7 +605,7 @@ public class ServerMessage extends BaseServerMessage {
 
 	protected ItemResponse processItemResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemResponse.getTypeName());
-		if (resp != null) {
+		if (mResp != null) {
 			throw new MalformedMessageException("Bogus " + ItemResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
@@ -649,7 +654,7 @@ public class ServerMessage extends BaseServerMessage {
 
 	protected ItemListResponse processItemListResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemListResponse.getTypeName());
-		if (resp != null) {
+		if (mResp != null) {
 			throw new MalformedMessageException("Bogus " + ItemListResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
@@ -677,7 +682,7 @@ public class ServerMessage extends BaseServerMessage {
 
 
 	protected SnoozeResponse processSnoozeResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
-		if (resp != null) {
+		if (mResp != null) {
 			throw new MalformedMessageException("Bogus " + SnoozeResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
@@ -714,7 +719,7 @@ public class ServerMessage extends BaseServerMessage {
 
 	protected ItemDeletionResponse processItemDeletionResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemDeletionResponse.getTypeName());
-		if (resp != null) {
+		if (mResp != null) {
 			throw new MalformedMessageException("Bogus " + ItemDeletionResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
@@ -743,7 +748,7 @@ public class ServerMessage extends BaseServerMessage {
 
 	protected ItemPreservationResponse processItemPreservationResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ItemPreservationResponse.getTypeName());
-		if (resp != null) {
+		if (mResp != null) {
 			throw new MalformedMessageException("Bogus " + ItemPreservationResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
@@ -772,7 +777,7 @@ public class ServerMessage extends BaseServerMessage {
 
 	protected ConfigResponse processConfigResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ConfigResponse.getTypeName());
-		if (resp != null) {
+		if (mResp != null) {
 			throw new MalformedMessageException("Bogus " + ConfigResponse.getTypeName() + " in " + getXmlRoot());
 		}
 
