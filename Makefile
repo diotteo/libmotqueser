@@ -81,7 +81,7 @@ $(LIB_DIR)/dioo-commons.jar:
 
 .PHONY: lastver
 $(BUILD_DIR)/.lastver: lastver
-	@if [ ! -e $@ -o $(shell cat $@) != $(VERSION) ]; then echo $(VERSION) > $@; fi
+	@if [ ! -e $@ ] || [ "$$(cat $@)" != $(VERSION) ]; then echo $(VERSION) > $@; fi
 
 $(BPATH)/version.properties: $(BPATH) $(BUILD_DIR)/.lastver
 	@echo vcs_version=$(VERSION) > $(BPATH)/version.properties
