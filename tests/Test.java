@@ -7,7 +7,12 @@ import ca.dioo.java.libmotqueser.*;
 
 public class Test {
 	public static void main(String args[]) {
+		packageVersion();
 		test2();
+	}
+
+	public static void packageVersion() {
+		System.out.println("libmotqueser version = " + Version.VERSION);
 	}
 
 
