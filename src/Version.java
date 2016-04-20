@@ -9,7 +9,7 @@ public class Version {
 	static {
 		Properties p = new Properties();
 		try {
-			p.load(Version.class.getResourceAsStream("/ca/dioo/java/motqueser/version.properties"));
+			p.load(Version.class.getResourceAsStream("/ca/dioo/java/libmotqueser/version.properties"));
 		} catch (IOException e) {
 			throw new Error(e.getMessage(), e);
 		}
