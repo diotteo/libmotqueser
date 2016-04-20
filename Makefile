@@ -78,6 +78,13 @@ $(LIB_DIR)/dioo-commons.jar:
 	$(MAKE) -C $(ROOT_DIR)/../java-commons jar
 
 
+.PHONY: lastver
+$(BUILD_DIR)/.lastver: lastver
+	@if [ ! -e $@ -o $(shell cat $@) != $(VERSION) ]; then echo $(VERSION) > $@; fi
+
+$(BPATH)/version.properties: $(BPATH) $(BUILD_DIR)/.lastver
+	@echo vcs_version=$(VERSION) > $(BPATH)/version.properties
+
 first_obj := $(firstword $(objects))
 rest_obj := $(wordlist 2,$(words $(objects)),$(objects))
 
