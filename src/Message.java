@@ -49,6 +49,9 @@ public abstract class Message {
 
 
 	public static String joinAttributeList(String eleDelim, String attrDelim, List<Attribute<String, String>> l) {
+		if (l == null) {
+			return "";
+		}
 		StringBuffer sb = new StringBuffer();
 
 		String d = "";
