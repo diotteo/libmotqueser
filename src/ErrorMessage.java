@@ -73,8 +73,12 @@ public class ErrorMessage extends Message {
 
 
 	public String toString() {
-		return ErrorMessage.class.getSimpleName()
-				+ "version " + mVersion + " text:" + errorMsg;
+		return toString(0);
+	}
+
+
+	public String toString(int indent) {
+		return getXmlRoot() + " version:" + mVersion + " text:" + errorMsg;
 	}
 
 

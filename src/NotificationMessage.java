@@ -37,11 +37,11 @@ public class NotificationMessage extends BaseServerMessage {
 		}
 
 		public String toString() {
-			return Message.joinAttributeList(" ", ":", getAttributeList());
+			return getType() + " " + Message.joinAttributeList(" ", ":", getAttributeList());
 		}
 
 		public String toString(int indent) {
-			return Utils.repeat("  ", indent) + toString();
+			return toString();
 		}
 	}
 
@@ -168,15 +168,14 @@ public class NotificationMessage extends BaseServerMessage {
 	}
 
 
-	public String toString(int indent) {
-		return NotificationMessage.class.getSimpleName()
-				+ " version " + mVersion
-				+ "\n" + it.toString(indent + 1);
+	public String toString() {
+		return toString(0);
 	}
 
 
-	public String toString() {
-		return toString(0);
+	public String toString(int indent) {
+		return getXmlRoot() + " version:" + mVersion
+				+ "\n" + Utils.repeat("  ", indent + 1) + it.toString(indent + 1);
 	}
 
 

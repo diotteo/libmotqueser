@@ -37,11 +37,11 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 		public String toString() {
-			return Message.joinAttributeList(" ", ":", getAttributeList());
+			return getType() + " " + Message.joinAttributeList(" ", ":", getAttributeList());
 		}
 
 		public String toString(int indent) {
-			return Utils.repeat("  ", indent) + toString();
+			return toString();
 		}
 	}
 
@@ -238,13 +238,16 @@ public class ServerMessage extends BaseServerMessage {
 		}
 
 
+		public String toString() {
+			return toString(0);
+		}
+
+
 		public String toString(int indent) {
-			StringBuffer sb = new StringBuffer();
-			sb.append("\n" + Utils.repeat("  ", indent) + getType() + toString());
+			StringBuffer sb = new StringBuffer(super.toString());
 
 			for (Item it: itemList) {
-				sb.append("\n" + Utils.repeat("  ", indent + 1)
-						+ Item.getTypeName() + " " + it.toString());
+				sb.append("\n" + Utils.repeat("  ", indent + 1) + it.toString(indent + 1));
 			}
 
 			return sb.toString();
@@ -466,9 +469,8 @@ public class ServerMessage extends BaseServerMessage {
 
 
 	public String toString(int indent) {
-		return ServerMessage.class.getSimpleName()
-				+ " version " + mVersion
-				+ "\n" + mResp.getClass().getSimpleName() + " " + mResp.toString(indent + 1);
+		return getXmlRoot() + " version:" + mVersion
+				+ "\n" + Utils.repeat("  ", indent + 1) + mResp.toString(indent + 1);
 	}
 
 

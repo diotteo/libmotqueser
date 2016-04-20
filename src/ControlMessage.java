@@ -101,10 +101,14 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer(ControlMessage.class.getSimpleName()
-				+ " version " + mVersion);
+		return toString(0);
+	}
+
+
+	public String toString(int indent) {
+		StringBuffer sb = new StringBuffer(getXmlRoot() + " version:" + mVersion);
 		for (Item it: itemList) {
-			sb.append("\n" + "  " + "item:" + it.toString(1));
+			sb.append("\n" + Utils.repeat("  ", indent + 1) + it.toString(indent + 1));
 		}
 
 		return sb.toString();
