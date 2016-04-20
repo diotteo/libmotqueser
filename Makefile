@@ -46,7 +46,7 @@ jar: $(BUILD_DIR)/$(PRGM)-$(VERSION).jar
 del_tests:
 	@for i in $(test_objects); do [ ! -e "$$i" ] || rm "$$i"; done
 
-$(BUILD_DIR)/$(PRGM)-$(VERSION).jar: $(objects)
+$(BUILD_DIR)/$(PRGM)-$(VERSION).jar: $(objects) $(res) $(BUILD_DIR)
 	jar -cf $@ -C $(JAR_DIR) .
 
 
