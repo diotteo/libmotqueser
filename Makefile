@@ -60,8 +60,9 @@ clean:
 	@[ ! -e $(BUILD_DIR) ] || rm -rv $(BUILD_DIR)
 
 
+$(BPATH): $(BUILD_DIR)
 $(JAR_DIR): $(BUILD_DIR)
-$(BUILD_DIR) $(JAR_DIR):
+$(BUILD_DIR) $(JAR_DIR) $(BPATH):
 	@[ -d $@ ] || mkdir -p $@
 
 
