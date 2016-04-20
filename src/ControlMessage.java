@@ -8,7 +8,7 @@ import java.util.List;
 import ca.dioo.java.commons.Utils;
 
 public class ControlMessage extends Message implements Iterable<ControlMessage.Item> {
-	public static final int VERSION[] = {1, 0};
+	public static final Version VERSION = new Version(1, 0);
 	private static final String XML_ROOT = "control_message";
 
 	private ArrayList<Item> itemList = new ArrayList<Item>();
@@ -76,7 +76,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	}
 
 
-	public ControlMessage(int[] version) {
+	public ControlMessage(Version version) {
 		super(version);
 	}
 
@@ -87,8 +87,8 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 	public ControlMessage(XmlParser xp) {
 		super(xp);
 
-		if (version[0] != 1 || version[1] != 0) {
-			throw new Error("unsupported version " + version[0] + "." + version[1]);
+		if (!mVersion.equals(new Version(1, 0))) {
+			throw new Error("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;
@@ -102,7 +102,7 @@ public class ControlMessage extends Message implements Iterable<ControlMessage.I
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer(ControlMessage.class.getSimpleName()
-				+ " version " + version[0] + "." + version[1]);
+				+ " version " + mVersion);
 		for (Item it: itemList) {
 			sb.append("\n" + "  " + "item:" + it.toString(1));
 		}

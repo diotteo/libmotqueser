@@ -3,7 +3,7 @@ package ca.dioo.java.libmotqueser;
 import ca.dioo.java.commons.Utils;
 
 public class ErrorMessage extends Message {
-	public static final int VERSION[] = {1, 0};
+	public static final Version VERSION = new Version(1, 0);
 	private static final String XML_ROOT = "error_message";
 
 	private StateMachine sm;
@@ -37,12 +37,12 @@ public class ErrorMessage extends Message {
 	}
 
 
-	public ErrorMessage(int[] version) {
+	public ErrorMessage(Version version) {
 		this(version, null);
 	}
 
 
-	public ErrorMessage(int[] version, String errMsg) {
+	public ErrorMessage(Version version, String errMsg) {
 		super(version);
 		errorMsg = errMsg;
 	}
@@ -54,8 +54,8 @@ public class ErrorMessage extends Message {
 	public ErrorMessage(XmlParser xp) {
 		super(xp);
 
-		if (version[0] != 1 || version[1] != 0) {
-			throw new Error("unsupported version " + version[0] + "." + version[1]);
+		if (!mVersion.equals(new Version(1, 0))) {
+			throw new Error("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;
@@ -74,7 +74,7 @@ public class ErrorMessage extends Message {
 
 	public String toString() {
 		return ErrorMessage.class.getSimpleName()
-				+ "version " + version[0] + "." + version[1] + " text:" + errorMsg;
+				+ "version " + mVersion + " text:" + errorMsg;
 	}
 
 

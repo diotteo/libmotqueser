@@ -8,7 +8,7 @@ import java.util.List;
 import ca.dioo.java.commons.Utils;
 
 public class NotificationMessage extends BaseServerMessage {
-	public static final int VERSION[] = {1, 0};
+	public static final Version VERSION = new Version(1, 0);
 	protected static final String XML_ROOT = "notification_message";
 
 	private NotificationItem it;
@@ -139,7 +139,7 @@ public class NotificationMessage extends BaseServerMessage {
 	}
 
 
-	public NotificationMessage(int[] version) {
+	public NotificationMessage(Version version) {
 		super(version);
 	}
 
@@ -150,8 +150,8 @@ public class NotificationMessage extends BaseServerMessage {
 	public NotificationMessage(XmlParser xp) {
 		super(xp);
 
-		if (version[0] != 1 || version[1] != 0) {
-			throw new Error("unsupported version " + version[0] + "." + version[1]);
+		if (!mVersion.equals(new Version(1, 0))) {
+			throw new Error("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;
@@ -170,7 +170,7 @@ public class NotificationMessage extends BaseServerMessage {
 
 	public String toString(int indent) {
 		return NotificationMessage.class.getSimpleName()
-				+ " version " + version[0] + "." + version[1]
+				+ " version " + mVersion
 				+ "\n" + it.toString(indent + 1);
 	}
 

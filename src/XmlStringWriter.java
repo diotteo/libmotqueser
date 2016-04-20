@@ -8,12 +8,12 @@ public class XmlStringWriter {
 	private XmlSerializer ser;
 
 
-	public XmlStringWriter(String rootElement, int[] version) {
+	public XmlStringWriter(String rootElement, Message.Version version) {
 		sw = new StringWriter();
 		ser = XmlFactory.newXmlSerializer(sw);
 		ser.writeStartDocument("utf-8");
 		ser.writeStartTag(rootElement);
-		ser.writeAttribute("version", version[0] + "." + version[1]);
+		ser.writeAttribute("version", version.toString());
 	}
 
 

@@ -6,7 +6,7 @@ import java.util.List;
 import ca.dioo.java.commons.Utils;
 
 public abstract class BaseServerMessage extends Message {
-	public static final int VERSION[] = {1, 0};
+	public static final Version VERSION = new Version(1, 0);
 
 	public static class Item {
 		private static final String XML_TYPE_NAME = "item";
@@ -133,7 +133,7 @@ public abstract class BaseServerMessage extends Message {
 	}
 
 
-	protected BaseServerMessage(int[] version) {
+	protected BaseServerMessage(Version version) {
 		super(version);
 	}
 

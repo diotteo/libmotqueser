@@ -4,7 +4,48 @@ import java.util.List;
 
 public abstract class Message {
 	protected XmlParser xp;
-	protected int[] version;
+	protected Version mVersion;
+
+
+	public static class Version {
+		public static final int NB_FIELDS = 2;
+		private int mMajor;
+		private int mMinor;
+
+
+		public static Version fromArray(int v[]) {
+			switch (v.length) {
+			case 1:
+				return new Version(v[0]);
+			case 2:
+				return new Version(v[0], v[1]);
+			default:
+				throw new UnsupportedOperationException("v.length = " + v.length);
+			}
+		}
+
+		public Version(int major) {
+			this(major, 0);
+		}
+
+		public Version(int major, int minor) {
+			mMajor = major;
+			mMinor = minor;
+		}
+
+		public String toString() {
+			return mMajor + "." + mMinor;
+		}
+
+		@Override
+		public int hashCode() {
+			return mMajor ^ mMinor;
+		}
+
+		public boolean equals(Version v) {
+			return mMajor == v.mMajor && mMinor == v.mMinor;
+		}
+	}
 
 
 	public static String joinAttributeList(String eleDelim, String attrDelim, List<Attribute<String, String>> l) {
@@ -19,15 +60,14 @@ public abstract class Message {
 	}
 
 
-	protected Message(int[] version) {
-		assert version.length == 2;
-		this.version = version;
+	protected Message(Version version) {
+		mVersion = version;
 	}
 
 
 	public Message(XmlParser xp) {
 		this.xp = xp;
-		version = null;
+		mVersion = null;
 
 		int attrCount = xp.getAttributeCount();
 		for (int i = 0; i < attrCount; i++) {
@@ -35,20 +75,21 @@ public abstract class Message {
 			String attrVal = xp.getAttributeValue(i);
 
 			if (attrName.equals("version")) {
-				version = new int[2];
 				String[] s = attrVal.split("\\.");
-				for (int j = 0; j < s.length; j++) {
-					version[j] = new Integer(s[j]);
+				int[] ver = new int[Math.min(s.length, Version.NB_FIELDS)];
+				for (int j = 0; j < s.length && j < Version.NB_FIELDS; j++) {
+					ver[j] = new Integer(s[j]);
 				}
+				mVersion = Version.fromArray(ver);
 				break;
 			}
 		}
-		assert version != null;
+		assert mVersion != null;
 	}
 
 
-	public int[] getVersion() {
-		return version;
+	public Version getVersion() {
+		return mVersion;
 	}
 
 

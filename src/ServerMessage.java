@@ -9,7 +9,7 @@ import java.util.Collection;
 import ca.dioo.java.commons.Utils;
 
 public class ServerMessage extends BaseServerMessage {
-	public static final int VERSION[] = {1, 0};
+	public static final Version VERSION = new Version(1, 0);
 	protected static final String XML_ROOT = "server_message";
 
 	private Response resp;
@@ -441,7 +441,7 @@ public class ServerMessage extends BaseServerMessage {
 	}
 
 
-	public ServerMessage(int[] version) {
+	public ServerMessage(Version version) {
 		super(version);
 	}
 
@@ -452,8 +452,8 @@ public class ServerMessage extends BaseServerMessage {
 	public ServerMessage(XmlParser xp) {
 		super(xp);
 
-		if (version[0] != 1 || version[1] != 0) {
-			throw new Error("unsupported version " + version[0] + "." + version[1]);
+		if (!mVersion.equals(new Version(1, 0))) {
+			throw new Error("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;
@@ -467,13 +467,13 @@ public class ServerMessage extends BaseServerMessage {
 
 	public String toString(int indent) {
 		return ServerMessage.class.getSimpleName()
-				+ " version " + version[0] + "." + version[1]
+				+ " version " + mVersion
 				+ "\n" + resp.getClass().getSimpleName() + " " + resp.toString(indent + 1);
 	}
 
 
 	public String getXmlString() {
-		XmlStringWriter xsw = new XmlStringWriter(getXmlRoot(), getVersion());
+		XmlStringWriter xsw = new XmlStringWriter(getXmlRoot(), mVersion);
 
 		resp.writeXmlString(xsw);
 

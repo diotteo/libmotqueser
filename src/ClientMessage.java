@@ -8,7 +8,7 @@ import java.util.List;
 import ca.dioo.java.commons.Utils;
 
 public class ClientMessage extends Message implements Iterable<ClientMessage.Request> {
-	public static final int VERSION[] = {1, 0};
+	public static final Version VERSION = new Version(1, 0);
 	private static final String XML_ROOT = "client_message";
 	private ArrayList<Request> reqList = new ArrayList<Request>();
 	private StateMachine sm;
@@ -361,7 +361,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	}
 
 
-	public ClientMessage(int[] version) {
+	public ClientMessage(Version version) {
 		super(version);
 	}
 
@@ -372,8 +372,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	public ClientMessage(XmlParser xp) {
 		super(xp);
 
-		if (version[0] != 1 || version[1] != 0) {
-			throw new Error("unsupported version " + version[0] + "." + version[1]);
+		if (!mVersion.equals(new Version(1, 0))) {
+			throw new Error("unsupported version " + mVersion);
 		}
 
 		sm = StateMachine.INIT;
@@ -392,7 +392,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 
 	public String toString(int indent) {
 		StringBuffer sb = new StringBuffer(ClientMessage.class.getSimpleName()
-				+ " version " + version[0] + "." + version[1]);
+				+ " version " + mVersion);
 		for (Request a: reqList) {
 			sb.append("\n" + Utils.repeat("  ", indent + 1) + "action " + a.toString());
 		}
