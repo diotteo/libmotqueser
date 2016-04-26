@@ -23,6 +23,8 @@ public class NotificationMessage extends BaseServerMessage {
 		ITEM_END,
 		REMOVED_ITEM,
 		REMOVED_ITEM_END,
+		SNOOZE_CHANGE,
+		SNOOZE_CHANGE_END,
 		END,
 	}
 
@@ -84,6 +86,43 @@ public class NotificationMessage extends BaseServerMessage {
 			xsw.writeTag(getType(), getAttributeList());
 			it.writeXmlString(xsw);
 			xsw.writeEndTag();
+		}
+	}
+
+
+	public static class SnoozeChange extends NotificationItem {
+		private static final String XML_TYPE_NAME = "snooze_change";
+		private int interval;
+
+		public SnoozeChange() {
+			this(-1);
+		}
+
+		public SnoozeChange(int interval) {
+			setInterval(interval);
+		}
+
+
+		public void setInterval(int interval) {
+			this.interval = interval;
+		}
+
+		public int getInterval() {
+			return interval;
+		}
+
+		@SuppressWarnings("unchecked")
+		public List<Attribute<String, String>> getAttributeList() {
+			return Arrays.asList(
+					new Attribute<String, String>("interval", Integer.toString(interval)));
+		}
+
+		public static String getTypeName() {
+			return XML_TYPE_NAME;
+		}
+
+		public String getType() {
+			return getTypeName();
 		}
 	}
 
@@ -197,6 +236,9 @@ public class NotificationMessage extends BaseServerMessage {
 			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, RemovedItem.getTypeName())) {
 				it = processRemovedItem(e);
 				sm = StateMachine.REMOVED_ITEM;
+			} else if (compareElement(e, XmlParser.XmlEvent.START_ELEMENT, SnoozeChange.getTypeName())) {
+				it = processSnoozeChange(e);
+				sm = StateMachine.SNOOZE_CHANGE;
 			} else {
 				//FIXME: send informative message string
 				throw new MalformedMessageException("received unexpected XML element");
@@ -219,9 +261,9 @@ public class NotificationMessage extends BaseServerMessage {
 				throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
 			}
 			break;
-		case REMOVED_ITEM_END:
-			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, getXmlRoot())) {
-				sm = StateMachine.END;
+		case SNOOZE_CHANGE:
+			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, SnoozeChange.getTypeName())) {
+				sm = StateMachine.SNOOZE_CHANGE_END;
 			} else {
 				String name = xp.getLocalName();
 				throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
@@ -246,18 +288,25 @@ public class NotificationMessage extends BaseServerMessage {
 				throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
 			}
 			break;
+		case REMOVED_ITEM_END:
+		case SNOOZE_CHANGE_END:
 		case NEW_ITEM_END:
-			if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, getXmlRoot())) {
-				sm = StateMachine.END;
-			} else {
-				String name = xp.getLocalName();
-				throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
-			}
+			processLastTag(e);
 			break;
 		case END:
 			throw new Error("Should never happen");
 		default:
 			throw new Error("unknown state machine state");
+		}
+	}
+
+
+	protected void processLastTag(XmlParser.XmlEvent e) throws MalformedMessageException {
+		if (compareElement(e, XmlParser.XmlEvent.END_ELEMENT, getXmlRoot())) {
+			sm = StateMachine.END;
+		} else {
+			String name = xp.getLocalName();
+			throw new MalformedMessageException("bogus end tag in " + getXmlRoot() + ": " + name);
 		}
 	}
 
@@ -268,6 +317,32 @@ public class NotificationMessage extends BaseServerMessage {
 		return new NewItem();
 	}
 
+	protected SnoozeChange processSnoozeChange(XmlParser.XmlEvent e) throws MalformedMessageException {
+		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, SnoozeChange.getTypeName());
+
+		int interval = -1;
+		int attrCount = xp.getAttributeCount();
+		for (int i = 0; i < attrCount; i++) {
+			String attrName = xp.getAttributeName(i).toString();
+			String attrVal = xp.getAttributeValue(i);
+
+			if (attrName.equals("interval")) {
+				try {
+					int nb = Integer.parseInt(attrVal);
+					if (nb < 0) {
+						throw new MalformedMessageException(attrName + " lower than 0 not allowed");
+					}
+					interval = nb;
+				} catch (NumberFormatException e2) {
+					throw new MalformedMessageException("bogus value for attribute " + attrName);
+				}
+			} else {
+				//Utils.debugLog(1, "ignoring unknown item attribute " + attrName + " in " + getXmlRoot());
+			}
+		}
+
+		return new SnoozeChange(interval);
+	}
 
 	protected RemovedItem processRemovedItem(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, RemovedItem.getTypeName());
