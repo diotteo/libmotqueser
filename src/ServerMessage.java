@@ -70,10 +70,10 @@ public class ServerMessage extends BaseServerMessage {
 			this(null);
 		}
 
-		public ConfigResponse(List<Attribute<String, String>> l) {
+		public ConfigResponse(Collection<Attribute<String, String>> c) {
 			attrList = new ArrayList<Attribute<String, String>>();
-			if (l != null) {
-				attrList.addAll(l);
+			if (c != null) {
+				attrList.addAll(c);
 			}
 		}
 
@@ -99,6 +99,17 @@ public class ServerMessage extends BaseServerMessage {
 
 		public boolean addAll(Collection<Attribute<String, String>> c) {
 			return attrList.addAll(c);
+		}
+
+		public boolean addAllParam(Collection<String> c) {
+			boolean ret = false;
+
+			for (String s: c) {
+				if (attrList.add(new Attribute<String, String>(s, null))) {
+					ret = true;
+				}
+			}
+			return ret;
 		}
 
 		/**
@@ -523,6 +534,7 @@ public class ServerMessage extends BaseServerMessage {
 		} else if (req instanceof ClientMessage.ConfigRequest) {
 			ClientMessage.ConfigRequest r = (ClientMessage.ConfigRequest) req;
 			mResp = new ConfigResponse();
+			((ConfigResponse) mResp).addAllParam(r.getParamList());
 
 		} else {
 			throw new UnsupportedOperationException("unimplemented " + getXmlRoot() + " to " + req.getType());
@@ -582,8 +594,11 @@ public class ServerMessage extends BaseServerMessage {
 			}
 			break;
 
-		//FIXME: verify that current tag is the proper end tag
 		case CONFIG:
+			//FIXME: handle multiple <config></config>
+			break;
+
+		//FIXME: verify that current tag is the proper end tag
 		case ITEM:
 		case ITEM_DEL:
 		case ITEM_KEEP:
@@ -780,8 +795,8 @@ public class ServerMessage extends BaseServerMessage {
 
 	protected ConfigResponse processConfigResponse(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, ConfigResponse.getTypeName());
-		if (mResp != null) {
-			throw new MalformedMessageException("Bogus " + ConfigResponse.getTypeName() + " in " + getXmlRoot());
+		if (mResp == null) {
+			mResp = new ConfigResponse();
 		}
 
 		List<Attribute<String, String>> attrList = new ArrayList<Attribute<String, String>>();
@@ -790,19 +805,10 @@ public class ServerMessage extends BaseServerMessage {
 			String attrName = xp.getAttributeName(i).toString();
 			String attrVal = xp.getAttributeValue(i);
 
-			if (attrName.equals("notification_port")) {
-				try {
-					int nb = Integer.parseInt(attrVal);
-					if (nb <= 0 || nb > 65535) {
-						throw new MalformedMessageException(attrName + " must be in range [1,65535]");
-					}
-					attrList.add(new Attribute<String, String>("notification_port", Integer.toString(nb)));
-				} catch (NumberFormatException e2) {
-					throw new MalformedMessageException("bogus value for attribute " + attrName);
-				}
-			}
+			attrList.add(new Attribute<String, String>(attrName, attrVal));
 		}
+		((ConfigResponse) mResp).addAll(attrList);
 
-		return new ConfigResponse(attrList);
+		return (ConfigResponse) mResp;
 	}
 }

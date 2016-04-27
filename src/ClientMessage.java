@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 import ca.dioo.java.commons.Utils;
 
@@ -332,10 +333,14 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	}
 
 
-	public static class ConfigRequest extends Request {
+	public static class ConfigRequest extends Request
+			implements Iterable<String> {
 		private static final String XML_TYPE_NAME = "config";
 
+		private List<String> mParamList;
+
 		public ConfigRequest() {
+			mParamList = new ArrayList<String>();
 		}
 
 
@@ -347,11 +352,29 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 			return getTypeName();
 		}
 
-
-		@SuppressWarnings("unchecked")
 		public List<Attribute<String, String>> getAttributeList() {
-			return Arrays.asList(
-					new Attribute<String, String>("type", getType()));
+			List<Attribute<String, String>> attrList = new ArrayList<Attribute<String, String>>();
+			attrList.add(new Attribute<String, String>("type", getType()));
+			for (String param: mParamList) {
+				attrList.add(new Attribute<String, String>("param", param));
+			}
+			return attrList;
+		}
+
+		public List<String> getParamList() {
+			return mParamList;
+		}
+
+		public boolean add(String param) {
+			return mParamList.add(param);
+		}
+
+		public boolean addAll(Collection<String> c) {
+			return mParamList.addAll(c);
+		}
+
+		public Iterator<String> iterator() {
+			return mParamList.iterator();
 		}
 	}
 
@@ -436,6 +459,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 	private void processRequest(XmlParser.XmlEvent e) throws MalformedMessageException {
 		validateElement(e, XmlParser.XmlEvent.START_ELEMENT, "action");
 
+		List<String> paramList = new ArrayList<String>();
 		Request req = null;
 		MediaType type = null;
 		int id = -1;
@@ -486,6 +510,8 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 				} else if (attrVal.equals("IMG")) {
 					type = MediaType.IMG;
 				}
+			} else if (attrName.equals("param")) {
+				paramList.add(attrVal);
 			}
 		}
 
@@ -510,7 +536,7 @@ public class ClientMessage extends Message implements Iterable<ClientMessage.Req
 		} else if (req instanceof UnsnoozeRequest) {
 			//Pass
 		} else if (req instanceof ConfigRequest) {
-			//Pass
+			((ConfigRequest) req).addAll(paramList);
 		} else {
 			throw new UnsupportedOperationException("unimplemented Request:" + req.getClass().getName());
 		}
